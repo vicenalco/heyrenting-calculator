@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Slider from './components/ui/Slider';
 import SelectionButton from './components/ui/SelectionButton';
+import ResultCard from './components/ui/ResultCard';
 
 export default function Home() {
   // Estados principales de la calculadora
@@ -10,15 +11,38 @@ export default function Home() {
   const [aniosFinanciacion, setAniosFinanciacion] = useState(5);
   const [precioCoche, setPrecioCoche] = useState(25000);
   const [tipoCombustible, setTipoCombustible] = useState('gasolina');
+  
+  // Estado para almacenar los resultados del cálculo
+  const [results, setResults] = useState({ 
+    ownershipCost: 0, 
+    rentingCost: 0 
+  });
 
-  // Función de cálculo principal (esqueleto por ahora)
+  // Función de cálculo principal con lógica realista
   const calculateOwnershipCost = (kms: number, anios: number, precio: number, combustible: string) => {
-    console.log('=== CÁLCULO DE COSTES ===');
-    console.log('Kilómetros anuales:', kms);
-    console.log('Años de financiación:', anios);
-    console.log('Precio del coche:', precio);
-    console.log('Tipo de combustible:', combustible);
-    console.log('========================');
+    // Cálculo de coste financiero mensual (con 8% de interés simple)
+    const costeFinancieroMensual = (precio / (anios * 12)) * 1.08;
+    
+    // Cálculo de depreciación mensual (45% de depreciación en 4 años)
+    const costeDepreciacionMensual = (precio * 0.45) / 48;
+    
+    // Coste de seguro mensual (fijo)
+    const costeSeguroMensual = 60;
+    
+    // Coste de mantenimiento mensual (25€ por cada 10.000 km)
+    const costeMantenimientoMensual = (kms / 10000) * 25;
+    
+    // Coste total de propiedad
+    const costeTotalPropiedad = costeFinancieroMensual + costeDepreciacionMensual + costeSeguroMensual + costeMantenimientoMensual;
+    
+    // Coste estimado de renting (fórmula simplificada)
+    const costeRentingEstimado = (precio / 60) + (kms / 1000);
+    
+    // Actualizar el estado con los resultados
+    setResults({
+      ownershipCost: Math.round(costeTotalPropiedad),
+      rentingCost: Math.round(costeRentingEstimado)
+    });
   };
 
   // useEffect para recalcular automáticamente cuando cambien los estados
@@ -135,9 +159,70 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Sección de Comparativa Financiera */}
+        <div className="mt-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            Comparativa Financiera Mensual
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Tarjeta de Coste en Propiedad */}
+            <ResultCard
+              title="Coste en Propiedad"
+              monthlyCost={results.ownershipCost}
+              isFeatured={false}
+            >
+              <h4 className="font-semibold mb-2">Incluye:</h4>
+              <ul className="space-y-1">
+                <li>• Financiación del vehículo</li>
+                <li>• Depreciación del vehículo</li>
+                <li>• Seguro obligatorio</li>
+                <li>• Mantenimiento y reparaciones</li>
+              </ul>
+            </ResultCard>
+
+            {/* Tarjeta de Renting HEYrenting */}
+            <ResultCard
+              title="Renting HEYrenting"
+              monthlyCost={results.rentingCost}
+              isFeatured={true}
+            >
+              <h4 className="font-semibold mb-2">Todo Incluido:</h4>
+              <ul className="space-y-1">
+                <li>• Vehículo nuevo siempre</li>
+                <li>• Seguro a todo riesgo</li>
+                <li>• Mantenimiento completo</li>
+                <li>• ITV y revisiones</li>
+                <li>• Asistencia en carretera</li>
+                <li>• Sin sorpresas ni costes extra</li>
+              </ul>
+            </ResultCard>
+          </div>
+
+          {/* Resumen de ahorro */}
+          {results.rentingCost < results.ownershipCost && (
+            <div className="mt-8 bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <span className="text-green-500 text-2xl">💰</span>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold text-green-800">
+                    ¡Ahorra con HEYrenting!
+                  </h3>
+                  <p className="text-green-700">
+                    Con renting ahorras <strong>{Math.round(results.ownershipCost - results.rentingCost)} €/mes</strong> 
+                    ({Math.round(((results.ownershipCost - results.rentingCost) / results.ownershipCost) * 100)}% menos)
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Footer informativo */}
         <div className="text-center mt-8 text-gray-600">
-          <p>Componente Slider creado con React, TypeScript y Tailwind CSS</p>
+          <p>Calculadora creada por HEYrenting</p>
         </div>
       </div>
     </div>
