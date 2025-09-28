@@ -1,11 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Slider from './components/ui/Slider';
+import SelectionButton from './components/ui/SelectionButton';
 
 export default function Home() {
-  // Estado para controlar el valor del slider
-  const [kilometrosAnuales, setKilometrosAnuales] = useState(15000);
+  // Estados principales de la calculadora
+  const [kmsAnuales, setKmsAnuales] = useState(20000);
+  const [aniosFinanciacion, setAniosFinanciacion] = useState(5);
+  const [precioCoche, setPrecioCoche] = useState(25000);
+  const [tipoCombustible, setTipoCombustible] = useState('gasolina');
+
+  // Función de cálculo principal (esqueleto por ahora)
+  const calculateOwnershipCost = (kms: number, anios: number, precio: number, combustible: string) => {
+    console.log('=== CÁLCULO DE COSTES ===');
+    console.log('Kilómetros anuales:', kms);
+    console.log('Años de financiación:', anios);
+    console.log('Precio del coche:', precio);
+    console.log('Tipo de combustible:', combustible);
+    console.log('========================');
+  };
+
+  // useEffect para recalcular automáticamente cuando cambien los estados
+  // Se ejecuta cada vez que cambia cualquiera de los valores de entrada
+  useEffect(() => {
+    calculateOwnershipCost(kmsAnuales, aniosFinanciacion, precioCoche, tipoCombustible);
+  }, [kmsAnuales, aniosFinanciacion, precioCoche, tipoCombustible]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
@@ -26,31 +46,84 @@ export default function Home() {
             Configuración del Vehículo
           </h2>
 
-          {/* Ejemplo de uso del componente Slider */}
+          {/* Sliders para configurar la calculadora */}
           <div className="space-y-8">
+            {/* Slider para Kilómetros Anuales */}
             <Slider
               label="Kilómetros Anuales"
               min={5000}
               max={50000}
               step={1000}
-              value={kilometrosAnuales}
-              onChange={setKilometrosAnuales}
+              value={kmsAnuales}
+              onChange={setKmsAnuales}
               unit="km"
             />
 
+            {/* Slider para Años de Financiación */}
+            <Slider
+              label="Años de Financiación"
+              min={1}
+              max={8}
+              step={1}
+              value={aniosFinanciacion}
+              onChange={setAniosFinanciacion}
+              unit="años"
+            />
+
+            {/* Slider para Precio del Coche */}
+            <Slider
+              label="Precio del Coche"
+              min={10000}
+              max={80000}
+              step={1000}
+              value={precioCoche}
+              onChange={setPrecioCoche}
+              unit="€"
+            />
+
+            {/* Selección de Tipo de Combustible */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800">Tipo de Combustible</h3>
+              <div className="flex gap-4">
+                <SelectionButton
+                  label="Gasolina"
+                  onClick={() => setTipoCombustible('gasolina')}
+                  isActive={tipoCombustible === 'gasolina'}
+                />
+                <SelectionButton
+                  label="Diésel"
+                  onClick={() => setTipoCombustible('diésel')}
+                  isActive={tipoCombustible === 'diésel'}
+                />
+              </div>
+            </div>
+
             {/* Información adicional mostrada en tiempo real */}
             <div className="bg-blue-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                Información del Vehículo
+              <h3 className="text-lg font-semibold text-blue-900 mb-4">
+                Resumen de Configuración
               </h3>
-              <p className="text-blue-700">
-                Has seleccionado <strong>{kilometrosAnuales.toLocaleString('es-ES')} km</strong> anuales.
-                {kilometrosAnuales > 30000 && (
-                  <span className="block mt-2 text-sm text-orange-600">
-                    ⚠️ Con este kilometraje, considera un vehículo con motor diésel para mayor eficiencia.
-                  </span>
-                )}
-              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-700">
+                <div>
+                  <strong>Kilómetros anuales:</strong> {kmsAnuales.toLocaleString('es-ES')} km
+                </div>
+                <div>
+                  <strong>Financiación:</strong> {aniosFinanciacion} años
+                </div>
+                <div>
+                  <strong>Precio:</strong> {precioCoche.toLocaleString('es-ES')} €
+                </div>
+                <div>
+                  <strong>Combustible:</strong> {tipoCombustible}
+                </div>
+              </div>
+              {kmsAnuales > 30000 && tipoCombustible === 'gasolina' && (
+                <div className="mt-4 p-3 bg-orange-100 border-l-4 border-orange-500 rounded">
+                  <p className="text-orange-700 text-sm">
+                    💡 Con este kilometraje, considera un vehículo diésel para mayor eficiencia.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Botón de acción (placeholder) */}
