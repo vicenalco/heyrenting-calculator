@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Slider from './components/ui/Slider';
 import SelectionButton from './components/ui/SelectionButton';
 import ResultCard from './components/ui/ResultCard';
+import { calculateFinancialAutopsy, calculateMonthlySavings, calculateSavingsPercentage } from '../lib/calculations';
 
 export default function Home() {
   // Estados principales de la calculadora
@@ -14,35 +15,30 @@ export default function Home() {
   
   // Estado para almacenar los resultados del cálculo
   const [results, setResults] = useState({ 
-    ownershipCost: 0, 
-    rentingCost: 0 
+    totalOwnershipCost: 0, 
+    rentingCost: 0,
+    breakdown: {
+      financiero: 0,
+      depreciacion: 0,
+      seguro: 0,
+      mantenimiento: 0,
+      neumaticos: 0,
+      impuestos: 0,
+      imprevistos: 0,
+    }
   });
 
-  // Función de cálculo principal con lógica realista
+  // Función de cálculo principal usando la lógica centralizada
   const calculateOwnershipCost = (kms: number, anios: number, precio: number, combustible: string) => {
-    // Cálculo de coste financiero mensual (con 8% de interés simple)
-    const costeFinancieroMensual = (precio / (anios * 12)) * 1.08;
-    
-    // Cálculo de depreciación mensual (45% de depreciación en 4 años)
-    const costeDepreciacionMensual = (precio * 0.45) / 48;
-    
-    // Coste de seguro mensual (fijo)
-    const costeSeguroMensual = 60;
-    
-    // Coste de mantenimiento mensual (25€ por cada 10.000 km)
-    const costeMantenimientoMensual = (kms / 10000) * 25;
-    
-    // Coste total de propiedad
-    const costeTotalPropiedad = costeFinancieroMensual + costeDepreciacionMensual + costeSeguroMensual + costeMantenimientoMensual;
-    
-    // Coste estimado de renting (fórmula simplificada)
-    const costeRentingEstimado = (precio / 60) + (kms / 1000);
-    
-    // Actualizar el estado con los resultados
-    setResults({
-      ownershipCost: Math.round(costeTotalPropiedad),
-      rentingCost: Math.round(costeRentingEstimado)
+    // Usar la función centralizada de cálculos
+    const calculationResults = calculateFinancialAutopsy({
+      precioCoche: precio,
+      aniosFinanciacion: anios,
+      kmsAnuales: kms
     });
+    
+    // Actualizar el estado con los resultados detallados
+    setResults(calculationResults);
   };
 
   // useEffect para recalcular automáticamente cuando cambien los estados
@@ -169,7 +165,7 @@ export default function Home() {
             {/* Tarjeta de Coste en Propiedad */}
             <ResultCard
               title="Coste en Propiedad"
-              monthlyCost={results.ownershipCost}
+              monthlyCost={results.totalOwnershipCost}
               isFeatured={false}
             >
               <h4 className="font-semibold mb-2">Incluye:</h4>
@@ -200,7 +196,7 @@ export default function Home() {
           </div>
 
           {/* Resumen de ahorro */}
-          {results.rentingCost < results.ownershipCost && (
+          {results.rentingCost < results.totalOwnershipCost && (
             <div className="mt-8 bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -211,8 +207,8 @@ export default function Home() {
                     ¡Ahorra con HEYrenting!
                   </h3>
                   <p className="text-green-700">
-                    Con renting ahorras <strong>{Math.round(results.ownershipCost - results.rentingCost)} €/mes</strong> 
-                    ({Math.round(((results.ownershipCost - results.rentingCost) / results.ownershipCost) * 100)}% menos)
+                    Con renting ahorras <strong>{calculateMonthlySavings(results.totalOwnershipCost, results.rentingCost)} €/mes</strong> 
+                    ({calculateSavingsPercentage(results.totalOwnershipCost, results.rentingCost)}% menos)
                   </p>
                 </div>
               </div>
