@@ -80,6 +80,11 @@ export default function Home() {
     setStep(step + 1);
   };
 
+  // Función para retroceder al paso anterior
+  const handlePrevious = () => {
+    setStep(step - 1);
+  };
+
   // Función para resetear al inicio (salida de emergencia)
   const handleResetToStart = () => {
     setStep(1);
@@ -247,15 +252,23 @@ export default function Home() {
             </div>
           )}
 
-          {/* Botón de emergencia - Volver al inicio */}
+          {/* Navegación */}
           {step > 1 && (
-            <div className="flex justify-start mt-8">
-              <button 
-                onClick={handleResetToStart}
-                className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
-              >
-                ← Volver al inicio
-              </button>
+            <div className="flex justify-between mt-8">
+              <div className="flex gap-4">
+                <button 
+                  onClick={handlePrevious}
+                  className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
+                >
+                  ← Atrás
+                </button>
+                <button 
+                  onClick={handleResetToStart}
+                  className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
+                >
+                  🏠 Inicio
+                </button>
+              </div>
             </div>
           )}
         </div>
