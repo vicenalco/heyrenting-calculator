@@ -102,7 +102,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header común a todos los pasos */}
         <div className="text-center mb-12">
@@ -123,15 +123,15 @@ export default function Home() {
                 <div key={stepNumber} className="flex items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
                     step >= stepNumber 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'text-white' 
                       : 'bg-gray-200 text-gray-500'
-                  }`}>
+                  }`} style={step >= stepNumber ? { backgroundColor: '#52bf31' } : {}}>
                     {stepNumber}
                   </div>
                   {stepNumber < 3 && (
                     <div className={`w-16 h-1 mx-2 ${
-                      step > stepNumber ? 'bg-blue-600' : 'bg-gray-200'
-                    }`} />
+                      step > stepNumber ? 'bg-gray-200' : 'bg-gray-200'
+                    }`} style={step > stepNumber ? { backgroundColor: '#52bf31' } : {}} />
                   )}
                 </div>
               ))}
@@ -231,16 +231,16 @@ export default function Home() {
               </div>
 
               {/* Resumen informativo */}
-              <div className="mt-8 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+              <div className="mt-8 p-6 rounded-lg" style={{ backgroundColor: '#f0f9f0', borderLeft: '4px solid #52bf31' }}>
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <span className="text-blue-500 text-2xl">💡</span>
+                    <span className="text-2xl">💡</span>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-semibold text-blue-800">
+                    <h3 className="text-lg font-semibold" style={{ color: '#2d5a2d' }}>
                       Información Importante
                     </h3>
-                    <p className="text-blue-700">
+                    <p style={{ color: '#2d5a2d' }}>
                       Estos cálculos incluyen todos los gastos reales: financiación, depreciación, seguro, mantenimiento, impuestos e imprevistos. 
                       Recuerda que la depreciación es un coste oculto pero real que afecta el valor de tu vehículo.
                     </p>

@@ -17,7 +17,7 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-transparent hover:border-blue-300 transition-all duration-200 cursor-pointer"
+        <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-transparent hover:border-green-300 transition-all duration-200 cursor-pointer"
              onClick={() => onSelectPath('knowsCar')}>
           <div className="text-4xl mb-4">🎯</div>
           <h3 className="text-xl font-semibold text-gray-800 mb-3">
@@ -28,7 +28,7 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-transparent hover:border-blue-300 transition-all duration-200 cursor-pointer"
+        <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-transparent hover:border-green-300 transition-all duration-200 cursor-pointer"
              onClick={() => onSelectPath('inspireMe')}>
           <div className="text-4xl mb-4">💡</div>
           <h3 className="text-xl font-semibold text-gray-800 mb-3">

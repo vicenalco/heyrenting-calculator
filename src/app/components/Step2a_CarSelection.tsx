@@ -61,7 +61,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
             value={carSearch}
             onChange={(e) => handleCarSearch(e.target.value)}
             placeholder="Ej: Seat León, Volkswagen Golf, BMW Serie 3..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent text-gray-900 placeholder-gray-500"
+            style={{ '--tw-ring-color': '#52bf31' } as React.CSSProperties}
+            onFocus={(e) => e.target.style.setProperty('--tw-ring-color', '#52bf31')}
           />
         </div>
 
@@ -134,11 +136,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
             </div>
 
             {/* Resumen de configuración */}
-            <div className="bg-blue-50 rounded-lg p-6">
-              <h4 className="text-lg font-semibold text-blue-900 mb-4">
+            <div className="rounded-lg p-6" style={{ backgroundColor: '#f0f9f0' }}>
+              <h4 className="text-lg font-semibold mb-4" style={{ color: '#2d5a2d' }}>
                 Resumen de tu selección
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ color: '#2d5a2d' }}>
                 <div>
                   <strong>Vehículo:</strong> {formData.carModel} {formData.carVersion}
                 </div>
@@ -158,7 +160,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
             <div className="text-center">
               <button 
                 onClick={handleNext}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg"
+                className="text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg hover:opacity-90"
+                style={{ backgroundColor: '#52bf31' }}
               >
                 Calcular Gastos Reales →
               </button>

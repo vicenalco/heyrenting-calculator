@@ -12,7 +12,7 @@ interface CarCardProps {
 
 export default function CarCard({ image, name, tags, price, onAnalyze }: CarCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-transparent hover:border-blue-300 transition-all duration-200">
+    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-transparent hover:border-green-300 transition-all duration-200">
       <div className="text-center">
         <Image 
           src={image} 
@@ -26,7 +26,8 @@ export default function CarCard({ image, name, tags, price, onAnalyze }: CarCard
           {tags.map((tag, index) => (
             <span 
               key={index}
-              className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+              className="px-2 py-1 text-xs rounded-full"
+              style={{ backgroundColor: '#f0f9f0', color: '#2d5a2d' }}
             >
               #{tag}
             </span>
@@ -37,7 +38,8 @@ export default function CarCard({ image, name, tags, price, onAnalyze }: CarCard
         </p>
         <button 
           onClick={onAnalyze}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+          className="w-full text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 hover:opacity-90"
+          style={{ backgroundColor: '#52bf31' }}
         >
           Analizar este coche
         </button>

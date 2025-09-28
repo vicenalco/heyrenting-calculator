@@ -98,9 +98,10 @@ export default function Step2b_Discovery({ formData, onUpdate, onNext }: Step2b_
               key={use.id}
               className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                 selectedUse === use.id
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300'
+                  ? 'border-gray-200'
+                  : 'border-gray-200 hover:border-green-300'
               }`}
+              style={selectedUse === use.id ? { borderColor: '#52bf31', backgroundColor: '#f0f9f0' } : {}}
               onClick={() => handleUseSelect(use.id)}
             >
               <div className="text-2xl mb-2">{use.icon}</div>
@@ -120,9 +121,10 @@ export default function Step2b_Discovery({ formData, onUpdate, onNext }: Step2b_
               key={budget.id}
               className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                 selectedBudget === budget.id
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300'
+                  ? 'border-gray-200'
+                  : 'border-gray-200 hover:border-green-300'
               }`}
+              style={selectedBudget === budget.id ? { borderColor: '#52bf31', backgroundColor: '#f0f9f0' } : {}}
               onClick={() => handleBudgetSelect(budget.id)}
             >
               <div className="text-2xl mb-2">{budget.icon}</div>
@@ -133,13 +135,13 @@ export default function Step2b_Discovery({ formData, onUpdate, onNext }: Step2b_
         </div>
       </div>
 
-      {/* Resumen de configuración automática */}
-      {selectedUse && selectedBudget && (
-        <div className="bg-green-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-green-900 mb-4">
-            ✨ Configuración automática aplicada
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-green-700">
+        {/* Resumen de configuración automática */}
+        {selectedUse && selectedBudget && (
+          <div className="rounded-lg p-6" style={{ backgroundColor: '#f0f9f0' }}>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#2d5a2d' }}>
+              ✨ Configuración automática aplicada
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ color: '#2d5a2d' }}>
             <div>
               <strong>Kilómetros anuales:</strong> {formData.kmsAnuales.toLocaleString('es-ES')} km
             </div>
@@ -164,9 +166,10 @@ export default function Step2b_Discovery({ formData, onUpdate, onNext }: Step2b_
             disabled={!selectedUse || !selectedBudget}
             className={`font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg ${
               selectedUse && selectedBudget
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                ? 'text-white hover:opacity-90'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
+            style={selectedUse && selectedBudget ? { backgroundColor: '#52bf31' } : {}}
           >
             Ver Recomendaciones →
           </button>
