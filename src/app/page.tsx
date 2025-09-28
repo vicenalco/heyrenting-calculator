@@ -1,8 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Slider from './components/ui/Slider';
-import SelectionButton from './components/ui/SelectionButton';
+import { useState, useEffect, useCallback } from 'react';
 import ResultCard from './components/ui/ResultCard';
 import Step1_Welcome from './components/Step1_Welcome';
 import Step2a_CarSelection from './components/Step2a_CarSelection';
@@ -50,7 +48,7 @@ export default function Home() {
   };
 
   // Función de cálculo principal usando la lógica centralizada
-  const calculateOwnershipCost = () => {
+  const calculateOwnershipCost = useCallback(() => {
     // Usar la función centralizada de cálculos
     const calculationResults = calculateFinancialAutopsy({
       precioCoche: formData.precioCoche,
@@ -60,14 +58,14 @@ export default function Home() {
     
     // Actualizar el estado con los resultados detallados
     setResults(calculationResults);
-  };
+  }, [formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales]);
 
   // useEffect para recalcular automáticamente cuando cambien los datos del formulario
   useEffect(() => {
     if (formData.precioCoche > 0 && formData.aniosFinanciacion > 0 && formData.kmsAnuales > 0) {
       calculateOwnershipCost();
     }
-  }, [formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales, formData.tipoCombustible]);
+  }, [calculateOwnershipCost]);
 
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {

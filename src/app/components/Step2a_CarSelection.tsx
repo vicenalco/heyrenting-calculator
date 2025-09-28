@@ -13,7 +13,7 @@ interface Step2a_CarSelectionProps {
     precioCoche: number;
     tipoCombustible: string;
   };
-  onUpdate: (updates: any) => void;
+  onUpdate: (updates: Partial<Step2a_CarSelectionProps['formData']>) => void;
   onNext: () => void;
 }
 

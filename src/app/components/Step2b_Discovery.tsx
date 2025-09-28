@@ -9,8 +9,10 @@ interface Step2b_DiscoveryProps {
     aniosFinanciacion: number;
     precioCoche: number;
     tipoCombustible: string;
+    carModel: string;
+    carVersion: string;
   };
-  onUpdate: (updates: any) => void;
+  onUpdate: (updates: Partial<Step2b_DiscoveryProps['formData']>) => void;
   onNext: () => void;
 }
 
