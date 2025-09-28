@@ -168,12 +168,28 @@ export default function Home() {
               monthlyCost={results.totalOwnershipCost}
               isFeatured={false}
             >
-              <h4 className="font-semibold mb-2">Incluye:</h4>
-              <ul className="space-y-1">
-                <li>• Financiación del vehículo</li>
-                <li>• Depreciación del vehículo</li>
-                <li>• Seguro obligatorio</li>
-                <li>• Mantenimiento y reparaciones</li>
+              <h4 className="font-semibold mb-2 text-gray-700">Desglose mensual estimado:</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex justify-between">
+                  <span>💸 Financiación e Intereses</span>
+                  <strong>{results.breakdown.financiero.toFixed(0)} €</strong>
+                </li>
+                <li className="flex justify-between">
+                  <span>📉 Depreciación (coste oculto)</span>
+                  <strong>{results.breakdown.depreciacion.toFixed(0)} €</strong>
+                </li>
+                <li className="flex justify-between">
+                  <span>🛡️ Seguro y Tasas</span>
+                  <strong>{(results.breakdown.seguro + results.breakdown.impuestos).toFixed(0)} €</strong>
+                </li>
+                <li className="flex justify-between">
+                  <span>🔧 Mantenimiento y Neumáticos</span>
+                  <strong>{(results.breakdown.mantenimiento + results.breakdown.neumaticos).toFixed(0)} €</strong>
+                </li>
+                <li className="flex justify-between border-t pt-2 mt-2 border-dashed">
+                  <span>🚨 Fondo para Imprevistos</span>
+                  <strong>{results.breakdown.imprevistos.toFixed(0)} €</strong>
+                </li>
               </ul>
             </ResultCard>
 
