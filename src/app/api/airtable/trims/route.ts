@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
   }
   
-  const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number; model?: string[] } }> };
+  const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number; cv?: number; model?: string[] } }> };
   
   // Filtramos en el frontend: buscamos trims donde el array model contenga el modelId
   const results = data.records
@@ -36,8 +36,9 @@ export async function GET(request: Request) {
     .map((r) => ({ 
       id: r.id, 
       name: r.fields.name || '', 
-      fuel: r.fields.fuel || '', 
-      price: r.fields.price || 0 
+      fuel: r.fields.fuel, 
+      price: r.fields.price, 
+      cv: r.fields.cv
     }))
     .filter((r) => r.name);
   

@@ -1,6 +1,6 @@
 export type Brand = { id: string; name: string };
 export type Model = { id: string; name: string };
-export type Trim = { id: string; name: string; fuel: string; price: number };
+export type Trim = { id: string; name: string; fuel?: string; price?: number; cv?: number };
 
 export async function fetchBrands(q: string): Promise<Brand[]> {
   const url = `/api/airtable/brands?q=${encodeURIComponent(q)}`;
