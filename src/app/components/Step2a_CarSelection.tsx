@@ -10,6 +10,7 @@ interface Step2a_CarSelectionProps {
     carBrand: string;
     carModel: string;
     carVersion: string; // usaremos para "motorización"
+    carYear: number; // nuevo campo para el año
     kmsAnuales: number;
     aniosFinanciacion: number;
     precioCoche: number;
@@ -28,7 +29,7 @@ interface Step2a_CarSelectionProps {
 }
 
 export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step2a_CarSelectionProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
@@ -192,24 +193,24 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     
     onUpdate(updates);
     
-    // Ir al paso 4 (uso y resumen)
+    // Ir al paso 4 (selección de año)
     setCurrentStep(4);
   };
 
   const handleNextStep = () => {
-    if (currentStep < 5) {
-      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5);
+    if (currentStep < 6) {
+      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5 | 6);
     }
   };
 
   const handlePreviousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5);
+      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5 | 6);
     }
   };
 
   const handleNext = () => {
-    if (formData.carBrand && formData.carModel && formData.carVersion) {
+    if (formData.carBrand && formData.carModel && formData.carVersion && formData.carYear) {
       // Guardar las respuestas adicionales en formData
       onUpdate({
         usoVehiculo,
@@ -252,8 +253,10 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       case 3:
         return renderTrimStep();
       case 4:
-        return renderUsageStep();
+        return renderYearStep();
       case 5:
+        return renderUsageStep();
+      case 6:
         return renderQuestionsStep();
       default:
         return renderBrandStep();
@@ -481,6 +484,45 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     </div>
   );
 
+  const renderYearStep = () => {
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 15 }, (_, i) => currentYear - i);
+    
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <i className="fa-solid fa-calendar mr-2"></i>¿De qué año es tu vehículo?
+          </h3>
+          <p className="text-gray-600">Selecciona el año de fabricación de tu <strong>{formData.carModel}</strong></p>
+        </div>
+        
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+          {years.map((year) => (
+            <div
+              key={year}
+              onClick={() => {
+                onUpdate({ carYear: year });
+                setCurrentStep(5);
+              }}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                formData.carYear === year
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-2xl mb-2">
+                  <i className="fa-solid fa-calendar-days text-gray-600"></i>
+                </div>
+                <h4 className="font-semibold text-gray-900">{year}</h4>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const renderUsageStep = () => (
     <div className="space-y-8">
@@ -525,7 +567,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
               <i className="fa-solid fa-car text-2xl mr-3 text-gray-600"></i>
               <div>
                 <p className="text-sm text-gray-500">Vehículo</p>
-                <p className="font-bold text-gray-900">{formData.carBrand} {formData.carModel}</p>
+                <p className="font-bold text-gray-900">{formData.carBrand} {formData.carModel} {formData.carYear}</p>
               </div>
             </div>
           </div>
@@ -773,7 +815,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         {/* Indicador de pasos */}
         <div className="flex justify-center mt-6">
           <div className="flex space-x-2">
-            {[1, 2, 3, 4, 5].map((step) => (
+            {[1, 2, 3, 4, 5, 6].map((step) => (
               <div
                 key={step}
                 className={`w-3 h-3 rounded-full transition-all duration-200 ${
@@ -801,15 +843,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         </button>
 
         <div className="text-center sm:text-left text-sm text-gray-500">
-          Paso {currentStep} de 5
+          Paso {currentStep} de 6
         </div>
 
-        {currentStep === 5 ? (
+        {currentStep === 6 ? (
           <button 
             onClick={handleNext}
             className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             style={{ backgroundColor: '#52bf31' }}
-            disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia}
+            disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !formData.carYear || !usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia}
           >
             <span className="mr-2">🚀</span>
             Calcular Gastos Reales
@@ -822,8 +864,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
               (currentStep === 1 && !formData.carBrand) ||
               (currentStep === 2 && !formData.carModel) ||
               (currentStep === 3 && !formData.carVersion) ||
-              (currentStep === 4 && (!formData.kmsAnuales || !formData.aniosFinanciacion)) ||
-              ((currentStep as number) === 5 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia))
+              (currentStep === 4 && !formData.carYear) ||
+              (currentStep === 5 && (!formData.kmsAnuales || !formData.aniosFinanciacion)) ||
+              ((currentStep as number) === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia))
             }
             className="w-full sm:w-auto flex items-center justify-center px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: '#52bf31' }}
