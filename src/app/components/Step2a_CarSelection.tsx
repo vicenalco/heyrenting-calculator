@@ -27,7 +27,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
 
   const [brandQuery, setBrandQuery] = useState('');
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
-  const [models, setModels] = useState<{ id: string; name: string }[]>([]);
+  const [models, setModels] = useState<{ id: string; name: string; startYear?: number; endYear?: number; imageUrl?: string }[]>([]);
   const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number }[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -193,7 +193,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   const renderBrandStep = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">🏷️ ¿Qué marca te gusta?</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-tag mr-2"></i>¿Qué marca te gusta?
+        </h3>
         <p className="text-gray-600">Busca y selecciona la marca de tu vehículo</p>
       </div>
       
@@ -239,7 +241,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       )}
       
       {makes.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {makes.map((m) => (
             <div
               key={m.id}
@@ -251,7 +253,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
               }`}
             >
               <div className="text-center">
-                <div className="text-2xl mb-2">🚗</div>
+                <div className="text-2xl mb-2">
+                  <i className="fa-solid fa-car text-gray-600"></i>
+                </div>
                 <h4 className="font-semibold text-gray-900">{m.name}</h4>
               </div>
             </div>
@@ -276,7 +280,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       )}
       
       {!loading && models.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {models.map((m) => (
             <div
               key={m.id}
@@ -288,9 +292,35 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
               }`}
             >
               <div className="text-center">
-                <div className="text-3xl mb-3">🚗</div>
+                {m.imageUrl ? (
+                  <div className="mb-3">
+                    <img 
+                      src={m.imageUrl} 
+                      alt={m.name}
+                      className="w-16 h-16 object-cover rounded-lg mx-auto"
+                      onError={(e) => {
+                        // Si falla la imagen, mostrar icono
+                        e.currentTarget.style.display = 'none';
+                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (nextElement) nextElement.style.display = 'block';
+                      }}
+                    />
+                    <div className="text-3xl mb-3 hidden">
+                      <i className="fa-solid fa-car text-gray-600"></i>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-3xl mb-3">
+                    <i className="fa-solid fa-car text-gray-600"></i>
+                  </div>
+                )}
                 <h4 className="font-bold text-lg text-gray-900">{m.name}</h4>
                 <p className="text-sm text-gray-500 mt-1">{formData.carBrand}</p>
+                {m.startYear && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    {m.startYear}{m.endYear && m.endYear !== m.startYear ? ` - ${m.endYear}` : ''}
+                  </p>
+                )}
               </div>
             </div>
           ))}
@@ -302,7 +332,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   const renderTrimStep = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">⚙️ ¿Qué motorización prefieres?</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-cogs mr-2"></i>¿Qué motorización prefieres?
+        </h3>
         <p className="text-gray-600">Elige la versión de <strong>{formData.carModel}</strong></p>
       </div>
       
@@ -314,7 +346,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       )}
       
       {!loading && trims.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {trims.map((trim) => (
             <div
               key={trim.id}
@@ -364,7 +396,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   const renderUsageStep = () => (
     <div className="space-y-8">
       <div className="text-center">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">📊 Ajusta tu uso</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-chart-line mr-2"></i>Ajusta tu uso
+        </h3>
         <p className="text-gray-600">Personaliza los parámetros según tus necesidades</p>
       </div>
       
@@ -399,7 +433,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center mb-2">
-              <span className="text-2xl mr-3">🚗</span>
+              <i className="fa-solid fa-car text-2xl mr-3 text-gray-600"></i>
               <div>
                 <p className="text-sm text-gray-500">Vehículo</p>
                 <p className="font-bold text-gray-900">{formData.carBrand} {formData.carModel}</p>
@@ -409,7 +443,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center mb-2">
-              <span className="text-2xl mr-3">⚙️</span>
+              <i className="fa-solid fa-cogs text-2xl mr-3 text-gray-600"></i>
               <div>
                 <p className="text-sm text-gray-500">Motorización</p>
                 <p className="font-bold text-gray-900">{formData.carVersion}</p>
@@ -429,7 +463,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center mb-2">
-              <span className="text-2xl mr-3">📊</span>
+              <i className="fa-solid fa-chart-line text-2xl mr-3 text-gray-600"></i>
               <div>
                 <p className="text-sm text-gray-500">Uso anual</p>
                 <p className="font-bold text-gray-900">{formData.kmsAnuales.toLocaleString('es-ES')} km</p>
@@ -442,10 +476,10 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Configura tu vehículo 🚗
+          <i className="fa-solid fa-car mr-2"></i>Configura tu vehículo
         </h2>
         <p className="text-gray-600">
           Selecciona paso a paso tu coche y ajusta los parámetros para calcular los gastos reales
@@ -466,29 +500,29 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         </div>
       </div>
 
-      <div className="min-h-[400px]">
+      <div className="min-h-[320px] sm:min-h-[400px]">
         {renderStepContent()}
       </div>
 
       {/* Navegación */}
-      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-stretch sm:items-center pt-6 border-t border-gray-200">
         <button
           onClick={handlePreviousStep}
           disabled={currentStep === 1}
-          className="flex items-center px-6 py-3 text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto flex items-center justify-center px-6 py-3 text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="mr-2">←</span>
           Anterior
         </button>
 
-        <div className="text-sm text-gray-500">
+        <div className="text-center sm:text-left text-sm text-gray-500">
           Paso {currentStep} de 4
         </div>
 
         {currentStep === 4 ? (
           <button 
             onClick={handleNext}
-            className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             style={{ backgroundColor: '#52bf31' }}
             disabled={!formData.carBrand || !formData.carModel || !formData.carVersion}
           >
@@ -504,7 +538,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
               (currentStep === 2 && !formData.carModel) ||
               (currentStep === 3 && !formData.carVersion)
             }
-            className="flex items-center px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto flex items-center justify-center px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: '#52bf31' }}
           >
             Siguiente

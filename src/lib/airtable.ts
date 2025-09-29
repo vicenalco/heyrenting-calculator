@@ -1,5 +1,5 @@
 export type Brand = { id: string; name: string };
-export type Model = { id: string; name: string };
+export type Model = { id: string; name: string; startYear?: number; endYear?: number; imageUrl?: string };
 export type Trim = { id: string; name: string; fuel?: string; price?: number; cv?: number };
 
 export async function fetchBrands(q: string): Promise<Brand[]> {

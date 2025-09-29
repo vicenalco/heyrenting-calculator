@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
   }
   
-  const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; brand?: string[] } }> };
+  const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; brand?: string[]; startYear?: number; endYear?: number; imageUrl?: string } }> };
   
   // Filtramos en el frontend: buscamos modelos donde el array brand contenga el brandId
   const results = data.records
@@ -33,8 +33,20 @@ export async function GET(request: Request) {
       const brandArray = r.fields.brand;
       return brandArray && Array.isArray(brandArray) && brandArray.includes(brandId);
     })
-    .map((r) => ({ id: r.id, name: r.fields.name || '' }))
-    .filter((r) => r.name);
+    .map((r) => ({ 
+      id: r.id, 
+      name: r.fields.name || '',
+      startYear: r.fields.startYear,
+      endYear: r.fields.endYear,
+      imageUrl: r.fields.imageUrl
+    }))
+    .filter((r) => r.name)
+    .sort((a, b) => {
+      // Ordenar por año de inicio (más reciente primero)
+      const yearA = a.startYear || 0;
+      const yearB = b.startYear || 0;
+      return yearB - yearA;
+    });
   
   return NextResponse.json(results);
 }
