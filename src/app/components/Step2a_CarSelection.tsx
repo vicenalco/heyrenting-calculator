@@ -66,7 +66,16 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     setLoading(true);
     fetchModels(formData.brandId)
       .then((modelList) => {
-        setModels(modelList);
+        // Verificar si es un objeto de debug
+        if (modelList && typeof modelList === 'object' && 'debug' in modelList) {
+          console.log('Debug info from models:', modelList);
+          setModels([]);
+        } else if (Array.isArray(modelList)) {
+          setModels(modelList);
+        } else {
+          console.error('Unexpected response format:', modelList);
+          setModels([]);
+        }
       })
       .catch((error) => {
         console.error('Error fetching models:', error);
@@ -87,7 +96,16 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     setLoading(true);
     fetchTrims(formData.modelId)
       .then((trimList) => {
-        setTrims(trimList);
+        // Verificar si es un objeto de debug
+        if (trimList && typeof trimList === 'object' && 'debug' in trimList) {
+          console.log('Debug info from trims:', trimList);
+          setTrims([]);
+        } else if (Array.isArray(trimList)) {
+          setTrims(trimList);
+        } else {
+          console.error('Unexpected response format:', trimList);
+          setTrims([]);
+        }
       })
       .catch((error) => {
         console.error('Error fetching trims:', error);
