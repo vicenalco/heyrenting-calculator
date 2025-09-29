@@ -29,6 +29,12 @@ export default function Home() {
     // IDs internos para integraciones (Airtable)
     brandId: '',
     modelId: '',
+    // Campos adicionales del paso 5
+    usoVehiculo: '',
+    estiloConduccion: '',
+    frecuenciaUso: '',
+    presupuesto: '',
+    experiencia: '',
   });
   
   // Estado para almacenar los resultados del cálculo
@@ -105,6 +111,12 @@ export default function Home() {
       telefono: '',
       brandId: '',
       modelId: '',
+      // Campos adicionales del paso 5
+      usoVehiculo: '',
+      estiloConduccion: '',
+      frecuenciaUso: '',
+      presupuesto: '',
+      experiencia: '',
     });
   };
 

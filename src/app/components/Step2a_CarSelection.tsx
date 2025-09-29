@@ -17,22 +17,43 @@ interface Step2a_CarSelectionProps {
     makeQid?: string;
     brandId?: string;
     modelId?: string;
+    usoVehiculo?: string;
+    estiloConduccion?: string;
+    frecuenciaUso?: string;
+    presupuesto?: string;
+    experiencia?: string;
   };
   onUpdate: (updates: Partial<Step2a_CarSelectionProps['formData']>) => void;
   onNext: () => void;
 }
 
 export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step2a_CarSelectionProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
   const [models, setModels] = useState<{ id: string; name: string; startYear?: number; endYear?: number; imageUrl?: string }[]>([]);
   const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number }[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState('');
+  
+  // Estados para el paso 5 (preguntas adicionales)
+  const [usoVehiculo, setUsoVehiculo] = useState('');
+  const [estiloConduccion, setEstiloConduccion] = useState('');
+  const [frecuenciaUso, setFrecuenciaUso] = useState('');
+  const [presupuesto, setPresupuesto] = useState('');
+  const [experiencia, setExperiencia] = useState('');
 
   // Debounce para evitar sobrecargar Airtable
   const debouncedQuery = useDebouncedValue(brandQuery, 300);
+
+  // Función helper para delay con loading
+  const delayWithLoading = (ms: number, text: string) => {
+    return new Promise(resolve => {
+      setLoadingText(text);
+      setTimeout(resolve, ms);
+    });
+  };
 
   // Buscar marcas con Airtable
   useEffect(() => {
@@ -62,9 +83,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       return; 
     }
     
-    setLoading(true);
-    fetchModels(formData.brandId)
-      .then((modelList) => {
+    const loadModels = async () => {
+      setLoading(true);
+      
+      // Delay de 2-3 segundos con texto personalizado
+      await delayWithLoading(2500, 'Buscando modelos...');
+      
+      try {
+        const modelList = await fetchModels(formData.brandId!);
+        
         // Verificar si es un objeto de debug
         if (modelList && typeof modelList === 'object' && 'debug' in modelList) {
           console.log('Debug info from models:', modelList);
@@ -75,14 +102,16 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
           console.error('Unexpected response format:', modelList);
           setModels([]);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching models:', error);
         setModels([]);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+        setLoadingText('');
+      }
+    };
+    
+    loadModels();
   }, [formData.brandId]);
 
   // Cargar trims cuando se selecciona un modelo
@@ -92,9 +121,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       return; 
     }
     
-    setLoading(true);
-    fetchTrims(formData.modelId)
-      .then((trimList) => {
+    const loadTrims = async () => {
+      setLoading(true);
+      
+      // Delay de 2-3 segundos con texto personalizado
+      await delayWithLoading(2500, 'Buscando motorizaciones para el modelo seleccionado...');
+      
+      try {
+        const trimList = await fetchTrims(formData.modelId!);
+        
         // Verificar si es un objeto de debug
         if (trimList && typeof trimList === 'object' && 'debug' in trimList) {
           console.log('Debug info from trims:', trimList);
@@ -105,14 +140,16 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
           console.error('Unexpected response format:', trimList);
           setTrims([]);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching trims:', error);
         setTrims([]);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+        setLoadingText('');
+      }
+    };
+    
+    loadTrims();
   }, [formData.modelId]);
 
   const needsFuelChoice = (fuel?: string) => !fuel || fuel === 'híbrido';
@@ -155,24 +192,55 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     
     onUpdate(updates);
     
-    // Siempre ir al paso 4 (uso y resumen)
+    // Ir al paso 4 (uso y resumen)
     setCurrentStep(4);
   };
 
   const handleNextStep = () => {
-    if (currentStep < 4) {
-      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
+    if (currentStep < 5) {
+      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5);
     }
   };
 
   const handlePreviousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
+      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5);
     }
   };
 
   const handleNext = () => {
-    if (formData.carBrand && formData.carModel && formData.carVersion) onNext();
+    if (formData.carBrand && formData.carModel && formData.carVersion) {
+      // Guardar las respuestas adicionales en formData
+      onUpdate({
+        usoVehiculo,
+        estiloConduccion,
+        frecuenciaUso,
+        presupuesto,
+        experiencia
+      });
+      onNext();
+    }
+  };
+
+  const handleUsoVehiculo = (uso: string) => {
+    setUsoVehiculo(uso);
+    setCurrentStep(5);
+  };
+
+  const handleEstiloConduccion = (estilo: string) => {
+    setEstiloConduccion(estilo);
+  };
+
+  const handleFrecuenciaUso = (frecuencia: string) => {
+    setFrecuenciaUso(frecuencia);
+  };
+
+  const handlePresupuesto = (presu: string) => {
+    setPresupuesto(presu);
+  };
+
+  const handleExperiencia = (exp: string) => {
+    setExperiencia(exp);
   };
 
   const renderStepContent = () => {
@@ -185,6 +253,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         return renderTrimStep();
       case 4:
         return renderUsageStep();
+      case 5:
+        return renderQuestionsStep();
       default:
         return renderBrandStep();
     }
@@ -273,9 +343,21 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       </div>
       
       {loading && (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-green-500 mx-auto mb-4"></div>
-          <p className="text-gray-500">Cargando modelos...</p>
+        <div className="text-center py-12">
+          <div className="relative mb-6">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-green-500 mx-auto"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="animate-pulse text-green-500 text-lg">⚙️</div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg font-semibold text-gray-700">{loadingText}</p>
+            <div className="flex justify-center space-x-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+          </div>
         </div>
       )}
       
@@ -339,9 +421,21 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       </div>
       
       {loading && (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-green-500 mx-auto mb-4"></div>
-          <p className="text-gray-500">Cargando motorizaciones...</p>
+        <div className="text-center py-12">
+          <div className="relative mb-6">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-green-500 mx-auto"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="animate-pulse text-green-500 text-lg">🔧</div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg font-semibold text-gray-700">{loadingText}</p>
+            <div className="flex justify-center space-x-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+          </div>
         </div>
       )}
       
@@ -475,6 +569,202 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     </div>
   );
 
+  const renderQuestionsStep = () => (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-question-circle mr-2"></i>Cuéntanos más sobre tu uso
+        </h3>
+        <p className="text-gray-600">Estas respuestas nos ayudarán a calcular los gastos reales más precisos</p>
+      </div>
+
+      {/* Uso del vehículo */}
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-gray-900">
+          <i className="fa-solid fa-route mr-2"></i>¿Cómo usarás principalmente tu {formData.carModel}?
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { key: 'urbano', label: 'Ciudad', icon: 'fa-city', desc: 'Trayectos cortos, semáforos, atascos' },
+            { key: 'carretera', label: 'Carretera', icon: 'fa-road', desc: 'Viajes largos, autopistas' },
+            { key: 'mixto', label: 'Mixto', icon: 'fa-balance-scale', desc: 'Combinación de ciudad y carretera' }
+          ].map((uso) => (
+            <div
+              key={uso.key}
+              onClick={() => handleUsoVehiculo(uso.key)}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                usoVehiculo === uso.key
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <i className={`fa-solid ${uso.icon} text-2xl mb-2 text-gray-600`}></i>
+                <h5 className="font-semibold text-gray-900">{uso.label}</h5>
+                <p className="text-xs text-gray-500 mt-1">{uso.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Estilo de conducción */}
+      {usoVehiculo && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-steering-wheel mr-2"></i>¿Cómo describirías tu estilo de conducción?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { key: 'conservador', label: 'Conservador', icon: 'fa-shield-halved', desc: 'Suave, eficiente, precavido' },
+              { key: 'normal', label: 'Normal', icon: 'fa-gauge', desc: 'Equilibrado, respeta límites' },
+              { key: 'deportivo', label: 'Deportivo', icon: 'fa-bolt', desc: 'Dinámico, aceleraciones rápidas' }
+            ].map((estilo) => (
+              <div
+                key={estilo.key}
+                onClick={() => handleEstiloConduccion(estilo.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  estiloConduccion === estilo.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${estilo.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{estilo.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{estilo.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Frecuencia de uso */}
+      {estiloConduccion && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-calendar-days mr-2"></i>¿Con qué frecuencia usarás el vehículo?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { key: 'diario', label: 'Diario', icon: 'fa-calendar-day', desc: 'Todos los días, trabajo y ocio' },
+              { key: 'frecuente', label: 'Frecuente', icon: 'fa-calendar-week', desc: 'Varias veces por semana' },
+              { key: 'ocasional', label: 'Ocasional', icon: 'fa-calendar', desc: 'Fines de semana y vacaciones' }
+            ].map((frecuencia) => (
+              <div
+                key={frecuencia.key}
+                onClick={() => handleFrecuenciaUso(frecuencia.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  frecuenciaUso === frecuencia.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${frecuencia.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{frecuencia.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{frecuencia.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Presupuesto */}
+      {frecuenciaUso && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-euro-sign mr-2"></i>¿Cuál es tu presupuesto mensual aproximado para mantenimiento?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { key: 'bajo', label: 'Bajo (50-100€)', icon: 'fa-coins', desc: 'Mantenimiento básico' },
+              { key: 'medio', label: 'Medio (100-200€)', icon: 'fa-wallet', desc: 'Mantenimiento regular' },
+              { key: 'alto', label: 'Alto (200€+)', icon: 'fa-gem', desc: 'Mantenimiento premium' }
+            ].map((presu) => (
+              <div
+                key={presu.key}
+                onClick={() => handlePresupuesto(presu.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  presupuesto === presu.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${presu.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{presu.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{presu.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Experiencia */}
+      {presupuesto && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-graduation-cap mr-2"></i>¿Qué experiencia tienes con vehículos similares?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { key: 'principiante', label: 'Principiante', icon: 'fa-seedling', desc: 'Primer vehículo o poco experiencia' },
+              { key: 'intermedio', label: 'Intermedio', icon: 'fa-chart-line', desc: 'Alguna experiencia con vehículos' },
+              { key: 'experto', label: 'Experto', icon: 'fa-crown', desc: 'Mucha experiencia, conoces el mercado' }
+            ].map((exp) => (
+              <div
+                key={exp.key}
+                onClick={() => handleExperiencia(exp.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  experiencia === exp.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${exp.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{exp.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{exp.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Resumen de respuestas */}
+      {experiencia && (
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6">
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">
+            <i className="fa-solid fa-clipboard-check mr-2"></i>Resumen de tu perfil
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                <strong>Uso:</strong> {usoVehiculo === 'urbano' ? 'Ciudad' : usoVehiculo === 'carretera' ? 'Carretera' : 'Mixto'}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Conducción:</strong> {estiloConduccion === 'conservador' ? 'Conservador' : estiloConduccion === 'normal' ? 'Normal' : 'Deportivo'}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                <strong>Frecuencia:</strong> {frecuenciaUso === 'diario' ? 'Diario' : frecuenciaUso === 'frecuente' ? 'Frecuente' : 'Ocasional'}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Presupuesto:</strong> {presupuesto === 'bajo' ? 'Bajo' : presupuesto === 'medio' ? 'Medio' : 'Alto'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center mb-8">
@@ -488,7 +778,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         {/* Indicador de pasos */}
         <div className="flex justify-center mt-6">
           <div className="flex space-x-2">
-            {[1, 2, 3, 4].map((step) => (
+            {[1, 2, 3, 4, 5].map((step) => (
               <div
                 key={step}
                 className={`w-3 h-3 rounded-full transition-all duration-200 ${
@@ -516,15 +806,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         </button>
 
         <div className="text-center sm:text-left text-sm text-gray-500">
-          Paso {currentStep} de 4
+          Paso {currentStep} de 5
         </div>
 
-        {currentStep === 4 ? (
+        {currentStep === 5 ? (
           <button 
             onClick={handleNext}
             className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             style={{ backgroundColor: '#52bf31' }}
-            disabled={!formData.carBrand || !formData.carModel || !formData.carVersion}
+            disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia}
           >
             <span className="mr-2">🚀</span>
             Calcular Gastos Reales
@@ -536,7 +826,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
             disabled={
               (currentStep === 1 && !formData.carBrand) ||
               (currentStep === 2 && !formData.carModel) ||
-              (currentStep === 3 && !formData.carVersion)
+              (currentStep === 3 && !formData.carVersion) ||
+              (currentStep === 4 && (!formData.kmsAnuales || !formData.aniosFinanciacion)) ||
+              ((currentStep as number) === 5 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia))
             }
             className="w-full sm:w-auto flex items-center justify-center px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: '#52bf31' }}
