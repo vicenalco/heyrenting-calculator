@@ -10,8 +10,8 @@ export async function GET(request: Request) {
   const brandId = (searchParams.get('brandId') || '').trim();
   if (!brandId) return NextResponse.json([]);
 
-  // El campo 'brand' contiene un array, usamos FIND para buscar el ID
-  const filter = `FIND('${brandId.replace(/'/g, "''")}', ARRAYJOIN({brand}))`;
+  // El campo 'brand' contiene un array, usamos una fórmula más simple
+  const filter = `{brand} = '${brandId.replace(/'/g, "''")}'`;
   const params = new URLSearchParams({ maxRecords: '100', filterByFormula: filter });
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_MODELS}?${params.toString()}`;
   
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   });
   
   if (res.ok) {
-    const data: { records: Array<{ id: string; fields: { name?: string } }> } = await res.json();
+    const data = await res.json() as { records: Array<{ id: string; fields: { name?: string } }> };
     const results = data.records.map((r) => ({ id: r.id, name: r.fields.name || '' })).filter((r) => r.name);
     
     if (results.length > 0) {
