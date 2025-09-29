@@ -1,9 +1,9 @@
 'use client';
 
 import Slider from './ui/Slider';
-import SelectionButton from './ui/SelectionButton';
 import { useEffect, useState } from 'react';
 import { fetchBrands, fetchModels, fetchTrims } from '@/lib/airtable';
+import Image from 'next/image';
 
 interface Step2a_CarSelectionProps {
   formData: {
@@ -152,8 +152,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     
     loadTrims();
   }, [formData.modelId]);
-
-  const needsFuelChoice = (fuel?: string) => !fuel || fuel === 'híbrido';
 
   const handleSelectBrand = (id: string, name: string) => {
     onUpdate({ 
@@ -381,9 +379,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
               <div className="text-center">
                 {m.imageUrl ? (
                   <div className="mb-3">
-                    <img 
+                    <Image 
                       src={m.imageUrl} 
                       alt={m.name}
+                      width={64}
+                      height={64}
                       className="w-16 h-16 object-cover rounded-lg mx-auto"
                       onError={(e) => {
                         // Si falla la imagen, mostrar icono

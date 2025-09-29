@@ -17,6 +17,7 @@ export default function Home() {
     carBrand: '',
     carModel: '',
     carVersion: '',
+    carYear: 2024, // nuevo campo para el año
     kmsAnuales: 20000,
     aniosFinanciacion: 5,
     precioCoche: 25000,
@@ -101,6 +102,7 @@ export default function Home() {
       carBrand: '',
       carModel: '',
       carVersion: '',
+      carYear: 2024,
       kmsAnuales: 20000,
       aniosFinanciacion: 5,
       precioCoche: 25000,
