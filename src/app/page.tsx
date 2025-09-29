@@ -5,7 +5,7 @@ import ResultCard from './components/ui/ResultCard';
 import Step1_Welcome from './components/Step1_Welcome';
 import Step2a_CarSelection from './components/Step2a_CarSelection';
 import Step2b_Discovery from './components/Step2b_Discovery';
-import { calculateFinancialAutopsy, calculateMonthlySavings, calculateSavingsPercentage } from '../lib/calculations';
+import { calculateFinancialAutopsy } from '../lib/calculations';
 
 export default function Home() {
   // Estado para controlar el paso actual del wizard
@@ -26,6 +26,9 @@ export default function Home() {
     nombre: '',
     email: '',
     telefono: '',
+    // IDs internos para integraciones (Airtable)
+    brandId: '',
+    modelId: '',
   });
   
   // Estado para almacenar los resultados del cálculo
@@ -100,6 +103,8 @@ export default function Home() {
       nombre: '',
       email: '',
       telefono: '',
+      brandId: '',
+      modelId: '',
     });
   };
 
