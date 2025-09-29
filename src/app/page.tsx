@@ -14,6 +14,7 @@ export default function Home() {
   // Estado unificado para todos los datos del formulario
   const [formData, setFormData] = useState({
     userPath: '', // 'knowsCar' o 'inspireMe'
+    carBrand: '',
     carModel: '',
     carVersion: '',
     kmsAnuales: 20000,
@@ -88,6 +89,7 @@ export default function Home() {
     setStep(1);
     setFormData({
       userPath: '',
+      carBrand: '',
       carModel: '',
       carVersion: '',
       kmsAnuales: 20000,
