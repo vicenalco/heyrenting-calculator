@@ -11,9 +11,8 @@ export async function GET(request: Request) {
   const modelId = (searchParams.get('modelId') || '').trim();
   if (!modelId) return NextResponse.json([]);
 
-  // El campo 'model' contiene un array, usamos una fórmula más simple
-  const filter = `{model} = '${modelId.replace(/'/g, "''")}'`;
-  const params = new URLSearchParams({ maxRecords: '100', filterByFormula: filter });
+  // Cargamos todos los trims y filtramos en el frontend
+  const params = new URLSearchParams({ maxRecords: '100' });
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_TRIMS}?${params.toString()}`;
   
   const res = await fetch(url, { 
@@ -21,38 +20,26 @@ export async function GET(request: Request) {
     cache: 'no-store' 
   });
   
-  if (res.ok) {
-    const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number } }> };
-    const results = data.records.map((r) => ({ 
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
+  }
+  
+  const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number; model?: string[] } }> };
+  
+  // Filtramos en el frontend: buscamos trims donde el array model contenga el modelId
+  const results = data.records
+    .filter((r) => {
+      const modelArray = r.fields.model;
+      return modelArray && Array.isArray(modelArray) && modelArray.includes(modelId);
+    })
+    .map((r) => ({ 
       id: r.id, 
       name: r.fields.name || '', 
       fuel: r.fields.fuel || '', 
       price: r.fields.price || 0 
-    })).filter((r) => r.name);
-    
-    if (results.length > 0) {
-      return NextResponse.json(results);
-    }
-  }
+    }))
+    .filter((r) => r.name);
   
-  // Si no funcionó, devolvemos todos los registros para debug
-  const debugParams = new URLSearchParams({ maxRecords: '5' });
-  const debugUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_TRIMS}?${debugParams.toString()}`;
-  const debugRes = await fetch(debugUrl, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }, cache: 'no-store' });
-  
-  if (!debugRes.ok) {
-    const errText = await debugRes.text().catch(() => '');
-    return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
-  }
-  
-  const debugData = await debugRes.json() as { records: Array<{ id: string; fields: Record<string, unknown> }> };
-  
-  return NextResponse.json({ 
-    debug: true,
-    modelId,
-    sampleRecord: debugData.records[0] || null,
-    allFields: debugData.records[0]?.fields || {},
-    totalRecords: debugData.records.length,
-    message: 'No se encontró el campo de enlace correcto. Revisa los nombres de campos en Airtable.'
-  });
+  return NextResponse.json(results);
 }
