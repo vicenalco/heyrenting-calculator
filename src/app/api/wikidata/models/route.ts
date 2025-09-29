@@ -26,15 +26,17 @@ export async function GET(request: Request) {
       headers: { 'Accept': 'application/sparql-results+json' },
       next: { revalidate: 60 * 60 * 6 },
     });
-    const data = await res.json();
-    const results = (data.results.bindings || []).map((b: any) => ({
+    const data: {
+      results: { bindings: Array<{ item: { value: string }; itemLabel: { value: string }; start?: { value: string }; end?: { value: string } }> };
+    } = await res.json();
+    const results = (data.results.bindings || []).map((b) => ({
       qid: b.item.value.split('/').pop(),
       name: b.itemLabel.value,
       startYear: b.start?.value?.slice(0, 4),
       endYear: b.end?.value?.slice(0, 4) || null,
     }));
     return NextResponse.json(results);
-  } catch (e) {
+  } catch (_) {
     return NextResponse.json([]);
   }
 }

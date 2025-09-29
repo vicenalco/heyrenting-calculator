@@ -21,6 +21,7 @@ interface Step2a_CarSelectionProps {
 }
 
 export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step2a_CarSelectionProps) {
+  // Nota: mantenemos stage por si en futuro se muestra paso actual visualmente
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
 
   const [brandQuery, setBrandQuery] = useState('');

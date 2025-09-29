@@ -27,13 +27,15 @@ export async function GET(request: Request) {
       // cache 6h en edge
       next: { revalidate: 60 * 60 * 6 },
     });
-    const data = await res.json();
-    const results = (data.results.bindings || []).map((b: any) => ({
+    const data: {
+      results: { bindings: Array<{ item: { value: string }; itemLabel: { value: string } }> };
+    } = await res.json();
+    const results = (data.results.bindings || []).map((b) => ({
       qid: b.item.value.split('/').pop(),
       name: b.itemLabel.value,
     }));
     return NextResponse.json(results);
-  } catch (e) {
+  } catch (_) {
     return NextResponse.json([]);
   }
 }
