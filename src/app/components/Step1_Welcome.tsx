@@ -25,9 +25,11 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
           <h3 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white group-active:text-white">
             Ya sé qué coche quiero
           </h3>
+          {/*
           <p className="text-gray-600 group-hover:text-white group-active:text-white">
             Tengo claro el modelo y quiero calcular todos los gastos reales (compra, financiación, mantenimiento, etc.)
           </p>
+          */}
         </div>
 
         <div
@@ -38,9 +40,10 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
           <h3 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white group-active:text-white">
             Quiero que me ayudes a elegir
           </h3>
+          {/*
           <p className="text-gray-600 group-hover:text-white group-active:text-white">
             No tengo claro qué coche necesito, ayúdame a encontrar la mejor opción para mi presupuesto
-          </p>
+          </p>*/}
         </div>
       </div>
     </div>
