@@ -10,11 +10,15 @@ export async function GET(request: Request) {
   const modelId = (searchParams.get('modelId') || '').trim();
   if (!modelId) return NextResponse.json([]);
 
-  const filter = `(({model}) = '${modelId.replace(/'/g, "''")}')`;
-  const params = new URLSearchParams({ maxRecords: '100', view: 'Grid view', filterByFormula: filter });
+  // Campo {model} es un enlace a la tabla de modelos
+  const filter = `{model} = '${modelId.replace(/'/g, "''")}'`;
+  const params = new URLSearchParams({ maxRecords: '100', filterByFormula: filter });
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_TRIMS}?${params.toString()}`;
   const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }, cache: 'no-store' });
-  if (!res.ok) return NextResponse.json([]);
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
+  }
   const data: { records: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number } }> } = await res.json();
   const results = data.records.map((r) => ({ id: r.id, name: r.fields.name || '', fuel: r.fields.fuel || '', price: r.fields.price || 0 })).filter((r) => r.name);
   return NextResponse.json(results);

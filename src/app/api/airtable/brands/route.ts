@@ -8,10 +8,10 @@ export async function GET(request: Request) {
   }
   const { searchParams } = new URL(request.url);
   const q = (searchParams.get('q') || '').trim();
-  const filter = q ? `FIND(LOWER('${q.replace(/'/g, "''")}'), LOWER({name}))` : '';
+  // Hacemos la búsqueda case-insensitive y explícitamente > 0
+  const filter = q ? `FIND(LOWER('${q.replace(/'/g, "''")}'), LOWER({name})) > 0` : '';
   const params = new URLSearchParams({
     maxRecords: '50',
-    view: 'Grid view',
   });
   if (filter) params.append('filterByFormula', filter);
 
@@ -20,7 +20,10 @@ export async function GET(request: Request) {
     headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` },
     cache: 'no-store',
   });
-  if (!res.ok) return NextResponse.json([], { status: 200 });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
+  }
   const data: { records: Array<{ id: string; fields: { name?: string } }> } = await res.json();
   const results = data.records.map((r) => ({ id: r.id, name: r.fields.name || '' })).filter((r) => r.name);
   return NextResponse.json(results);
