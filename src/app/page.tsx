@@ -26,6 +26,9 @@ export default function Home() {
     nombre: '',
     email: '',
     telefono: '',
+    // IDs internos para integraciones (Airtable)
+    brandId: '',
+    modelId: '',
   });
   
   // Estado para almacenar los resultados del cálculo
@@ -100,6 +103,8 @@ export default function Home() {
       nombre: '',
       email: '',
       telefono: '',
+      brandId: '',
+      modelId: '',
     });
   };
 

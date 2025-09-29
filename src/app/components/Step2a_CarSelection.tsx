@@ -2,8 +2,8 @@
 
 import Slider from './ui/Slider';
 import SelectionButton from './ui/SelectionButton';
-import { useEffect, useState } from 'react';
-import { fetchMakesWD, fetchModelsWD } from '@/lib/wikidata';
+import { useEffect, useState, useMemo } from 'react';
+import { fetchBrands, fetchModels, fetchTrims } from '@/lib/airtable';
 
 interface Step2a_CarSelectionProps {
   formData: {
@@ -15,6 +15,8 @@ interface Step2a_CarSelectionProps {
     precioCoche: number;
     tipoCombustible: string;
     makeQid?: string;
+    brandId?: string;
+    modelId?: string;
   };
   onUpdate: (updates: Partial<Step2a_CarSelectionProps['formData']>) => void;
   onNext: () => void;
@@ -25,54 +27,118 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
-  const [makes, setMakes] = useState<{ qid: string; name: string }[]>([]);
-  const [models, setModels] = useState<{ qid: string; name: string; startYear?: string; endYear?: string | null }[]>([]);
+  const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
+  const [models, setModels] = useState<{ id: string; name: string }[]>([]);
+  const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string }[]>([]);
+  const [loading, setLoading] = useState(false);
 
+  // Debounce para evitar sobrecargar Airtable
+  const debouncedQuery = useDebouncedValue(brandQuery, 300);
+
+  // Buscar marcas con Airtable
   useEffect(() => {
-    let active = true;
-    (async () => {
-      const res = await fetchMakesWD(brandQuery);
-      if (active) setMakes(res);
-    })();
-    return () => { active = false; };
-  }, [brandQuery]);
+    if (debouncedQuery.trim().length < 2) { 
+      setMakes([]); 
+      return; 
+    }
+    
+    setLoading(true);
+    fetchBrands(debouncedQuery)
+      .then((brands) => {
+        setMakes(brands);
+      })
+      .catch((error) => {
+        console.error('Error fetching brands:', error);
+        setMakes([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [debouncedQuery]);
 
+  // Cargar modelos cuando se selecciona una marca
   useEffect(() => {
-    let active = true;
-    if (!formData.makeQid) return;
-    (async () => {
-      const res = await fetchModelsWD(formData.makeQid!);
-      if (active) setModels(res);
-    })();
-    return () => { active = false; };
-  }, [formData.makeQid]);
+    if (!formData.brandId) { 
+      setModels([]); 
+      return; 
+    }
+    
+    setLoading(true);
+    fetchModels(formData.brandId)
+      .then((modelList) => {
+        setModels(modelList);
+      })
+      .catch((error) => {
+        console.error('Error fetching models:', error);
+        setModels([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [formData.brandId]);
 
-  const motorByModel: Record<string, { label: string; price: number; fuel?: 'gasolina' | 'diésel' | 'híbrido' | 'phev' | 'eléctrico' }[]> = {
-    default: [
-      { label: 'Gasolina 1.5', price: 28000, fuel: 'gasolina' },
-      { label: 'Diésel 2.0', price: 32000, fuel: 'diésel' },
-      { label: 'Híbrido enchufable', price: 40000, fuel: 'phev' },
-    ],
-  };
+  // Cargar trims cuando se selecciona un modelo
+  useEffect(() => {
+    if (!formData.modelId) { 
+      setTrims([]); 
+      return; 
+    }
+    
+    setLoading(true);
+    fetchTrims(formData.modelId)
+      .then((trimList) => {
+        setTrims(trimList);
+      })
+      .catch((error) => {
+        console.error('Error fetching trims:', error);
+        setTrims([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [formData.modelId]);
 
   const needsFuelChoice = (fuel?: string) => !fuel || fuel === 'híbrido';
 
-  const handleSelectBrand = (qid: string, name: string) => {
-    onUpdate({ carBrand: name, carModel: '', carVersion: '', makeQid: qid });
+  const handleSelectBrand = (id: string, name: string) => {
+    onUpdate({ 
+      carBrand: name, 
+      carModel: '', 
+      carVersion: '', 
+      brandId: id,
+      modelId: '',
+      makeQid: undefined 
+    });
     setStage(2);
   };
 
-  const handleSelectModel = (model: string) => {
-    onUpdate({ carModel: model, carVersion: '' });
+  const handleSelectModel = (id: string, name: string) => {
+    onUpdate({ 
+      carModel: name, 
+      carVersion: '',
+      modelId: id
+    });
     setStage(3);
   };
 
-  const handleSelectMotor = (motor: { label: string; price: number; fuel?: string }) => {
-    onUpdate({ carVersion: motor.label, precioCoche: motor.price });
-    if (needsFuelChoice(motor.fuel)) {
-      setStage(4);
-    } else if (motor.fuel) {
-      onUpdate({ tipoCombustible: motor.fuel });
+  const handleSelectTrim = (trim: { id: string; name: string; price?: number; fuel?: string }) => {
+    const updates: Partial<Step2a_CarSelectionProps['formData']> = {
+      carVersion: trim.name
+    };
+    
+    // Autocompletar precio si está disponible
+    if (trim.price) {
+      updates.precioCoche = trim.price;
+    }
+    
+    // Autocompletar combustible si está disponible
+    if (trim.fuel) {
+      updates.tipoCombustible = trim.fuel;
+    }
+    
+    onUpdate(updates);
+    
+    if (needsFuelChoice(trim.fuel)) {
       setStage(4);
     } else {
       setStage(4);
@@ -99,7 +165,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       </div>
 
       <div className="space-y-8">
-        {/* Paso 1: Marca (Wikidata + eswiki) */}
+        {/* Paso 1: Marca */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-800">1. Marca</h3>
           <input
@@ -113,48 +179,80 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
             onKeyDown={(e) => {
               if (e.key === 'Enter' && makes.length > 0) {
                 const first = makes[0];
-                handleSelectBrand(first.qid, first.name);
+                handleSelectBrand(first.id, first.name);
               }
             }}
           />
+          {loading && (
+            <p className="text-sm text-gray-500">Buscando marcas...</p>
+          )}
+          {brandQuery.trim().length >= 2 && !loading && makes.length === 0 && (
+            <p className="text-sm text-gray-500">No se han encontrado marcas. Prueba con otra búsqueda.</p>
+          )}
           <div className="flex flex-wrap gap-3">
             {makes.map((m) => (
-              <SelectionButton key={m.qid} label={m.name} onClick={() => handleSelectBrand(m.qid, m.name)} isActive={formData.carBrand === m.name} />
+              <SelectionButton 
+                key={m.id} 
+                label={m.name} 
+                onClick={() => handleSelectBrand(m.id, m.name)} 
+                isActive={formData.carBrand === m.name} 
+              />
             ))}
           </div>
         </div>
 
-        {/* Paso 2: Modelo (vigente en 2025 en eswiki) */}
-        {formData.makeQid && (
+        {/* Paso 2: Modelo */}
+        {formData.carBrand && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800">2. Modelo</h3>
+            {loading && (
+              <p className="text-sm text-gray-500">Cargando modelos...</p>
+            )}
             <div className="flex flex-wrap gap-3">
               {models.map((m) => (
-                <SelectionButton key={m.qid} label={m.name} onClick={() => handleSelectModel(m.name)} isActive={formData.carModel === m.name} />
+                <SelectionButton 
+                  key={m.id} 
+                  label={m.name} 
+                  onClick={() => handleSelectModel(m.id, m.name)} 
+                  isActive={formData.carModel === m.name} 
+                />
               ))}
             </div>
           </div>
         )}
 
-        {/* Paso 3: Motorización (temporal) */}
+        {/* Paso 3: Motorización */}
         {formData.carModel && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800">3. Motorización</h3>
+            {loading && (
+              <p className="text-sm text-gray-500">Cargando motorizaciones...</p>
+            )}
             <div className="flex flex-wrap gap-3">
-              {(motorByModel[formData.carModel] || motorByModel.default).map((mot) => (
-                <SelectionButton key={mot.label} label={mot.label} onClick={() => handleSelectMotor(mot)} isActive={formData.carVersion === mot.label} />
+              {trims.map((trim) => (
+                <SelectionButton 
+                  key={trim.id} 
+                  label={trim.name} 
+                  onClick={() => handleSelectTrim(trim)} 
+                  isActive={formData.carVersion === trim.name} 
+                />
               ))}
             </div>
           </div>
         )}
 
         {/* Paso 4: Combustible (si procede) */}
-        {formData.carVersion && (
+        {formData.carVersion && needsFuelChoice(formData.tipoCombustible) && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800">4. Combustible</h3>
             <div className="flex flex-wrap gap-3">
               {['gasolina', 'diésel', 'híbrido', 'phev', 'eléctrico'].map((fuel) => (
-                <SelectionButton key={fuel} label={fuel} onClick={() => handleFuel(fuel)} isActive={formData.tipoCombustible === fuel} />
+                <SelectionButton 
+                  key={fuel} 
+                  label={fuel} 
+                  onClick={() => handleFuel(fuel)} 
+                  isActive={formData.tipoCombustible === fuel} 
+                />
               ))}
             </div>
           </div>
@@ -229,4 +327,14 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       </div>
     </div>
   );
+}
+
+// Hook simple de debounce
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [val, setVal] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setVal(value), delayMs);
+    return () => clearTimeout(id);
+  }, [value, delayMs]);
+  return val;
 }
