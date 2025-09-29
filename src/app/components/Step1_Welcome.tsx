@@ -16,25 +16,29 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
         </p>
       </div>
 
-      <div className="space-y-6">
-        <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-transparent hover:border-green-300 transition-all duration-200 cursor-pointer"
-             onClick={() => onSelectPath('knowsCar')}>
+      <div className="space-y-6 max-w-3xl mx-auto">
+        <div
+          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5"
+          onClick={() => onSelectPath('knowsCar')}
+        >
           <div className="text-4xl mb-4">🎯</div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">
+          <h3 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white group-active:text-white">
             Ya sé qué coche quiero
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 group-hover:text-white group-active:text-white">
             Tengo claro el modelo y quiero calcular todos los gastos reales (compra, financiación, mantenimiento, etc.)
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-transparent hover:border-green-300 transition-all duration-200 cursor-pointer"
-             onClick={() => onSelectPath('inspireMe')}>
+        <div
+          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5"
+          onClick={() => onSelectPath('inspireMe')}
+        >
           <div className="text-4xl mb-4">💡</div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">
+          <h3 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white group-active:text-white">
             Quiero que me ayudes a elegir
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 group-hover:text-white group-active:text-white">
             No tengo claro qué coche necesito, ayúdame a encontrar la mejor opción para mi presupuesto
           </p>
         </div>
