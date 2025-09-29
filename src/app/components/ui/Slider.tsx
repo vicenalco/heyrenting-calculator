@@ -45,7 +45,7 @@ const Slider: React.FC<SliderProps> = ({
           {label}
         </label>
         {/* Valor actual formateado con unidad */}
-        <span className="text-lg font-semibold text-blue-600">
+        <span className="text-lg font-semibold" style={{ color: '#52bf31' }}>
           {formatNumber(value)}
           {unit && <span className="text-sm text-gray-500 ml-1">{unit}</span>}
         </span>
@@ -63,7 +63,7 @@ const Slider: React.FC<SliderProps> = ({
           onChange={handleSliderChange}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
           style={{
-            background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
+            background: `linear-gradient(to right, #52bf31 0%, #52bf31 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
           }}
         />
         

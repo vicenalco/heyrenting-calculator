@@ -398,11 +398,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
                 )}
                 <h4 className="font-bold text-lg text-gray-900">{m.name}</h4>
                 <p className="text-sm text-gray-500 mt-1">{formData.carBrand}</p>
-                {m.startYear && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    {m.startYear}{m.endYear && m.endYear !== m.startYear ? ` - ${m.endYear}` : ''}
-                  </p>
-                )}
               </div>
             </div>
           ))}
