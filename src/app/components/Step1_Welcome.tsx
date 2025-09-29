@@ -16,9 +16,9 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
         </p>
       </div>
 
-      <div className="space-y-6 max-w-3xl mx-auto">
+      <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto">
         <div
-          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5"
+          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5 flex-1"
           onClick={() => onSelectPath('knowsCar')}
         >
           <div className="text-4xl mb-4">🎯</div>
@@ -33,7 +33,7 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
         </div>
 
         <div
-          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5"
+          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5 flex-1"
           onClick={() => onSelectPath('inspireMe')}
         >
           <div className="text-4xl mb-4">💡</div>

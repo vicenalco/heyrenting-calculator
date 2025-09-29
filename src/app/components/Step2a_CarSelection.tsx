@@ -264,7 +264,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   };
 
   const renderBrandStep = () => (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="text-center">
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           <i className="fa-solid fa-tag mr-2"></i>¿Qué marca te gusta?
@@ -306,8 +306,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         )}
       </div>
       
+      {/* Contenido dinámico sin espacio fijo */}
       {brandQuery.trim().length >= 2 && !loading && makes.length === 0 && (
-        <div className="text-center py-8">
+        <div className="text-center py-4">
           <div className="text-4xl mb-2">🔍</div>
           <p className="text-gray-500">No encontramos esa marca. Prueba con otra búsqueda</p>
         </div>
@@ -903,55 +904,55 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         </div>
       </div>
 
-      <div className="min-h-[320px] sm:min-h-[400px]">
+      <div>
         {renderStepContent()}
       </div>
 
-      {/* Navegación */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-stretch sm:items-center pt-6 border-t border-gray-200">
-        <button
-          onClick={handlePreviousStep}
-          disabled={currentStep === 1}
-          className="w-full sm:w-auto flex items-center justify-center px-6 py-3 text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span className="mr-2">←</span>
-          Anterior
-        </button>
-
-        <div className="text-center sm:text-left text-sm text-gray-500">
-          Paso {currentStep} de 7
-        </div>
-
-        {currentStep === 7 ? (
-          <button 
-            onClick={handleNext}
-            className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-            style={{ backgroundColor: '#52bf31' }}
-            disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !formData.carYear || !usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia}
-          >
-            <span className="mr-2">🚀</span>
-            Calcular Gastos Reales
-            <span className="ml-2 group-hover:translate-x-1 transition-transform duration-200">→</span>
-          </button>
-        ) : (
+      {/* Navegación interna del paso 2 - Diseño diferenciado */}
+      <div className="bg-gray-50 rounded-lg p-4 mt-6">
+        <div className="flex justify-between items-center">
           <button
-            onClick={handleNextStep}
-            disabled={
-              (currentStep === 1 && !formData.carBrand) ||
-              (currentStep === 2 && !formData.carModel) ||
-              (currentStep === 3 && !formData.carVersion) ||
-              (currentStep === 4 && !formData.carYear) ||
-              (currentStep === 5 && !formData.aniosFinanciacion) ||
-              (currentStep === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia)) ||
-              ((currentStep as number) === 7 && !formData.kmsAnuales)
-            }
-            className="w-full sm:w-auto flex items-center justify-center px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: '#52bf31' }}
+            onClick={handlePreviousStep}
+            disabled={currentStep === 1}
+            className="flex items-center px-3 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Siguiente
-            <span className="ml-2">→</span>
+            <span className="mr-1">←</span>
+            Anterior
           </button>
-        )}
+
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-gray-500">Paso</span>
+            <span className="text-sm font-medium text-gray-700">{currentStep} de 7</span>
+          </div>
+
+          {currentStep === 7 ? (
+            <button 
+              onClick={handleNext}
+              className="flex items-center px-4 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !formData.carYear || !formData.kmsAnuales || !usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia}
+            >
+              <span className="mr-1">🚀</span>
+              Finalizar
+            </button>
+          ) : (
+            <button
+              onClick={handleNextStep}
+              disabled={
+                (currentStep === 1 && !formData.carBrand) ||
+                (currentStep === 2 && !formData.carModel) ||
+                (currentStep === 3 && !formData.carVersion) ||
+                (currentStep === 4 && !formData.carYear) ||
+                (currentStep === 5 && !formData.aniosFinanciacion) ||
+                (currentStep === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia)) ||
+                ((currentStep as number) === 7 && !formData.kmsAnuales)
+              }
+              className="flex items-center px-3 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Siguiente
+              <span className="ml-1">→</span>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

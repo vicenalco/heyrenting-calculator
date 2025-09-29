@@ -123,22 +123,22 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header común a todos los pasos */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
             🚗 Calculadora de Gastos Reales
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             Descubre cuánto cuesta realmente tener un coche en España
           </p>
         </div>
 
         {/* Contenedor principal del wizard */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8">
           {/* Indicador de progreso */}
-          <div className="mb-8">
+          <div className="mb-4 sm:mb-6">
             <div className="flex items-center justify-center space-x-4">
               {[1, 2, 3].map((stepNumber) => (
                 <div key={stepNumber} className="flex items-center">
@@ -273,7 +273,7 @@ export default function Home() {
 
           {/* Navegación */}
           {step > 1 && (
-            <div className="flex justify-between mt-8">
+            <div className="flex justify-between items-center mt-8">
               <div className="flex gap-4">
                 <button 
                   onClick={handlePrevious}
@@ -288,6 +288,23 @@ export default function Home() {
                   🏠 Inicio
                 </button>
               </div>
+              
+              {step === 2 && (
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => {
+                      // Lógica para navegar internamente en el paso 2
+                      if (formData.carBrand && formData.carModel && formData.carVersion && formData.carYear && formData.kmsAnuales && formData.usoVehiculo && formData.estiloConduccion && formData.frecuenciaUso && formData.presupuesto && formData.experiencia) {
+                        handleNext(); // Ir al paso 3
+                      }
+                    }}
+                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
+                    disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !formData.carYear || !formData.kmsAnuales || !formData.usoVehiculo || !formData.estiloConduccion || !formData.frecuenciaUso || !formData.presupuesto || !formData.experiencia}
+                  >
+                    🚀 Calcular Gastos
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
