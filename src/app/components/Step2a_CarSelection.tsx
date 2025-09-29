@@ -225,7 +225,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
 
   const handleUsoVehiculo = (uso: string) => {
     setUsoVehiculo(uso);
-    setCurrentStep(5);
+    // No cambiar el paso automáticamente, dejar que el usuario use el botón "Siguiente"
   };
 
   const handleEstiloConduccion = (estilo: string) => {
