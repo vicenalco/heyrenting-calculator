@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const errText = await res.text().catch(() => '');
     return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
   }
-  const data: { records: Array<{ id: string; fields: any }> } = await res.json();
+  const data: { records: Array<{ id: string; fields: Record<string, unknown> }> } = await res.json();
   
   // Devolvemos la estructura para debug
   return NextResponse.json({ 

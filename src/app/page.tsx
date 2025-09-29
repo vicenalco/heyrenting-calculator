@@ -69,7 +69,7 @@ export default function Home() {
     if (formData.precioCoche > 0 && formData.aniosFinanciacion > 0 && formData.kmsAnuales > 0) {
       calculateOwnershipCost();
     }
-  }, [calculateOwnershipCost]);
+  }, [calculateOwnershipCost, formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales]);
 
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {

@@ -2,7 +2,7 @@
 
 import Slider from './ui/Slider';
 import SelectionButton from './ui/SelectionButton';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchBrands, fetchModels, fetchTrims } from '@/lib/airtable';
 
 interface Step2a_CarSelectionProps {
