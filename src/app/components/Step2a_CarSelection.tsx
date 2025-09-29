@@ -29,7 +29,7 @@ interface Step2a_CarSelectionProps {
 }
 
 export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step2a_CarSelectionProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
@@ -198,19 +198,19 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   };
 
   const handleNextStep = () => {
-    if (currentStep < 6) {
-      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5 | 6);
+    if (currentStep < 7) {
+      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7);
     }
   };
 
   const handlePreviousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5 | 6);
+      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7);
     }
   };
 
   const handleNext = () => {
-    if (formData.carBrand && formData.carModel && formData.carVersion && formData.carYear) {
+    if (formData.carBrand && formData.carModel && formData.carVersion && formData.carYear && formData.kmsAnuales) {
       // Guardar las respuestas adicionales en formData
       onUpdate({
         usoVehiculo,
@@ -258,6 +258,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         return renderUsageStep();
       case 6:
         return renderQuestionsStep();
+      case 7:
+        return renderKmsStep();
       default:
         return renderBrandStep();
     }
@@ -528,21 +530,12 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     <div className="space-y-8">
       <div className="text-center">
         <h3 className="text-xl font-bold text-gray-900 mb-2">
-          <i className="fa-solid fa-chart-line mr-2"></i>Ajusta tu uso
+          <i className="fa-solid fa-euro-sign mr-2"></i>Configura tu financiación
         </h3>
-        <p className="text-gray-600">Personaliza los parámetros según tus necesidades</p>
+        <p className="text-gray-600">Selecciona los años de financiación para tu vehículo</p>
       </div>
       
       <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
-        <Slider
-          label="Kilómetros Anuales"
-          min={5000}
-          max={50000}
-          step={1000}
-          value={formData.kmsAnuales}
-          onChange={(value) => onUpdate({ kmsAnuales: value })}
-          unit="km"
-        />
         <Slider
           label="Años de Financiación"
           min={1}
@@ -594,7 +587,90 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center mb-2">
-              <i className="fa-solid fa-chart-line text-2xl mr-3 text-gray-600"></i>
+              <i className="fa-solid fa-euro-sign text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Financiación</p>
+                <p className="font-bold text-gray-900">{formData.aniosFinanciacion} años</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderKmsStep = () => (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-road mr-2"></i>¿Cuántos kilómetros harás al año?
+        </h3>
+        <p className="text-gray-600">Estima el uso anual de tu vehículo para calcular los gastos reales</p>
+      </div>
+      
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
+        <Slider
+          label="Kilómetros Anuales"
+          min={5000}
+          max={50000}
+          step={1000}
+          value={formData.kmsAnuales}
+          onChange={(value) => onUpdate({ kmsAnuales: value })}
+          unit="km"
+        />
+      </div>
+
+      {/* Resumen final */}
+      <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-8 border-2 border-green-200">
+        <div className="text-center mb-6">
+          <h4 className="text-2xl font-bold text-gray-900 mb-2">🚗 Tu vehículo completo</h4>
+          <p className="text-gray-600">Revisa toda tu configuración antes de calcular</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-car text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Vehículo</p>
+                <p className="font-bold text-gray-900">{formData.carBrand} {formData.carModel} {formData.carYear}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-cogs text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Motorización</p>
+                <p className="font-bold text-gray-900">{formData.carVersion}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <span className="text-2xl mr-3">💰</span>
+              <div>
+                <p className="text-sm text-gray-500">Precio estimado</p>
+                <p className="font-bold text-green-600 text-lg">{formData.precioCoche.toLocaleString('es-ES')} €</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-euro-sign text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Financiación</p>
+                <p className="font-bold text-gray-900">{formData.aniosFinanciacion} años</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-road text-2xl mr-3 text-gray-600"></i>
               <div>
                 <p className="text-sm text-gray-500">Uso anual</p>
                 <p className="font-bold text-gray-900">{formData.kmsAnuales.toLocaleString('es-ES')} km</p>
@@ -815,7 +891,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         {/* Indicador de pasos */}
         <div className="flex justify-center mt-6">
           <div className="flex space-x-2">
-            {[1, 2, 3, 4, 5, 6].map((step) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((step) => (
               <div
                 key={step}
                 className={`w-3 h-3 rounded-full transition-all duration-200 ${
@@ -843,10 +919,10 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         </button>
 
         <div className="text-center sm:text-left text-sm text-gray-500">
-          Paso {currentStep} de 6
+          Paso {currentStep} de 7
         </div>
 
-        {currentStep === 6 ? (
+        {currentStep === 7 ? (
           <button 
             onClick={handleNext}
             className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
@@ -865,8 +941,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
               (currentStep === 2 && !formData.carModel) ||
               (currentStep === 3 && !formData.carVersion) ||
               (currentStep === 4 && !formData.carYear) ||
-              (currentStep === 5 && (!formData.kmsAnuales || !formData.aniosFinanciacion)) ||
-              ((currentStep as number) === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia))
+              (currentStep === 5 && !formData.aniosFinanciacion) ||
+              (currentStep === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia)) ||
+              ((currentStep as number) === 7 && !formData.kmsAnuales)
             }
             className="w-full sm:w-auto flex items-center justify-center px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: '#52bf31' }}
