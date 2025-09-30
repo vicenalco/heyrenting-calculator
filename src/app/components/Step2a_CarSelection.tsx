@@ -2,8 +2,9 @@
 
 import Slider from './ui/Slider';
 import { useEffect, useState } from 'react';
-import { fetchBrands, fetchModels, fetchTrims } from '@/lib/airtable';
+import { fetchBrands, fetchModels, fetchTrims, fetchTrimsWithKm77Prices } from '@/lib/airtable';
 import Image from 'next/image';
+import PriceUpdateInfo from './PriceUpdateInfo';
 
 // Lista de todas las provincias de España
 const PROVINCIAS_ESPANA = [
@@ -48,9 +49,14 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   const [brandQuery, setBrandQuery] = useState('');
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
   const [models, setModels] = useState<{ id: string; name: string; startYear?: number; endYear?: number; imageUrl?: string }[]>([]);
-  const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[] }[]>([]);
+  const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[]; priceUpdated?: boolean; priceAccuracy?: string; originalPrice?: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
+  const [priceUpdateStats, setPriceUpdateStats] = useState<{
+    totalTrims: number;
+    updatedTrims: number;
+    accuracyPercentage: number;
+  } | null>(null);
   
   // Estados para el paso 5 (preguntas adicionales)
   const [usoVehiculo, setUsoVehiculo] = useState('');
@@ -139,7 +145,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   // Cargar trims cuando se selecciona un modelo
   useEffect(() => {
-    if (!formData.modelId) { 
+    if (!formData.modelId || !formData.brandId) { 
       setTrims([]); 
       return; 
     }
@@ -148,24 +154,68 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       setLoading(true);
       
       // Delay de 2-3 segundos con texto personalizado
-      await delayWithLoading(2500, 'Buscando motorizaciones para el modelo seleccionado...');
+      await delayWithLoading(2500, 'Obteniendo precios actualizados de motorizaciones...');
       
       try {
-        const trimList = await fetchTrims(formData.modelId!);
+        // Primero intentar obtener trims con precios actualizados
+        const trimListWithPrices = await fetchTrimsWithKm77Prices(formData.brandId!, formData.modelId!);
         
-        // Verificar si es un objeto de debug
-        if (trimList && typeof trimList === 'object' && 'debug' in trimList) {
-          console.log('Debug info from trims:', trimList);
-          setTrims([]);
-        } else if (Array.isArray(trimList)) {
-          setTrims(trimList);
+        if (trimListWithPrices && trimListWithPrices.success && trimListWithPrices.data.trims) {
+          // Usar los trims con precios actualizados
+          const trimsWithUpdatedPrices = trimListWithPrices.data.trims.map((integrationResult: any) => {
+            const trim = integrationResult.trim;
+            const updatedPrice = integrationResult.averagePrice || integrationResult.lowestPrice || trim.price;
+            
+            return {
+              ...trim,
+              price: updatedPrice, // Usar el precio actualizado
+              originalPrice: trim.price, // Guardar precio original
+              priceUpdated: !!updatedPrice && updatedPrice !== trim.price, // Indicar si se actualizó
+              priceAccuracy: integrationResult.priceAccuracy
+            };
+          });
+          
+          // Calcular estadísticas de actualización
+          const totalTrims = trimsWithUpdatedPrices.length;
+          const updatedTrims = trimsWithUpdatedPrices.filter((t: any) => t.priceUpdated).length;
+          const accuratePrices = trimsWithUpdatedPrices.filter((t: any) => 
+            t.priceAccuracy === 'exact' || t.priceAccuracy === 'close'
+          ).length;
+          const accuracyPercentage = totalTrims > 0 ? Math.round((accuratePrices / totalTrims) * 100) : 0;
+          
+          setPriceUpdateStats({
+            totalTrims,
+            updatedTrims,
+            accuracyPercentage
+          });
+          
+          setTrims(trimsWithUpdatedPrices);
         } else {
-          console.error('Unexpected response format:', trimList);
-          setTrims([]);
+          // Fallback a trims normales si no hay precios actualizados
+          const trimList = await fetchTrims(formData.modelId!);
+          
+          if (trimList && typeof trimList === 'object' && 'debug' in trimList) {
+            console.log('Debug info from trims:', trimList);
+            setTrims([]);
+          } else if (Array.isArray(trimList)) {
+            setTrims(trimList);
+          } else {
+            console.error('Unexpected response format:', trimList);
+            setTrims([]);
+          }
         }
       } catch (error) {
         console.error('Error fetching trims:', error);
-        setTrims([]);
+        // Fallback a trims normales en caso de error
+        try {
+          const trimList = await fetchTrims(formData.modelId!);
+          if (Array.isArray(trimList)) {
+            setTrims(trimList);
+          }
+        } catch (fallbackError) {
+          console.error('Error in fallback:', fallbackError);
+          setTrims([]);
+        }
       } finally {
         setLoading(false);
         setLoadingText('');
@@ -173,7 +223,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     };
     
     loadTrims();
-  }, [formData.modelId]);
+  }, [formData.modelId, formData.brandId]);
 
   const handleSelectBrand = (id: string, name: string) => {
     onUpdate({ 
@@ -466,7 +516,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       )}
       
       {!loading && trims.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-6">
+          {priceUpdateStats && (
+            <PriceUpdateInfo
+              totalTrims={priceUpdateStats.totalTrims}
+              updatedTrims={priceUpdateStats.updatedTrims}
+              accuracyPercentage={priceUpdateStats.accuracyPercentage}
+            />
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {trims.map((trim) => {
             return (
             <div
@@ -487,6 +545,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   <div className="flex items-center justify-center gap-2 text-green-700 font-semibold">
                     <i className="fa-solid fa-tags" aria-hidden="true"></i>
                     <span>{trim.price.toLocaleString('es-ES')} €</span>
+                    {trim.priceUpdated && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                        Actualizado
+                      </span>
+                    )}
                   </div>
                 )}
                 {(trim.fuel || trim.cv || (trim.transmision && trim.transmision.length > 0)) && (
@@ -516,6 +579,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             </div>
             );
           })}
+          </div>
         </div>
       )}
     </div>
@@ -1031,7 +1095,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
 // Hook simple de debounce
 function useDebouncedValue<T>(value: T, delayMs: number): T {
-  const [val, setVal] = useState(value);
+  const [val, setVal] = useState<T>(value);
   useEffect(() => {
     const id = setTimeout(() => setVal(value), delayMs);
     return () => clearTimeout(id);
