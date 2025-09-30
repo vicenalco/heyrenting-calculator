@@ -52,6 +52,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
   const [models, setModels] = useState<{ id: string; name: string; startYear?: number; endYear?: number; imageUrl?: string }[]>([]);
   const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[]; priceUpdated?: boolean; priceAccuracy?: string; originalPrice?: number }[]>([]);
+  const [selectedTrim, setSelectedTrim] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   const [priceUpdateStats, setPriceUpdateStats] = useState<{
@@ -308,26 +309,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     
     onUpdate(updates);
     
-    // Iniciar scraping en segundo plano si tenemos los datos necesarios
-    if (formData.carBrand && formData.carModel && trim.fuel && trim.cv) {
-      const scrapingParams = {
-        brand: formData.carBrand,
-        model: formData.carModel,
-        fuel: trim.fuel,
-        power: trim.cv,
-        transmission: (trim as any).transmision?.[0] || 'automatico'
-      };
-      
-      console.log('🎯 Iniciando scraping para trim:', trim.name, 'con parámetros:', scrapingParams);
-      startScraping(scrapingParams);
-    } else {
-      console.log('❌ No se puede iniciar scraping - datos faltantes:', {
-        carBrand: formData.carBrand,
-        carModel: formData.carModel,
-        fuel: trim.fuel,
-        cv: trim.cv
-      });
-    }
+    // Guardar el trim seleccionado para usar en el scraping
+    setSelectedTrim(trim);
+    
+    // El scraping se realizará después de seleccionar el año
+    console.log('📝 Trim seleccionado:', trim.name, '- Scraping se realizará después de seleccionar año');
     
     // Ir al paso 4 (selección de año)
     setCurrentStep(4);
@@ -685,6 +671,21 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
               key={year}
               onClick={() => {
                 onUpdate({ carYear: year });
+                
+                // Iniciar scraping después de seleccionar año
+                if (formData.carBrand && formData.carModel && selectedTrim) {
+                  const scrapingParams = {
+                    brand: formData.carBrand,
+                    model: formData.carModel,
+                    fuel: selectedTrim.fuel,
+                    power: selectedTrim.cv,
+                    transmission: (selectedTrim as any).transmision?.[0] || 'automatico'
+                  };
+                  
+                  console.log('🎯 Iniciando scraping después de seleccionar año:', year, 'con parámetros:', scrapingParams);
+                  startScraping(scrapingParams);
+                }
+                
                 setCurrentStep(5);
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
