@@ -5,6 +5,7 @@ import ResultCard from './components/ui/ResultCard';
 import Step1_Welcome from './components/Step1_Welcome';
 import Step2a_CarSelection from './components/Step2a_CarSelection';
 import Step2b_Discovery from './components/Step2b_Discovery';
+import PriceScrapingProgress from './components/PriceScrapingProgress';
 import { calculateFinancialAutopsy } from '../lib/calculations';
 
 export default function Home() {
@@ -55,6 +56,15 @@ export default function Home() {
       impuestos: 0,
       imprevistos: 0,
     }
+  });
+
+  // Estado para el scraping de precios
+  const [scrapingState, setScrapingState] = useState({
+    isScraping: false,
+    progress: 0,
+    currentStep: '',
+    error: null as string | null,
+    completed: false,
   });
 
   // Función para actualizar el formData de forma segura
@@ -157,6 +167,7 @@ export default function Home() {
                 setIsModifying(false);
                 setStep(3);
               }}
+              onScrapingStateChange={setScrapingState}
             />
           )}
 
@@ -178,6 +189,17 @@ export default function Home() {
                   Aquí tienes el desglose completo de todos los costes reales
                 </p>
               </div>
+
+              {/* Mostrar animación de scraping si está activo */}
+              {scrapingState.isScraping && (
+                <PriceScrapingProgress
+                  isScraping={scrapingState.isScraping}
+                  progress={scrapingState.progress}
+                  currentStep={scrapingState.currentStep}
+                  error={scrapingState.error}
+                  completed={scrapingState.completed}
+                />
+              )}
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Tarjeta de Coste Total Real */}

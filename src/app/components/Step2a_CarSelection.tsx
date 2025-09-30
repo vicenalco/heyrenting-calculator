@@ -43,9 +43,10 @@ interface Step2a_CarSelectionProps {
   onNext: () => void;
   isModifying?: boolean;
   onFinishModifying?: () => void;
+  onScrapingStateChange?: (state: any) => void;
 }
 
-export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying }: Step2a_CarSelectionProps) {
+export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying, onScrapingStateChange }: Step2a_CarSelectionProps) {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
@@ -239,6 +240,19 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     
     loadTrims();
   }, [formData.modelId, formData.brandId]);
+
+  // Efecto para pasar el estado del scraping al componente padre
+  useEffect(() => {
+    if (onScrapingStateChange) {
+      onScrapingStateChange({
+        isScraping,
+        progress,
+        currentStep: scrapingCurrentStep,
+        error: scrapingError,
+        completed: scrapingCompleted,
+      });
+    }
+  }, [isScraping, progress, scrapingCurrentStep, scrapingError, scrapingCompleted, onScrapingStateChange]);
 
   // Efecto para actualizar precios cuando el scraping se complete
   useEffect(() => {
@@ -569,22 +583,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       
       {!loading && trims.length > 0 && (
         <div className="space-y-6">
-          {priceUpdateStats && (
-            <PriceUpdateInfo
-              totalTrims={priceUpdateStats.totalTrims}
-              updatedTrims={priceUpdateStats.updatedTrims}
-              accuracyPercentage={priceUpdateStats.accuracyPercentage}
-            />
-          )}
+          {/* Información de precios eliminada - no debe aparecer en selección de motorización */}
           
-          {/* Mostrar progreso de scraping si está activo */}
-          <PriceScrapingProgress
-            isScraping={isScraping}
-            progress={progress}
-            currentStep={scrapingCurrentStep}
-            error={scrapingError}
-            completed={scrapingCompleted}
-          />
+          {/* Animación de scraping eliminada - no debe aparecer en selección de motorización */}
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {trims.map((trim) => {
