@@ -603,22 +603,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   <i className="fa-solid fa-wrench text-lg" aria-hidden="true"></i>
                   <h4 className="font-bold text-lg">{trim.name}</h4>
                 </div>
-                {typeof trim.price === 'number' && trim.price > 0 ? (
-                  <div className="flex items-center justify-center gap-2 text-green-700 font-semibold">
-                    <i className="fa-solid fa-tags" aria-hidden="true"></i>
-                    <span>{trim.price.toLocaleString('es-ES')} €</span>
-                    {trim.priceUpdated && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                        Actualizado
-                      </span>
-                    )}
-                  </div>
-                ) : isScraping ? (
-                  <div className="flex items-center justify-center gap-2 text-blue-600 font-semibold">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-200 border-t-blue-600"></div>
-                    <span className="text-sm">Obteniendo precio...</span>
-                  </div>
-                ) : null}
+                {/* Los precios se mostrarán en el paso 3, no aquí */}
                 {(trim.fuel || trim.cv || (trim.transmision && trim.transmision.length > 0)) && (
                   <div className="mt-4 flex flex-wrap justify-center gap-2">
                     {trim.fuel && (

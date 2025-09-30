@@ -82,16 +82,16 @@ export default function Home() {
     }
   }, [calculateOwnershipCost, formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales]);
 
-  // useEffect para navegación automática al paso 3 cuando se completen todos los campos
+  // useEffect para navegación automática al paso 3 cuando se completen los campos básicos del vehículo
   useEffect(() => {
-    if (step === 2 && !isModifying && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null && formData.kmsAnuales && formData.provincia && formData.usoVehiculo && formData.estiloConduccion && formData.frecuenciaUso && formData.presupuesto && formData.experiencia) {
+    if (step === 2 && !isModifying && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null && formData.kmsAnuales && formData.usoVehiculo && formData.estiloConduccion && formData.frecuenciaUso && formData.presupuesto && formData.experiencia) {
       // Pequeño delay para que el usuario vea que se completó la configuración
       const timer = setTimeout(() => {
         setStep(3);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [step, isModifying, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear, formData.kmsAnuales, formData.provincia, formData.usoVehiculo, formData.estiloConduccion, formData.frecuenciaUso, formData.presupuesto, formData.experiencia]);
+  }, [step, isModifying, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear, formData.kmsAnuales, formData.usoVehiculo, formData.estiloConduccion, formData.frecuenciaUso, formData.presupuesto, formData.experiencia]);
 
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {
