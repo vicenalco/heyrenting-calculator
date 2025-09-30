@@ -169,8 +169,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     const loadTrims = async () => {
       setLoading(true);
       
-      // Delay de 2-3 segundos con texto personalizado
-      await delayWithLoading(2500, 'Obteniendo precios actualizados de motorizaciones...');
+      // Sin delay ni animación - cargar trims directamente
       
       try {
         // Primero intentar obtener trims con precios actualizados
@@ -742,15 +741,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <div className="flex items-center mb-2">
-              <span className="text-2xl mr-3">💰</span>
-              <div>
-                <p className="text-sm text-gray-500">Precio estimado</p>
-                <p className="font-bold text-green-600 text-lg">{formData.precioCoche.toLocaleString('es-ES')} €</p>
-              </div>
-            </div>
-          </div>
+          {/* Precio eliminado - solo se mostrará en el paso 3 */}
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center mb-2">
@@ -815,15 +806,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <div className="flex items-center mb-2">
-              <span className="text-2xl mr-3">💰</span>
-              <div>
-                <p className="text-sm text-gray-500">Precio estimado</p>
-                <p className="font-bold text-green-600 text-lg">{formData.precioCoche.toLocaleString('es-ES')} €</p>
-              </div>
-            </div>
-          </div>
+          {/* Precio eliminado - solo se mostrará en el paso 3 */}
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center mb-2">
