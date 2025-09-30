@@ -58,7 +58,7 @@ export default function Km77PriceCard({ integrationResult, showDetails = false }
           </p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Precio km77</p>
+          <p className="text-sm text-gray-600">Precio km77 (Nuevo)</p>
           <p className="text-lg font-bold text-green-600">
             {lowestPrice ? `${lowestPrice.toLocaleString()} €` : 'N/A'}
           </p>
@@ -76,7 +76,7 @@ export default function Km77PriceCard({ integrationResult, showDetails = false }
 
       {averagePrice && averagePrice !== lowestPrice && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600">Precio promedio km77</p>
+          <p className="text-sm text-gray-600">Precio promedio km77 (Nuevo)</p>
           <p className="text-lg font-bold text-gray-700">
             {averagePrice.toLocaleString()} €
           </p>

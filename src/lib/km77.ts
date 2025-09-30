@@ -121,6 +121,43 @@ export function parseKm77Results(html: string, targetMotorization: string): Km77
 }
 
 /**
+ * Agrupa resultados por motorización y calcula la media de precios
+ */
+export function groupResultsByMotorization(results: Km77Result[]): Km77Result[] {
+  const grouped = new Map<string, Km77Result[]>();
+
+  // Agrupar por motorización
+  results.forEach(result => {
+    const key = result.motorization.toLowerCase();
+    if (!grouped.has(key)) {
+      grouped.set(key, []);
+    }
+    grouped.get(key)!.push(result);
+  });
+
+  // Calcular media para cada motorización
+  const averagedResults: Km77Result[] = [];
+  
+  grouped.forEach((motorizationResults, motorization) => {
+    if (motorizationResults.length === 0) return;
+
+    // Calcular media de precios
+    const prices = motorizationResults.map(r => r.price).filter(p => !isNaN(p));
+    const averagePrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+
+    // Usar el primer resultado como base y actualizar el precio con la media
+    const baseResult = motorizationResults[0];
+    averagedResults.push({
+      ...baseResult,
+      price: Math.round(averagePrice),
+      description: `${baseResult.motorization} (${motorizationResults.length} variantes, precio promedio)`,
+    });
+  });
+
+  return averagedResults;
+}
+
+/**
  * Función principal para buscar precios en km77
  */
 export async function searchKm77Prices(params: Km77SearchParams): Promise<Km77SearchResponse> {
@@ -149,7 +186,10 @@ export async function searchKm77Prices(params: Km77SearchParams): Promise<Km77Se
     // Por ejemplo: "Ibrida 1.2" de "Alfa Romeo Junior Ibrida 1.2 107 kW (145 CV) eDCT6"
     const targetMotorization = extractMotorizationFromTrim(params.brand, params.model);
     
-    const results = parseKm77Results(html, targetMotorization);
+    const rawResults = parseKm77Results(html, targetMotorization);
+    
+    // Agrupar por motorización y calcular media de precios
+    const results = groupResultsByMotorization(rawResults);
 
     return {
       results,
@@ -179,6 +219,7 @@ function extractMotorizationFromTrim(brand: string, model: string): string {
 
 /**
  * Función auxiliar para obtener el precio más bajo de una motorización específica
+ * IMPORTANTE: Estos son precios de coches NUEVOS
  */
 export function getLowestPrice(results: Km77Result[]): number | null {
   if (results.length === 0) return null;
@@ -189,10 +230,23 @@ export function getLowestPrice(results: Km77Result[]): number | null {
 
 /**
  * Función auxiliar para obtener el precio promedio de una motorización específica
+ * IMPORTANTE: Estos son precios de coches NUEVOS
  */
 export function getAveragePrice(results: Km77Result[]): number | null {
   if (results.length === 0) return null;
   
   const prices = results.map(r => r.price).filter(p => !isNaN(p));
   return prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : null;
+}
+
+/**
+ * Función principal para obtener el precio recomendado de km77
+ * Prioriza el precio promedio calculado (ya que agrupa múltiples variantes)
+ */
+export function getRecommendedKm77Price(results: Km77Result[]): number | null {
+  if (results.length === 0) return null;
+  
+  // Como ya agrupamos y calculamos la media, el precio de cada resultado es el promedio
+  const prices = results.map(r => r.price).filter(p => !isNaN(p));
+  return prices.length > 0 ? prices[0] : null; // El primer resultado ya es el promedio
 }

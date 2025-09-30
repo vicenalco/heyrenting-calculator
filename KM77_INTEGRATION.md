@@ -1,14 +1,21 @@
-# Integración con km77.com
+# Integración con km77.com - Obtención de Precios
 
-Esta funcionalidad permite integrar precios actualizados de km77.com con los datos de Airtable para obtener precios más precisos de las motorizaciones.
+Esta funcionalidad permite obtener precios actualizados de coches NUEVOS de km77.com y compararlos con los datos de Airtable.
 
 ## Características
 
 - **Búsqueda automática**: Construye URLs de km77 basándose en marca, modelo, combustible y potencia
 - **Scraping inteligente**: Extrae precios específicos de motorizaciones
-- **Comparación de precios**: Compara precios de Airtable vs km77
+- **Cálculo de promedio**: Cuando hay múltiples variantes de la misma motorización, calcula la media de precios
+- **Comparación de precios**: Compara precios de Airtable vs km77 (coches nuevos)
 - **Validación de precisión**: Indica la precisión de los precios con iconos de estado
 - **Estadísticas**: Resumen de precisión de precios por marca/modelo
+
+## ⚠️ IMPORTANTE
+
+- **Precios de coches NUEVOS**: Esta funcionalidad obtiene precios de coches nuevos únicamente
+- **Cálculo de promedio**: Si hay múltiples variantes de la misma motorización, se calcula la media de precios
+- **Futuras funcionalidades**: Los precios de segunda mano, km0 y renting se implementarán en pasos posteriores
 
 ## Archivos Creados
 
