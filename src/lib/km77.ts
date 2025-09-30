@@ -32,6 +32,7 @@ export const fuelMapping: Record<string, string> = {
   'gasolina': 'gasolina',
   'diesel': 'diesel',
   'hibrido': 'hibrido_no_enchufable',
+  'Híbrido': 'hibrido_no_enchufable', // Mapeo para el formato que viene de Airtable
   'hibrido_enchufable': 'hibrido_enchufable',
   'electrico': 'electrico',
   'gas': 'gas',
@@ -43,6 +44,7 @@ export const fuelMapping: Record<string, string> = {
 export const transmissionMapping: Record<string, string> = {
   'manual': 'manual',
   'automatico': 'automatico',
+  'Automático': 'automatico', // Mapeo para el formato que viene de Airtable
   'cvt': 'automatico', // CVT se considera automático
 };
 
@@ -62,16 +64,19 @@ export function formatBrandModelForKm77(brand: string, model: string): string {
 export function buildKm77SearchUrl(params: Km77SearchParams): string {
   const baseUrl = 'https://www.km77.com/buscador/datos';
   
-  const searchParams = new URLSearchParams({
-    grouped: '0',
-    order: 'price-asc',
-    'markets[]': 'current',
-    'nqls[]': `ve:car:${formatBrandModelForKm77(params.brand, params.model)}`,
-    'fuel_categories[]': fuelMapping[params.fuel] || params.fuel,
-    'gearboxes[]': transmissionMapping[params.transmission] || params.transmission,
-  });
+  // Construir parámetros manualmente para evitar problemas de encoding
+  const searchParams = [
+    'grouped=0',
+    'order=price-asc',
+    'markets[]=current',
+    `nqls[]=ve:car:${formatBrandModelForKm77(params.brand, params.model)}`,
+    `fuel_categories[]=${fuelMapping[params.fuel] || params.fuel}`,
+    `power-min=${params.power}`,
+    `power-max=${params.power}`,
+    `gearboxes[]=${transmissionMapping[params.transmission] || params.transmission}`,
+  ];
 
-  return `${baseUrl}?${searchParams.toString()}`;
+  return `${baseUrl}?${searchParams.join('&')}`;
 }
 
 /**
