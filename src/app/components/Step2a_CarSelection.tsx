@@ -337,11 +337,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
           </div>
           <div className="space-y-2">
             <p className="text-lg font-semibold text-gray-700">Buscando marcas...</p>
-            <div className="flex justify-center space-x-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-            </div>
           </div>
         </div>
       )}
@@ -396,11 +391,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
           </div>
           <div className="space-y-2">
             <p className="text-lg font-semibold text-gray-700">{loadingText}</p>
-            <div className="flex justify-center space-x-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-            </div>
           </div>
         </div>
       )}
@@ -471,11 +461,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
           </div>
           <div className="space-y-2">
             <p className="text-lg font-semibold text-gray-700">{loadingText}</p>
-            <div className="flex justify-center space-x-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-            </div>
           </div>
         </div>
       )}
@@ -504,22 +489,22 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                     <span>{trim.price.toLocaleString('es-ES')} €</span>
                   </div>
                 )}
-                {(trim.fuel || typeof trim.cv === 'number' || (trim.transmision && trim.transmision.length > 0)) && (
-                  <div className="flex items-center justify-center gap-4 text-sm text-gray-600 flex-wrap">
+                {(trim.fuel || trim.cv || (trim.transmision && trim.transmision.length > 0)) && (
+                  <div className="mt-4 flex flex-wrap justify-center gap-2">
                     {trim.fuel && (
-                      <span className="inline-flex items-center gap-1">
+                      <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-800 text-xs font-medium rounded-full border border-green-200">
                         <i className="fa-solid fa-gas-pump" aria-hidden="true"></i>
                         <span className="capitalize">{trim.fuel}</span>
                       </span>
                     )}
-                    {typeof trim.cv === 'number' && (
-                      <span className="inline-flex items-center gap-1">
+                    {trim.cv && (
+                      <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-800 text-xs font-medium rounded-full border border-blue-200">
                         <i className="fa-solid fa-horse" aria-hidden="true"></i>
                         <span>{trim.cv} CV</span>
                       </span>
                     )}
                     {trim.transmision && trim.transmision.length > 0 && (
-                      <span className="inline-flex items-center gap-1">
+                      <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-purple-100 text-purple-800 text-xs font-medium rounded-full border border-purple-200">
                         <i className="fa-solid fa-gear" aria-hidden="true"></i>
                         <span>{trim.transmision.join(' / ')}</span>
                       </span>
