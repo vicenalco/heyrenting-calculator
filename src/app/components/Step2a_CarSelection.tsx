@@ -757,7 +757,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     </div>
   );
 
-  const renderKmsStep = () => (
+  const renderKmsStep = () => {
+    console.log('🔍 Debug paso 7 - kmsAnuales:', formData.kmsAnuales, 'tipo:', typeof formData.kmsAnuales);
+    return (
     <div className="space-y-8">
       <div className="text-center">
         <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -1128,7 +1130,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                 (currentStep === 4 && !formData.carYear) ||
                 (currentStep === 5 && !formData.aniosFinanciacion) ||
                 (currentStep === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia)) ||
-                (currentStep === 7 && !formData.kmsAnuales) ||
+                (currentStep === 7 && (!formData.kmsAnuales || formData.kmsAnuales === 0)) ||
                 ((currentStep as number) === 8 && !formData.provincia)
               }
               className="flex items-center px-3 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
