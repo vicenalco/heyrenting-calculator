@@ -241,7 +241,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   // Efecto para actualizar precios cuando el scraping se complete
   useEffect(() => {
+    console.log('🔄 Estado del scraping:', { scrapingCompleted, scrapingResults: scrapingResults?.length });
+    
     if (scrapingCompleted && scrapingResults && scrapingResults.length > 0) {
+      console.log('✅ Scraping completado, actualizando precios...');
+      
       // Actualizar los precios de los trims con los resultados del scraping
       setTrims(prevTrims => 
         prevTrims.map(trim => {
@@ -251,6 +255,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
           );
           
           if (matchingResult) {
+            console.log('💰 Precio encontrado para', trim.name, ':', matchingResult.price);
             return {
               ...trim,
               price: matchingResult.price,
@@ -313,7 +318,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
         transmission: (trim as any).transmision?.[0] || 'automatico'
       };
       
+      console.log('🎯 Iniciando scraping para trim:', trim.name, 'con parámetros:', scrapingParams);
       startScraping(scrapingParams);
+    } else {
+      console.log('❌ No se puede iniciar scraping - datos faltantes:', {
+        carBrand: formData.carBrand,
+        carModel: formData.carModel,
+        fuel: trim.fuel,
+        cv: trim.cv
+      });
     }
     
     // Ir al paso 4 (selección de año)

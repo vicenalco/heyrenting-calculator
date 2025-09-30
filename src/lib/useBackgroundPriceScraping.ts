@@ -20,6 +20,8 @@ export function useBackgroundPriceScraping() {
   });
 
   const startScraping = useCallback(async (params: any) => {
+    console.log('🚀 Iniciando scraping con parámetros:', params);
+    
     setScrapingState({
       isScraping: true,
       progress: 0,
@@ -46,7 +48,10 @@ export function useBackgroundPriceScraping() {
 
       // Realizar la búsqueda real a través de la API del servidor
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/km77/search`, {
+      const apiUrl = `${baseUrl}/api/km77/search`;
+      console.log('🌐 Llamando a la API:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,11 +59,14 @@ export function useBackgroundPriceScraping() {
         body: JSON.stringify(params),
       });
 
+      console.log('📡 Respuesta de la API:', response.status, response.statusText);
+
       if (!response.ok) {
         throw new Error(`Error en la API: ${response.status}`);
       }
 
       const results = await response.json();
+      console.log('📊 Resultados obtenidos:', results);
 
       setScrapingState({
         isScraping: false,
