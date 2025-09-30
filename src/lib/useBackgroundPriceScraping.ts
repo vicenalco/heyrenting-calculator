@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { searchKm77Prices, Km77SearchParams } from './km77';
 
 interface PriceScrapingState {
   isScraping: boolean;
@@ -20,7 +19,7 @@ export function useBackgroundPriceScraping() {
     completed: false,
   });
 
-  const startScraping = useCallback(async (params: Km77SearchParams) => {
+  const startScraping = useCallback(async (params: any) => {
     setScrapingState({
       isScraping: true,
       progress: 0,
@@ -45,14 +44,27 @@ export function useBackgroundPriceScraping() {
         await new Promise(resolve => setTimeout(resolve, 800)); // Simular tiempo de procesamiento
       }
 
-      // Realizar la búsqueda real
-      const results = await searchKm77Prices(params);
+      // Realizar la búsqueda real a través de la API del servidor
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+      const response = await fetch(`${baseUrl}/api/km77/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error en la API: ${response.status}`);
+      }
+
+      const results = await response.json();
 
       setScrapingState({
         isScraping: false,
         progress: 100,
         currentStep: 'Completado',
-        results: results.results,
+        results: results.data?.results || [],
         error: null,
         completed: true,
       });

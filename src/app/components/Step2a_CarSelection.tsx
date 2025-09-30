@@ -619,12 +619,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-200 border-t-blue-600"></div>
                     <span className="text-sm">Obteniendo precio...</span>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-center gap-2 text-gray-500 font-semibold">
-                    <i className="fa-solid fa-clock" aria-hidden="true"></i>
-                    <span className="text-sm">Precio no disponible</span>
-                  </div>
-                )}
+                ) : null}
                 {(trim.fuel || trim.cv || (trim.transmision && trim.transmision.length > 0)) && (
                   <div className="mt-4 flex flex-wrap justify-center gap-2">
                     {trim.fuel && (
