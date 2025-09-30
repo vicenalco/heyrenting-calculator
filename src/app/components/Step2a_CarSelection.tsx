@@ -5,16 +5,28 @@ import { useEffect, useState } from 'react';
 import { fetchBrands, fetchModels, fetchTrims } from '@/lib/airtable';
 import Image from 'next/image';
 
+// Lista de todas las provincias de España
+const PROVINCIAS_ESPANA = [
+  'Álava', 'Albacete', 'Alicante', 'Almería', 'Asturias', 'Ávila', 'Badajoz', 'Baleares',
+  'Barcelona', 'Burgos', 'Cáceres', 'Cádiz', 'Cantabria', 'Castellón', 'Ciudad Real', 'Córdoba',
+  'La Coruña', 'Cuenca', 'Girona', 'Granada', 'Guadalajara', 'Guipúzcoa', 'Huelva', 'Huesca',
+  'Jaén', 'León', 'Lleida', 'Lugo', 'Madrid', 'Málaga', 'Murcia', 'Navarra', 'Ourense',
+  'Palencia', 'Las Palmas', 'Pontevedra', 'La Rioja', 'Salamanca', 'Santa Cruz de Tenerife',
+  'Segovia', 'Sevilla', 'Soria', 'Tarragona', 'Teruel', 'Toledo', 'Valencia', 'Valladolid',
+  'Vizcaya', 'Zamora', 'Zaragoza'
+];
+
 interface Step2a_CarSelectionProps {
   formData: {
     carBrand: string;
     carModel: string;
     carVersion: string; // usaremos para "motorización"
-    carYear: number; // nuevo campo para el año
+    carYear: number | null; // nuevo campo para el año
     kmsAnuales: number;
     aniosFinanciacion: number;
     precioCoche: number;
     tipoCombustible: string;
+    provincia?: string;
     makeQid?: string;
     brandId?: string;
     modelId?: string;
@@ -26,15 +38,17 @@ interface Step2a_CarSelectionProps {
   };
   onUpdate: (updates: Partial<Step2a_CarSelectionProps['formData']>) => void;
   onNext: () => void;
+  isModifying?: boolean;
+  onFinishModifying?: () => void;
 }
 
-export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step2a_CarSelectionProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying }: Step2a_CarSelectionProps) {
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
   const [models, setModels] = useState<{ id: string; name: string; startYear?: number; endYear?: number; imageUrl?: string }[]>([]);
-  const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number }[]>([]);
+  const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[] }[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   
@@ -46,7 +60,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   const [experiencia, setExperiencia] = useState('');
 
   // Debounce para evitar sobrecargar Airtable
-  const debouncedQuery = useDebouncedValue(brandQuery, 300);
+  const debouncedQuery = useDebouncedValue(brandQuery, 100);
+
+  // Limpiar estado de carga cuando se entra en modo modificación
+  useEffect(() => {
+    if (isModifying) {
+      setLoading(false);
+      setLoadingText('');
+    }
+  }, [isModifying]);
 
   // Función helper para delay con loading
   const delayWithLoading = (ms: number, text: string) => {
@@ -195,6 +217,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     setCurrentStep(4);
   };
 
+
   const handleNextStep = () => {
     if (currentStep < 7) {
       setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7);
@@ -258,6 +281,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         return renderQuestionsStep();
       case 7:
         return renderKmsStep();
+      case 8:
+        return renderProvinceStep();
       default:
         return renderBrandStep();
     }
@@ -269,7 +294,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           <i className="fa-solid fa-tag mr-2"></i>¿Qué marca te gusta?
         </h3>
-        <p className="text-gray-600">Busca y selecciona la marca de tu vehículo</p>
+        <p className="text-gray-600">Busca y selecciona la marca del vehículo que quieres comprar</p>
       </div>
       
       <div className="relative">
@@ -299,12 +324,27 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
             }
           }}
         />
-        {loading && (
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-green-500"></div>
-          </div>
-        )}
       </div>
+      
+      {/* Spinner de carga visible */}
+      {loading && (
+        <div className="text-center py-8">
+          <div className="relative mb-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-green-500 mx-auto"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <i className="fa-solid fa-car text-green-500 text-lg"></i>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg font-semibold text-gray-700">Buscando marcas...</p>
+            <div className="flex justify-center space-x-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Contenido dinámico sin espacio fijo */}
       {brandQuery.trim().length >= 2 && !loading && makes.length === 0 && (
@@ -342,7 +382,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
   const renderModelStep = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">🚙 Elige tu modelo</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">🚙 Elige el modelo</h3>
         <p className="text-gray-600">Selecciona el modelo de <strong>{formData.carBrand}</strong></p>
       </div>
       
@@ -442,7 +482,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       
       {!loading && trims.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          {trims.map((trim) => (
+          {trims.map((trim) => {
+            return (
             <div
               key={trim.id}
               onClick={() => handleSelectTrim(trim)}
@@ -463,8 +504,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
                     <span>{trim.price.toLocaleString('es-ES')} €</span>
                   </div>
                 )}
-                {(trim.fuel || typeof trim.cv === 'number') && (
-                  <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+                {(trim.fuel || typeof trim.cv === 'number' || (trim.transmision && trim.transmision.length > 0)) && (
+                  <div className="flex items-center justify-center gap-4 text-sm text-gray-600 flex-wrap">
                     {trim.fuel && (
                       <span className="inline-flex items-center gap-1">
                         <i className="fa-solid fa-gas-pump" aria-hidden="true"></i>
@@ -477,11 +518,19 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
                         <span>{trim.cv} CV</span>
                       </span>
                     )}
+                    {trim.transmision && trim.transmision.length > 0 && (
+                      <span className="inline-flex items-center gap-1">
+                        <i className="fa-solid fa-gear" aria-hidden="true"></i>
+                        <span>{trim.transmision.join(' / ')}</span>
+                      </span>
+                    )}
                   </div>
                 )}
+                
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -495,9 +544,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       <div className="space-y-6">
         <div className="text-center">
           <h3 className="text-xl font-bold text-gray-900 mb-2">
-            <i className="fa-solid fa-calendar mr-2"></i>¿De qué año es tu vehículo?
+            <i className="fa-solid fa-calendar mr-2"></i>¿De qué año es el vehículo que quieres comprar?
           </h3>
-          <p className="text-gray-600">Selecciona el año de fabricación de tu <strong>{formData.carModel}</strong></p>
+          <p className="text-gray-600">Selecciona el año de fabricación del <strong>{formData.carModel}</strong> que quieres comprar</p>
         </div>
         
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -533,7 +582,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           <i className="fa-solid fa-euro-sign mr-2"></i>Configura tu financiación
         </h3>
-        <p className="text-gray-600">Selecciona los años de financiación para tu vehículo</p>
+        <p className="text-gray-600">Selecciona los años de financiación para el vehículo que quieres comprar</p>
       </div>
       
       <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
@@ -551,8 +600,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       {/* Resumen de configuración */}
       <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-8 border-2 border-green-200">
         <div className="text-center mb-6">
-          <h4 className="text-2xl font-bold text-gray-900 mb-2">✨ Tu configuración</h4>
-          <p className="text-gray-600">Revisa tu selección antes de calcular</p>
+          <h4 className="text-2xl font-bold text-gray-900 mb-2">✨ Configuración seleccionada</h4>
+          <p className="text-gray-600">Revisa la selección antes de calcular</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -606,7 +655,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           <i className="fa-solid fa-road mr-2"></i>¿Cuántos kilómetros harás al año?
         </h3>
-        <p className="text-gray-600">Estima el uso anual de tu vehículo para calcular los gastos reales</p>
+        <p className="text-gray-600">Estima el uso anual que tendrás con el vehículo para calcular los gastos reales</p>
       </div>
       
       <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
@@ -624,8 +673,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
       {/* Resumen final */}
       <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-8 border-2 border-green-200">
         <div className="text-center mb-6">
-          <h4 className="text-2xl font-bold text-gray-900 mb-2">🚗 Tu vehículo completo</h4>
-          <p className="text-gray-600">Revisa toda tu configuración antes de calcular</p>
+          <h4 className="text-2xl font-bold text-gray-900 mb-2">🚗 Vehículo seleccionado</h4>
+          <p className="text-gray-600">Revisa toda la configuración antes de calcular</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -679,6 +728,41 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+
+  const renderProvinceStep = () => (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-map-marker-alt mr-2"></i>¿En qué provincia vives?
+        </h3>
+        <p className="text-gray-600">Selecciona tu provincia para cálculos más precisos</p>
+      </div>
+      
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {PROVINCIAS_ESPANA.map((provincia) => (
+          <button
+            key={provincia}
+            onClick={() => {
+              onUpdate({ provincia });
+              setCurrentStep(8);
+            }}
+            className={`p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+              formData.provincia === provincia
+                ? 'border-green-500 bg-green-50 shadow-md'
+                : 'border-gray-200 bg-white hover:border-green-300'
+            }`}
+          >
+            <div className="text-center">
+              <div className="text-lg mb-1">
+                <i className="fa-solid fa-map-pin text-gray-600"></i>
+              </div>
+              <span className="text-sm font-medium text-gray-900">{provincia}</span>
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -883,10 +967,10 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          <i className="fa-solid fa-car mr-2"></i>Configura tu vehículo
+          <i className="fa-solid fa-car mr-2"></i>Configura el vehículo
         </h2>
         <p className="text-gray-600">
-          Selecciona paso a paso tu coche y ajusta los parámetros para calcular los gastos reales
+          Selecciona paso a paso el coche que quieres comprar y ajusta los parámetros para calcular los gastos reales
         </p>
         
         {/* Indicador de pasos */}
@@ -922,17 +1006,17 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
 
           <div className="flex items-center space-x-2">
             <span className="text-xs text-gray-500">Paso</span>
-            <span className="text-sm font-medium text-gray-700">{currentStep} de 7</span>
+            <span className="text-sm font-medium text-gray-700">{currentStep} de 8</span>
           </div>
 
-          {currentStep === 7 ? (
+          {currentStep === 8 ? (
             <button 
-              onClick={handleNext}
+              onClick={isModifying ? onFinishModifying : handleNext}
               className="flex items-center px-4 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !formData.carYear || !formData.kmsAnuales || !usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia}
+              disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !formData.carYear || !formData.kmsAnuales || !formData.provincia || !usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia}
             >
               <span className="mr-1">🚀</span>
-              Finalizar
+              {isModifying ? 'Ver Resultados' : 'Finalizar'}
             </button>
           ) : (
             <button
@@ -944,9 +1028,10 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
                 (currentStep === 4 && !formData.carYear) ||
                 (currentStep === 5 && !formData.aniosFinanciacion) ||
                 (currentStep === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia)) ||
-                ((currentStep as number) === 7 && !formData.kmsAnuales)
+                (currentStep === 7 && !formData.kmsAnuales) ||
+                ((currentStep as number) === 8 && !formData.provincia)
               }
-              className="flex items-center px-3 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-3 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Siguiente
               <span className="ml-1">→</span>
@@ -954,6 +1039,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext }: Step
           )}
         </div>
       </div>
+
     </div>
   );
 }

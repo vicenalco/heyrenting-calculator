@@ -11,18 +11,22 @@ export default function Home() {
   // Estado para controlar el paso actual del wizard
   const [step, setStep] = useState(1);
   
+  // Estado para controlar si el usuario está modificando datos (no debe avanzar automáticamente)
+  const [isModifying, setIsModifying] = useState(false);
+  
   // Estado unificado para todos los datos del formulario
   const [formData, setFormData] = useState({
     userPath: '', // 'knowsCar' o 'inspireMe'
     carBrand: '',
     carModel: '',
     carVersion: '',
-    carYear: 2024, // nuevo campo para el año
+    carYear: null as number | null, // nuevo campo para el año
     kmsAnuales: 20000,
     aniosFinanciacion: 5,
     precioCoche: 25000,
     tipoCombustible: 'gasolina',
     codigoPostal: '',
+    provincia: '',
     // Campos adicionales que podremos necesitar
     nombre: '',
     email: '',
@@ -78,6 +82,17 @@ export default function Home() {
     }
   }, [calculateOwnershipCost, formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales]);
 
+  // useEffect para navegación automática al paso 3 cuando se completen todos los campos
+  useEffect(() => {
+    if (step === 2 && !isModifying && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null && formData.kmsAnuales && formData.provincia && formData.usoVehiculo && formData.estiloConduccion && formData.frecuenciaUso && formData.presupuesto && formData.experiencia) {
+      // Pequeño delay para que el usuario vea que se completó la configuración
+      const timer = setTimeout(() => {
+        setStep(3);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [step, isModifying, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear, formData.kmsAnuales, formData.provincia, formData.usoVehiculo, formData.estiloConduccion, formData.frecuenciaUso, formData.presupuesto, formData.experiencia]);
+
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {
     updateFormData({ userPath: path });
@@ -89,38 +104,6 @@ export default function Home() {
     setStep(step + 1);
   };
 
-  // Función para retroceder al paso anterior
-  const handlePrevious = () => {
-    setStep(step - 1);
-  };
-
-  // Función para resetear al inicio (salida de emergencia)
-  const handleResetToStart = () => {
-    setStep(1);
-    setFormData({
-      userPath: '',
-      carBrand: '',
-      carModel: '',
-      carVersion: '',
-      carYear: 2024,
-      kmsAnuales: 20000,
-      aniosFinanciacion: 5,
-      precioCoche: 25000,
-      tipoCombustible: 'gasolina',
-      codigoPostal: '',
-      nombre: '',
-      email: '',
-      telefono: '',
-      brandId: '',
-      modelId: '',
-      // Campos adicionales del paso 5
-      usoVehiculo: '',
-      estiloConduccion: '',
-      frecuenciaUso: '',
-      presupuesto: '',
-      experiencia: '',
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 lg:p-8">
@@ -169,6 +152,11 @@ export default function Home() {
               formData={formData} 
               onUpdate={updateFormData} 
               onNext={handleNext}
+              isModifying={isModifying}
+              onFinishModifying={() => {
+                setIsModifying(false);
+                setStep(3);
+              }}
             />
           )}
 
@@ -184,7 +172,7 @@ export default function Home() {
             <div className="space-y-8">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Gastos Reales de tu Vehículo 📊
+                  Gastos Reales del Vehículo 📊
                 </h2>
                 <p className="text-gray-600">
                   Aquí tienes el desglose completo de todos los costes reales
@@ -263,50 +251,60 @@ export default function Home() {
                     </h3>
                     <p style={{ color: '#2d5a2d' }}>
                       Estos cálculos incluyen todos los gastos reales: financiación, depreciación, seguro, mantenimiento, impuestos e imprevistos. 
-                      Recuerda que la depreciación es un coste oculto pero real que afecta el valor de tu vehículo.
+                      Recuerda que la depreciación es un coste oculto pero real que afecta el valor del vehículo.
                     </p>
                   </div>
                 </div>
               </div>
+
+              {/* Botones de navegación para el paso 3 */}
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => {
+                    setIsModifying(true);
+                    setStep(2);
+                  }}
+                  className="flex items-center justify-center px-6 py-3 text-white bg-gray-600 hover:bg-gray-700 font-semibold rounded-lg transition-colors duration-200"
+                >
+                  <span className="mr-2">←</span>
+                  Modificar Datos
+                </button>
+                <button 
+                  onClick={() => {
+                    setStep(1);
+                    setFormData({
+                      userPath: '',
+                      carBrand: '',
+                      carModel: '',
+                      carVersion: '',
+                      carYear: null as number | null,
+                      kmsAnuales: 20000,
+                      aniosFinanciacion: 5,
+                      precioCoche: 25000,
+                      tipoCombustible: 'gasolina',
+                      codigoPostal: '',
+                      provincia: '',
+                      nombre: '',
+                      email: '',
+                      telefono: '',
+                      brandId: '',
+                      modelId: '',
+                      usoVehiculo: '',
+                      estiloConduccion: '',
+                      frecuenciaUso: '',
+                      presupuesto: '',
+                      experiencia: '',
+                    });
+                  }}
+                  className="flex items-center justify-center px-6 py-3 text-white bg-green-600 hover:bg-green-700 font-semibold rounded-lg transition-colors duration-200"
+                >
+                  <span className="mr-2">🏠</span>
+                  Empezar de Nuevo
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Navegación */}
-          {step > 1 && (
-            <div className="flex justify-between items-center mt-8">
-              <div className="flex gap-4">
-                <button 
-                  onClick={handlePrevious}
-                  className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
-                >
-                  ← Atrás
-                </button>
-                <button 
-                  onClick={handleResetToStart}
-                  className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
-                >
-                  🏠 Inicio
-                </button>
-              </div>
-              
-              {step === 2 && (
-                <div className="flex gap-3">
-                  <button 
-                    onClick={() => {
-                      // Lógica para navegar internamente en el paso 2
-                      if (formData.carBrand && formData.carModel && formData.carVersion && formData.carYear && formData.kmsAnuales && formData.usoVehiculo && formData.estiloConduccion && formData.frecuenciaUso && formData.presupuesto && formData.experiencia) {
-                        handleNext(); // Ir al paso 3
-                      }
-                    }}
-                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
-                    disabled={!formData.carBrand || !formData.carModel || !formData.carVersion || !formData.carYear || !formData.kmsAnuales || !formData.usoVehiculo || !formData.estiloConduccion || !formData.frecuenciaUso || !formData.presupuesto || !formData.experiencia}
-                  >
-                    🚀 Calcular Gastos
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Footer informativo */}
