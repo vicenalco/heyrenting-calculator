@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { fetchBrands, fetchModels, fetchTrims, fetchTrimsWithKm77Prices } from '@/lib/airtable';
 import Image from 'next/image';
 import PriceUpdateInfo from './PriceUpdateInfo';
+import PriceScrapingProgress from './PriceScrapingProgress';
+import { useBackgroundPriceScraping } from '@/lib/useBackgroundPriceScraping';
 
 // Lista de todas las provincias de España
 const PROVINCIAS_ESPANA = [
@@ -57,6 +59,18 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     updatedTrims: number;
     accuracyPercentage: number;
   } | null>(null);
+
+  // Hook para scraping en segundo plano
+  const {
+    isScraping,
+    progress,
+    currentStep: scrapingCurrentStep,
+    results: scrapingResults,
+    error: scrapingError,
+    completed: scrapingCompleted,
+    startScraping,
+    resetScraping,
+  } = useBackgroundPriceScraping();
   
   // Estados para el paso 5 (preguntas adicionales)
   const [usoVehiculo, setUsoVehiculo] = useState('');
@@ -225,6 +239,32 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     loadTrims();
   }, [formData.modelId, formData.brandId]);
 
+  // Efecto para actualizar precios cuando el scraping se complete
+  useEffect(() => {
+    if (scrapingCompleted && scrapingResults && scrapingResults.length > 0) {
+      // Actualizar los precios de los trims con los resultados del scraping
+      setTrims(prevTrims => 
+        prevTrims.map(trim => {
+          // Buscar el resultado correspondiente por motorización
+          const matchingResult = scrapingResults.find((result: any) => 
+            result.motorization && trim.name.toLowerCase().includes(result.motorization.toLowerCase())
+          );
+          
+          if (matchingResult) {
+            return {
+              ...trim,
+              price: matchingResult.price,
+              priceUpdated: true,
+              priceAccuracy: 'exact'
+            };
+          }
+          
+          return trim;
+        })
+      );
+    }
+  }, [scrapingCompleted, scrapingResults]);
+
   const handleSelectBrand = (id: string, name: string) => {
     onUpdate({ 
       carBrand: name, 
@@ -262,6 +302,19 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     }
     
     onUpdate(updates);
+    
+    // Iniciar scraping en segundo plano si tenemos los datos necesarios
+    if (formData.carBrand && formData.carModel && trim.fuel && trim.cv) {
+      const scrapingParams = {
+        brand: formData.carBrand,
+        model: formData.carModel,
+        fuel: trim.fuel,
+        power: trim.cv,
+        transmission: (trim as any).transmision?.[0] || 'automatico'
+      };
+      
+      startScraping(scrapingParams);
+    }
     
     // Ir al paso 4 (selección de año)
     setCurrentStep(4);
@@ -524,6 +577,16 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
               accuracyPercentage={priceUpdateStats.accuracyPercentage}
             />
           )}
+          
+          {/* Mostrar progreso de scraping si está activo */}
+          <PriceScrapingProgress
+            isScraping={isScraping}
+            progress={progress}
+            currentStep={scrapingCurrentStep}
+            error={scrapingError}
+            completed={scrapingCompleted}
+          />
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {trims.map((trim) => {
             return (
@@ -541,7 +604,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   <i className="fa-solid fa-wrench text-lg" aria-hidden="true"></i>
                   <h4 className="font-bold text-lg">{trim.name}</h4>
                 </div>
-                {typeof trim.price === 'number' && trim.price > 0 && (
+                {typeof trim.price === 'number' && trim.price > 0 ? (
                   <div className="flex items-center justify-center gap-2 text-green-700 font-semibold">
                     <i className="fa-solid fa-tags" aria-hidden="true"></i>
                     <span>{trim.price.toLocaleString('es-ES')} €</span>
@@ -550,6 +613,16 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                         Actualizado
                       </span>
                     )}
+                  </div>
+                ) : isScraping ? (
+                  <div className="flex items-center justify-center gap-2 text-blue-600 font-semibold">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-200 border-t-blue-600"></div>
+                    <span className="text-sm">Obteniendo precio...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2 text-gray-500 font-semibold">
+                    <i className="fa-solid fa-clock" aria-hidden="true"></i>
+                    <span className="text-sm">Precio no disponible</span>
                   </div>
                 )}
                 {(trim.fuel || trim.cv || (trim.transmision && trim.transmision.length > 0)) && (
