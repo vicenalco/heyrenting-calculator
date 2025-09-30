@@ -58,7 +58,7 @@ export default function Km77PriceCard({ integrationResult, showDetails = false }
           </p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Precio km77 (Nuevo)</p>
+          <p className="text-sm text-gray-600">Precio Actualizado (Nuevo)</p>
           <p className="text-lg font-bold text-green-600">
             {lowestPrice ? `${lowestPrice.toLocaleString()} €` : 'N/A'}
           </p>
@@ -76,7 +76,7 @@ export default function Km77PriceCard({ integrationResult, showDetails = false }
 
       {averagePrice && averagePrice !== lowestPrice && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600">Precio promedio km77 (Nuevo)</p>
+          <p className="text-sm text-gray-600">Precio Promedio (Nuevo)</p>
           <p className="text-lg font-bold text-gray-700">
             {averagePrice.toLocaleString()} €
           </p>
@@ -86,7 +86,7 @@ export default function Km77PriceCard({ integrationResult, showDetails = false }
       {showDetails && km77Results.length > 0 && (
         <div className="mt-4">
           <h4 className="text-sm font-semibold text-gray-700 mb-2">
-            Resultados detallados ({km77Results.length})
+            Variantes encontradas ({km77Results.length})
           </h4>
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {km77Results.map((result, index) => (
@@ -110,7 +110,7 @@ export default function Km77PriceCard({ integrationResult, showDetails = false }
       {km77Results.length === 0 && (
         <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
           <p className="text-sm text-yellow-800">
-            No se encontraron resultados en km77 para esta motorización
+            No se encontraron precios actualizados para esta motorización
           </p>
         </div>
       )}

@@ -32,7 +32,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="text-center">
           <div className="text-2xl font-bold text-blue-600">{dataPercentage}%</div>
-          <div className="text-sm text-gray-600">Con datos km77</div>
+          <div className="text-sm text-gray-600">Con precios actualizados</div>
           <div className="text-xs text-gray-500">{withKm77Data}/{totalTrims}</div>
         </div>
         
@@ -57,7 +57,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
         <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
           <div className="flex items-center space-x-2">
             <span className="text-blue-600">📊</span>
-            <span className="text-sm font-medium text-blue-800">Datos disponibles</span>
+            <span className="text-sm font-medium text-blue-800">Precios actualizados</span>
           </div>
           <span className="text-sm text-blue-600 font-semibold">
             {withKm77Data} de {totalTrims} motorizaciones
@@ -90,7 +90,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-2">
               <span className="text-gray-600">❓</span>
-              <span className="text-sm font-medium text-gray-800">Sin datos km77</span>
+              <span className="text-sm font-medium text-gray-800">Sin precios actualizados</span>
             </div>
             <span className="text-sm text-gray-600 font-semibold">
               {noData} motorizaciones
@@ -108,7 +108,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
             </span>
           </div>
           <p className="text-sm text-yellow-700 mt-1">
-            Solo el {accuracyPercentage}% de los precios coinciden con km77. 
+            Solo el {accuracyPercentage}% de los precios coinciden con los datos actualizados. 
             Considera actualizar los precios en Airtable.
           </p>
         </div>

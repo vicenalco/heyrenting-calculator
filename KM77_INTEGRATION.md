@@ -1,13 +1,13 @@
-# Integración con km77.com - Obtención de Precios
+# Sistema de Validación de Precios
 
-Esta funcionalidad permite obtener precios actualizados de coches NUEVOS de km77.com y compararlos con los datos de Airtable.
+Esta funcionalidad permite validar y actualizar precios de coches NUEVOS comparándolos con fuentes externas de datos.
 
 ## Características
 
-- **Búsqueda automática**: Construye URLs de km77 basándose en marca, modelo, combustible y potencia
-- **Scraping inteligente**: Extrae precios específicos de motorizaciones
+- **Validación automática**: Obtiene precios actualizados basándose en marca, modelo, combustible y potencia
+- **Extracción inteligente**: Extrae precios específicos de motorizaciones
 - **Cálculo de promedio**: Cuando hay múltiples variantes de la misma motorización, calcula la media de precios
-- **Comparación de precios**: Compara precios de Airtable vs km77 (coches nuevos)
+- **Comparación de precios**: Compara precios de Airtable vs datos actualizados (coches nuevos)
 - **Validación de precisión**: Indica la precisión de los precios con iconos de estado
 - **Estadísticas**: Resumen de precisión de precios por marca/modelo
 
@@ -15,28 +15,29 @@ Esta funcionalidad permite obtener precios actualizados de coches NUEVOS de km77
 
 - **Precios de coches NUEVOS**: Esta funcionalidad obtiene precios de coches nuevos únicamente
 - **Cálculo de promedio**: Si hay múltiples variantes de la misma motorización, se calcula la media de precios
+- **Confidencialidad**: La fuente de datos externos no se muestra en la interfaz de usuario
 - **Futuras funcionalidades**: Los precios de segunda mano, km0 y renting se implementarán en pasos posteriores
 
 ## Archivos Creados
 
 ### Librerías
-- `src/lib/km77.ts` - Servicio principal para km77
+- `src/lib/km77.ts` - Servicio principal para validación de precios
 - `src/lib/priceIntegration.ts` - Integración con Airtable
 
 ### APIs
-- `src/app/api/km77/search/route.ts` - API para búsquedas directas en km77
+- `src/app/api/km77/search/route.ts` - API para validación directa de precios
 - `src/app/api/airtable/trims-with-prices/route.ts` - API integrada con Airtable
 
 ### Componentes
-- `src/app/components/Km77PriceCard.tsx` - Tarjeta de precios
-- `src/app/components/PriceIntegrationSummary.tsx` - Resumen de integración
+- `src/app/components/Km77PriceCard.tsx` - Tarjeta de validación de precios
+- `src/app/components/PriceIntegrationSummary.tsx` - Resumen de validación
 
 ### Página de Prueba
 - `src/app/test-km77/page.tsx` - Página para probar la funcionalidad
 
 ## Uso
 
-### 1. Búsqueda Directa en km77
+### 1. Validación Directa de Precios
 
 ```typescript
 import { searchKm77Prices } from '@/lib/km77';
@@ -58,7 +59,7 @@ import { fetchTrimsWithKm77Prices } from '@/lib/airtable';
 const results = await fetchTrimsWithKm77Prices(brandId, modelId);
 ```
 
-### 3. Página de Prueba
+### 3. Página de Validación
 
 Visita `/test-km77` para probar la funcionalidad con una interfaz gráfica.
 
@@ -89,11 +90,13 @@ Visita `/test-km77` para probar la funcionalidad con una interfaz gráfica.
 https://www.km77.com/buscador/datos?grouped=0&order=price-asc&markets[]=current&nqls[]=ve:car:alfa-romeo:junior&fuel_categories[]=hibrido_no_enchufable&gearboxes[]=automatico
 ```
 
+**Nota**: Esta URL se genera internamente y no se muestra al usuario.
+
 ## Limitaciones
 
 - **Rate limiting**: Se incluye una pausa de 1 segundo entre peticiones
-- **Dependencia de km77**: La funcionalidad depende de la estructura de km77
-- **Scraping**: Puede requerir ajustes si km77 cambia su estructura
+- **Dependencia de fuentes externas**: La funcionalidad depende de la estructura de las fuentes externas
+- **Scraping**: Puede requerir ajustes si las fuentes externas cambian su estructura
 
 ## Próximos Pasos
 
@@ -109,5 +112,7 @@ Para probar la funcionalidad:
 1. Ejecuta `npm run dev`
 2. Visita `http://localhost:3000/test-km77`
 3. Selecciona una marca y modelo
-4. Haz clic en "Buscar Precios"
+4. Haz clic en "Validar Precios"
 5. Revisa los resultados y la precisión de los precios
+
+**Nota**: La interfaz no muestra la fuente de los datos externos para mantener la confidencialidad.

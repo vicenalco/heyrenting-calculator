@@ -74,10 +74,10 @@ export default function TestKm77Page() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Obtención de Precios km77
+            Validación de Precios
           </h1>
           <p className="text-gray-600">
-            Busca precios actualizados de coches NUEVOS en km77.com
+            Verifica precios actualizados de coches NUEVOS
           </p>
           <p className="text-sm text-gray-500 mt-2">
             Los precios se calculan como promedio cuando hay múltiples variantes de la misma motorización
@@ -130,7 +130,7 @@ export default function TestKm77Page() {
                 disabled={!selectedBrand || !selectedModel || loading}
                 className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Buscando...' : 'Buscar Precios'}
+                {loading ? 'Validando...' : 'Validar Precios'}
               </button>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function TestKm77Page() {
             </h3>
             <ul className="text-blue-700 space-y-2">
               <li>• Selecciona una marca y modelo de la lista</li>
-              <li>• Haz clic en "Buscar Precios" para obtener precios de coches NUEVOS de km77</li>
+              <li>• Haz clic en "Validar Precios" para verificar precios actualizados</li>
               <li>• Los precios se calculan como promedio cuando hay múltiples variantes</li>
               <li>• Se compara con los precios de Airtable para validar precisión</li>
               <li>• Se indicará la precisión de los precios con iconos de estado</li>
