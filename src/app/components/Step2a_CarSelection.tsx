@@ -51,8 +51,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   const [brandQuery, setBrandQuery] = useState('');
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
-  const [models, setModels] = useState<{ id: string; name: string; startYear?: number; endYear?: number; imageUrl?: string }[]>([]);
-  const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[]; priceUpdated?: boolean; priceAccuracy?: string; originalPrice?: number }[]>([]);
+  const [models, setModels] = useState<{ id: string; name: string; imageUrl?: string }[]>([]);
+  const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[]; startYear?: number; endYear?: number; priceUpdated?: boolean; priceAccuracy?: string; originalPrice?: number }[]>([]);
   const [selectedTrim, setSelectedTrim] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
@@ -83,6 +83,21 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   // Debounce para evitar sobrecargar Airtable
   const debouncedQuery = useDebouncedValue(brandQuery, 100);
+
+  // Función para calcular los años disponibles basados en la motorización seleccionada
+  const getAvailableYears = () => {
+    const currentYear = new Date().getFullYear();
+    
+    // Prioridad: usar los años de la motorización seleccionada
+    if (selectedTrim && selectedTrim.startYear && selectedTrim.endYear) {
+      const startYear = Math.max(selectedTrim.startYear, 2010); // No mostrar años anteriores a 2010
+      const endYear = Math.min(selectedTrim.endYear, currentYear);
+      return Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+    }
+    
+    // Si no hay motorización seleccionada, mostrar años recientes (últimos 5 años)
+    return Array.from({ length: 5 }, (_, i) => currentYear - i);
+  };
 
   // Limpiar estado de carga cuando se entra en modo modificación
   useEffect(() => {
@@ -305,7 +320,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     setCurrentStep(3);
   };
 
-  const handleSelectTrim = (trim: { id: string; name: string; price?: number; fuel?: string; cv?: number }) => {
+  const handleSelectTrim = (trim: { id: string; name: string; price?: number; fuel?: string; cv?: number; startYear?: number; endYear?: number }) => {
     const updates: Partial<Step2a_CarSelectionProps['formData']> = {
       carVersion: trim.name
     };
@@ -593,7 +608,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
               key={trim.id}
               onClick={() => handleSelectTrim(trim)}
               className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                formData.carVersion === trim.name
+                selectedTrim && selectedTrim.id === trim.id
                   ? 'border-green-500 bg-green-50 shadow-md'
                   : 'border-gray-200 bg-white hover:border-green-300'
               }`}
@@ -638,8 +653,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   );
 
   const renderYearStep = () => {
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 15 }, (_, i) => currentYear - i);
+    const availableYears = getAvailableYears();
     
     return (
       <div className="space-y-6">
@@ -647,11 +661,39 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             <i className="fa-solid fa-calendar mr-2"></i>¿De qué año es el vehículo que quieres comprar?
           </h3>
-          <p className="text-gray-600">Selecciona el año de fabricación del <strong>{formData.carModel}</strong> que quieres comprar</p>
+          <p className="text-gray-600">
+            Selecciona el año de fabricación del <strong>{formData.carModel}</strong>
+            {selectedTrim && (
+              <span className="block text-sm text-gray-500 mt-1">
+                Motorización: <strong>{selectedTrim.name}</strong>
+                {selectedTrim.startYear && selectedTrim.endYear && (
+                  <span> - Disponible desde {selectedTrim.startYear} hasta {selectedTrim.endYear}</span>
+                )}
+              </span>
+            )}
+          </p>
+          
+          {/* Texto explicativo sobre los años de disponibilidad */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <i className="fa-solid fa-info-circle text-blue-500 mt-0.5"></i>
+              </div>
+              <div className="ml-3">
+                <p className="font-medium mb-1">Información sobre los años mostrados</p>
+                <p className="text-blue-700">
+                  Los años mostrados corresponden al período en el que la motorización <strong>{selectedTrim?.name || 'seleccionada'}{selectedTrim?.cv ? ` de ${selectedTrim.cv} CV` : ''}</strong> ha estado disponible en el mercado europeo para el modelo <strong>{formData.carModel}</strong>.
+                </p>
+                <p className="text-blue-700 mt-2">
+                  <strong>Nota:</strong> Si aparece el año 2025, significa que la motorización sigue disponible actualmente, no que termine en 2025.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
-          {years.map((year) => (
+          {availableYears.map((year) => (
             <div
               key={year}
               onClick={() => {
