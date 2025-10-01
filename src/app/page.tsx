@@ -5,6 +5,8 @@ import ResultCard from './components/ui/ResultCard';
 import Step1_Welcome from './components/Step1_Welcome';
 import Step2a_CarSelection from './components/Step2a_CarSelection';
 import Step2b_Discovery from './components/Step2b_Discovery';
+import Step3_DriverProfile from './components/Step3_DriverProfile';
+import Step4_FinancialProfile from './components/Step4_FinancialProfile';
 import PriceScrapingProgress from './components/PriceScrapingProgress';
 import { calculateFinancialAutopsy } from '../lib/calculations';
 
@@ -35,12 +37,21 @@ export default function Home() {
     // IDs internos para integraciones (Airtable)
     brandId: '',
     modelId: '',
-    // Campos adicionales del paso 5
+    // Campos adicionales del paso 5 (legacy - se mantienen para compatibilidad)
     usoVehiculo: '',
     estiloConduccion: '',
     frecuenciaUso: '',
     presupuesto: '',
     experiencia: '',
+    // Nuevos campos para el diagnóstico detallado (Paso 3)
+    habitatVehiculo: [] as string[], // ['urbano', 'carretera', 'rural']
+    temperamentoVolante1: '', // 'calmado', 'agresivo', 'normal'
+    temperamentoVolante2: '', // 'fluido', 'deportivo', 'tranquilo'
+    misionVehiculo: '', // 'ligero', 'cargado', 'mixto_carga'
+    // Nuevos campos para el perfil financiero (Paso 4)
+    planPago: '', // 'contado', 'entrada_financiar', 'financiar_100'
+    desembolso30PorCiento: '', // 'si', 'no' (solo si planPago === 'contado')
+    porcentajeIngresos: '', // 'menos_15', '15_25', 'mas_25'
   });
   
   // Estado para almacenar los resultados del cálculo
@@ -92,16 +103,16 @@ export default function Home() {
     }
   }, [calculateOwnershipCost, formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales]);
 
-  // useEffect para navegación automática al paso 3 cuando se completen los campos básicos del vehículo
+  // useEffect para navegación automática al paso 3 cuando se seleccione el año
   useEffect(() => {
-    if (step === 2 && !isModifying && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null && formData.kmsAnuales && formData.usoVehiculo && formData.estiloConduccion && formData.frecuenciaUso && formData.presupuesto && formData.experiencia) {
-      // Pequeño delay para que el usuario vea que se completó la configuración
+    if (step === 2 && !isModifying && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null) {
+      // Pequeño delay para que el usuario vea que se completó la selección del vehículo
       const timer = setTimeout(() => {
         setStep(3);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [step, isModifying, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear, formData.kmsAnuales, formData.usoVehiculo, formData.estiloConduccion, formData.frecuenciaUso, formData.presupuesto, formData.experiencia]);
+  }, [step, isModifying, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear]);
 
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {
@@ -133,7 +144,7 @@ export default function Home() {
           {/* Indicador de progreso */}
           <div className="mb-4 sm:mb-6">
             <div className="flex items-center justify-center space-x-4">
-              {[1, 2, 3].map((stepNumber) => (
+              {[1, 2, 3, 4, 5].map((stepNumber) => (
                 <div key={stepNumber} className="flex items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
                     step >= stepNumber 
@@ -142,7 +153,7 @@ export default function Home() {
                   }`} style={step >= stepNumber ? { backgroundColor: '#52bf31' } : {}}>
                     {stepNumber}
                   </div>
-                  {stepNumber < 3 && (
+                  {stepNumber < 5 && (
                     <div className={`w-16 h-1 mx-2 ${
                       step > stepNumber ? 'bg-gray-200' : 'bg-gray-200'
                     }`} style={step > stepNumber ? { backgroundColor: '#52bf31' } : {}} />
@@ -180,8 +191,23 @@ export default function Home() {
             />
           )}
 
+          {step === 3 && formData.userPath === 'knowsCar' && (
+            <Step3_DriverProfile 
+              formData={formData} 
+              onUpdate={updateFormData} 
+              onNext={handleNext}
+            />
+          )}
 
-          {step === 3 && (
+          {step === 4 && formData.userPath === 'knowsCar' && (
+            <Step4_FinancialProfile 
+              formData={formData} 
+              onUpdate={updateFormData} 
+              onNext={handleNext}
+            />
+          )}
+
+          {step === 5 && (
             <div className="space-y-8">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -281,7 +307,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Botones de navegación para el paso 3 */}
+              {/* Botones de navegación para el paso 5 */}
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                 <button 
                   onClick={() => {
@@ -318,6 +344,13 @@ export default function Home() {
                       frecuenciaUso: '',
                       presupuesto: '',
                       experiencia: '',
+                      habitatVehiculo: [],
+                      temperamentoVolante1: '',
+                      temperamentoVolante2: '',
+                      misionVehiculo: '',
+                      planPago: '',
+                      desembolso30PorCiento: '',
+                      porcentajeIngresos: '',
                     });
                   }}
                   className="flex items-center justify-center px-6 py-3 text-white bg-green-600 hover:bg-green-700 font-semibold rounded-lg transition-colors duration-200"

@@ -713,7 +713,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   startScraping(scrapingParams);
                 }
                 
-                setCurrentStep(5);
+                // La navegación al paso 3 se maneja automáticamente desde page.tsx
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 formData.carYear === year
