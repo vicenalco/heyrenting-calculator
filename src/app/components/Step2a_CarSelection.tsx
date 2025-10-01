@@ -47,6 +47,7 @@ interface Step2a_CarSelectionProps {
 }
 
 export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying, onScrapingStateChange }: Step2a_CarSelectionProps) {
+  console.log('🚀 Step2a_CarSelection renderizado con formData:', formData);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
@@ -1065,6 +1066,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     </div>
   );
 
+  console.log('🎨 Step2a_CarSelection renderizando con currentStep:', currentStep);
+  
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center mb-8">
