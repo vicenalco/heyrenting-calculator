@@ -131,8 +131,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     const loadModels = async () => {
       setLoading(true);
       
-      // Delay de 2-3 segundos con texto personalizado
-      await delayWithLoading(2500, 'Buscando modelos...');
+      // Delay mínimo para mostrar el loading
+      await delayWithLoading(1000, 'Buscando modelos...');
       
       try {
         const modelList = await fetchModels(formData.brandId!);
