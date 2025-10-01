@@ -4,8 +4,6 @@ import Slider from './ui/Slider';
 import { useEffect, useState } from 'react';
 import { fetchBrands, fetchModels, fetchTrims, fetchTrimsWithKm77Prices } from '@/lib/airtable';
 import Image from 'next/image';
-import PriceUpdateInfo from './PriceUpdateInfo';
-import PriceScrapingProgress from './PriceScrapingProgress';
 import { useBackgroundPriceScraping } from '@/lib/useBackgroundPriceScraping';
 
 // Lista de todas las provincias de España
@@ -43,7 +41,13 @@ interface Step2a_CarSelectionProps {
   onNext: () => void;
   isModifying?: boolean;
   onFinishModifying?: () => void;
-  onScrapingStateChange?: (state: any) => void;
+  onScrapingStateChange?: (state: {
+    isScraping: boolean;
+    progress: number;
+    currentStep: string;
+    error: string | null;
+    completed: boolean;
+  }) => void;
 }
 
 export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying, onScrapingStateChange }: Step2a_CarSelectionProps) {
@@ -53,14 +57,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   const [makes, setMakes] = useState<{ id: string; name: string }[]>([]);
   const [models, setModels] = useState<{ id: string; name: string; imageUrl?: string }[]>([]);
   const [trims, setTrims] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[]; startYear?: number; endYear?: number; priceUpdated?: boolean; priceAccuracy?: string; originalPrice?: number }[]>([]);
-  const [selectedTrim, setSelectedTrim] = useState<any | null>(null);
+  const [selectedTrim, setSelectedTrim] = useState<{ id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[]; startYear?: number; endYear?: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
-  const [priceUpdateStats, setPriceUpdateStats] = useState<{
-    totalTrims: number;
-    updatedTrims: number;
-    accuracyPercentage: number;
-  } | null>(null);
 
   // Hook para scraping en segundo plano
   const {
@@ -71,7 +70,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     error: scrapingError,
     completed: scrapingCompleted,
     startScraping,
-    resetScraping,
   } = useBackgroundPriceScraping();
   
   // Estados para el paso 5 (preguntas adicionales)
@@ -192,7 +190,14 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
         
         if (trimListWithPrices && trimListWithPrices.success && trimListWithPrices.data.trims) {
           // Usar los trims con precios actualizados
-          const trimsWithUpdatedPrices = trimListWithPrices.data.trims.map((integrationResult: any) => {
+          type IntegrationResult = {
+            trim: { id: string; name: string; price?: number; fuel?: string; cv?: number; transmision?: string[]; startYear?: number; endYear?: number };
+            averagePrice?: number;
+            lowestPrice?: number;
+            priceAccuracy: string;
+          };
+          
+          const trimsWithUpdatedPrices = (trimListWithPrices.data.trims as IntegrationResult[]).map((integrationResult) => {
             const trim = integrationResult.trim;
             const updatedPrice = integrationResult.averagePrice || integrationResult.lowestPrice || trim.price;
             
@@ -203,20 +208,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
               priceUpdated: !!updatedPrice && updatedPrice !== trim.price,
               priceAccuracy: integrationResult.priceAccuracy
             };
-          });
-          
-          // Calcular estadísticas de actualización
-          const totalTrims = trimsWithUpdatedPrices.length;
-          const updatedTrims = trimsWithUpdatedPrices.filter((t: any) => t.priceUpdated).length;
-          const accuratePrices = trimsWithUpdatedPrices.filter((t: any) => 
-            t.priceAccuracy === 'exact' || t.priceAccuracy === 'close'
-          ).length;
-          const accuracyPercentage = totalTrims > 0 ? Math.round((accuratePrices / totalTrims) * 100) : 0;
-          
-          setPriceUpdateStats({
-            totalTrims,
-            updatedTrims,
-            accuracyPercentage
           });
           
           setTrims(trimsWithUpdatedPrices);
@@ -279,7 +270,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       setTrims(prevTrims => 
         prevTrims.map(trim => {
           // Buscar el resultado correspondiente por motorización
-          const matchingResult = scrapingResults.find((result: any) => 
+          const matchingResult = scrapingResults.find((result: { motorization?: string; price: number }) => 
             result.motorization && trim.name.toLowerCase().includes(result.motorization.toLowerCase())
           );
           
@@ -706,7 +697,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                     model: formData.carModel,
                     fuel: selectedTrim.fuel,
                     power: selectedTrim.cv,
-                    transmission: (selectedTrim as any).transmision?.[0] || 'automatico'
+                    transmission: selectedTrim.transmision?.[0] || 'automatico'
                   };
                   
                   console.log('🎯 Iniciando scraping después de seleccionar año:', year, 'con parámetros:', scrapingParams);

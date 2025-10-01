@@ -143,7 +143,7 @@ export function groupResultsByMotorization(results: Km77Result[]): Km77Result[] 
   // Calcular media para cada motorización
   const averagedResults: Km77Result[] = [];
   
-  grouped.forEach((motorizationResults, motorization) => {
+  grouped.forEach((motorizationResults) => {
     if (motorizationResults.length === 0) return;
 
     // Calcular media de precios
@@ -189,7 +189,7 @@ export async function searchKm77Prices(params: Km77SearchParams): Promise<Km77Se
     
     // Extraer la motorización objetivo del nombre del trim
     // Por ejemplo: "Ibrida 1.2" de "Alfa Romeo Junior Ibrida 1.2 107 kW (145 CV) eDCT6"
-    const targetMotorization = extractMotorizationFromTrim(params.brand, params.model);
+    const targetMotorization = extractMotorizationFromTrim();
     
     const rawResults = parseKm77Results(html, targetMotorization);
     
@@ -215,7 +215,7 @@ export async function searchKm77Prices(params: Km77SearchParams): Promise<Km77Se
  * Extrae la motorización específica del nombre del trim
  * Esta función necesita ser ajustada según la estructura de tus datos
  */
-function extractMotorizationFromTrim(brand: string, model: string): string {
+function extractMotorizationFromTrim(): string {
   // Por ahora, devolvemos una motorización genérica
   // Esto debería ser mejorado para extraer la motorización específica
   // basándose en los datos de Airtable

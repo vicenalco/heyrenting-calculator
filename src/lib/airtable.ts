@@ -36,7 +36,12 @@ export async function fetchTrims(modelId: string): Promise<Trim[]> {
   return (await res.json()) as Trim[];
 }
 
-export async function fetchTrimsWithKm77Prices(brandId: string, modelId: string): Promise<any> {
+export async function fetchTrimsWithKm77Prices(brandId: string, modelId: string): Promise<{
+  success: boolean;
+  data: {
+    trims: unknown[];
+  };
+} | null> {
   const baseUrl = getBaseUrl();
   const url = `${baseUrl}/api/airtable/trims-with-prices?brandId=${encodeURIComponent(brandId)}&modelId=${encodeURIComponent(modelId)}`;
   const res = await fetch(url);

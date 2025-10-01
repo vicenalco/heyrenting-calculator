@@ -47,9 +47,6 @@ export async function integrateKm77Prices(
     const prices = km77Response.results.map(r => r.price).filter(p => !isNaN(p));
     const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
     const averagePrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : null;
-    
-    // El precio recomendado es el precio promedio calculado (ya agrupado por motorización)
-    const recommendedPrice = averagePrice;
 
     // Calcular diferencia con el precio de Airtable
     let priceDifference: number | null = null;
@@ -129,7 +126,7 @@ export async function integrateKm77PricesForTrims(
  * IMPORTANTE: Prioriza el precio promedio de km77 (coches nuevos)
  */
 export function getRecommendedPrice(integrationResult: PriceIntegrationResult): number | null {
-  const { trim, averagePrice, priceAccuracy } = integrationResult;
+  const { trim, averagePrice } = integrationResult;
 
   // Si no hay datos de km77, usar el precio de Airtable
   if (!averagePrice) {
@@ -149,7 +146,7 @@ export function validatePriceAccuracy(integrationResult: PriceIntegrationResult)
   confidence: 'high' | 'medium' | 'low';
   recommendation: string;
 } {
-  const { priceAccuracy, km77Results, priceDifference } = integrationResult;
+  const { priceAccuracy } = integrationResult;
 
   let isAccurate = false;
   let confidence: 'high' | 'medium' | 'low' = 'low';

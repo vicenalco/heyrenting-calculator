@@ -6,12 +6,19 @@ import { Brand, Model } from '@/lib/airtable';
 import Km77PriceCard from '@/app/components/Km77PriceCard';
 import PriceIntegrationSummary from '@/app/components/PriceIntegrationSummary';
 
+interface IntegrationResults {
+  success: boolean;
+  data: {
+    trims: unknown[];
+  };
+}
+
 export default function TestKm77Page() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<string>('');
-  const [integrationResults, setIntegrationResults] = useState<any>(null);
+  const [integrationResults, setIntegrationResults] = useState<IntegrationResults | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +28,7 @@ export default function TestKm77Page() {
       try {
         const brandsData = await fetchBrands('');
         setBrands(brandsData);
-      } catch (err) {
+      } catch {
         setError('Error cargando marcas');
       }
     };
@@ -36,7 +43,7 @@ export default function TestKm77Page() {
           const modelsData = await fetchModels(selectedBrand);
           setModels(modelsData);
           setSelectedModel(''); // Reset modelo seleccionado
-        } catch (err) {
+        } catch {
           setError('Error cargando modelos');
         }
       };
@@ -59,7 +66,7 @@ export default function TestKm77Page() {
     try {
       const results = await fetchTrimsWithKm77Prices(selectedBrand, selectedModel);
       setIntegrationResults(results);
-    } catch (err) {
+    } catch {
       setError('Error en la búsqueda de precios');
     } finally {
       setLoading(false);
@@ -151,7 +158,7 @@ export default function TestKm77Page() {
           <div className="space-y-8">
             {/* Resumen */}
             <PriceIntegrationSummary
-              results={integrationResults.data.trims}
+              results={integrationResults.data.trims as never[]}
               brand={selectedBrandName}
               model={selectedModelName}
             />
@@ -162,10 +169,10 @@ export default function TestKm77Page() {
                 Motorizaciones y Precios
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {integrationResults.data.trims.map((result: any, index: number) => (
+                {integrationResults.data.trims.map((result: unknown, index: number) => (
                   <Km77PriceCard
                     key={index}
-                    integrationResult={result}
+                    integrationResult={result as never}
                     showDetails={true}
                   />
                 ))}
@@ -182,7 +189,7 @@ export default function TestKm77Page() {
             </h3>
             <ul className="text-blue-700 space-y-2">
               <li>• Selecciona una marca y modelo de la lista</li>
-              <li>• Haz clic en "Validar Precios" para verificar precios actualizados</li>
+              <li>• Haz clic en &quot;Validar Precios&quot; para verificar precios actualizados</li>
               <li>• Los precios se calculan como promedio cuando hay múltiples variantes</li>
               <li>• Se compara con los precios de Airtable para validar precisión</li>
               <li>• Se indicará la precisión de los precios con iconos de estado</li>

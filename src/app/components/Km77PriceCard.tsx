@@ -1,6 +1,5 @@
 'use client';
 
-import { Km77Result } from '@/lib/km77';
 import { PriceIntegrationResult } from '@/lib/priceIntegration';
 
 interface Km77PriceCardProps {

@@ -1,10 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+
+interface ScrapingParams {
+  brand: string;
+  model: string;
+  fuel?: string;
+  power?: number;
+  transmission?: string;
+}
 
 interface PriceScrapingState {
   isScraping: boolean;
   progress: number;
   currentStep: string;
-  results: any[] | null;
+  results: { motorization?: string; price: number }[] | null;
   error: string | null;
   completed: boolean;
 }
@@ -19,7 +27,7 @@ export function useBackgroundPriceScraping() {
     completed: false,
   });
 
-  const startScraping = useCallback(async (params: any) => {
+  const startScraping = useCallback(async (params: ScrapingParams) => {
     console.log('🚀 Iniciando scraping con parámetros:', params);
     
     setScrapingState({
