@@ -42,10 +42,21 @@ export async function GET(request: Request) {
     }))
     .filter((r) => r.name)
     .sort((a, b) => {
-      // Ordenar por año de inicio (más reciente primero)
-      const yearA = a.startYear || 0;
-      const yearB = b.startYear || 0;
-      return yearB - yearA;
+      // Ordenar por modelos más nuevos primero
+      // 1. Prioridad a modelos que siguen en producción (endYear más alto o actual)
+      const currentYear = new Date().getFullYear();
+      const endYearA = a.endYear || currentYear; // Si no tiene endYear, asumimos que sigue en producción
+      const endYearB = b.endYear || currentYear;
+      
+      // Si los endYear son diferentes, ordenar por el más reciente
+      if (endYearB !== endYearA) {
+        return endYearB - endYearA;
+      }
+      
+      // Si tienen el mismo endYear, ordenar por startYear más reciente
+      const startYearA = a.startYear || 0;
+      const startYearB = b.startYear || 0;
+      return startYearB - startYearA;
     });
   
   return NextResponse.json(results);
