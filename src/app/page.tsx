@@ -105,10 +105,8 @@ export default function Home() {
 
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {
-    console.log('🎯 handlePathSelection llamado con:', path);
     updateFormData({ userPath: path });
     setStep(2);
-    console.log('🎯 Paso actualizado a 2, userPath:', path);
   };
 
   // Función para avanzar al siguiente paso
@@ -154,8 +152,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Debug: Log del estado actual */}
-          {console.log('🔍 Estado actual - step:', step, 'userPath:', formData.userPath)}
 
           {/* Renderizado condicional de pasos */}
           {step === 1 && (
@@ -184,14 +180,6 @@ export default function Home() {
             />
           )}
 
-          {/* Debug: Mostrar información del estado */}
-          {step === 2 && !formData.userPath && (
-            <div className="text-center p-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Debug: Paso 2 sin userPath</h2>
-              <p className="text-gray-600">userPath: {formData.userPath || 'undefined'}</p>
-              <p className="text-gray-600">step: {step}</p>
-            </div>
-          )}
 
           {step === 3 && (
             <div className="space-y-8">

@@ -47,7 +47,6 @@ interface Step2a_CarSelectionProps {
 }
 
 export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying, onScrapingStateChange }: Step2a_CarSelectionProps) {
-  console.log('🚀 Step2a_CarSelection renderizado con formData:', formData);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
@@ -335,14 +334,14 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
 
   const handleNextStep = () => {
-    if (currentStep < 7) {
-      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7);
+    if (currentStep < 8) {
+      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8);
     }
   };
 
   const handlePreviousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7);
+      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8);
     }
   };
 
@@ -759,7 +758,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   );
 
   const renderKmsStep = () => {
-    console.log('🔍 Debug paso 7 - kmsAnuales:', formData.kmsAnuales, 'tipo:', typeof formData.kmsAnuales);
     return (
     <div className="space-y-8">
       <div className="text-center">
@@ -833,7 +831,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderProvinceStep = () => (
     <div className="space-y-8">
@@ -1066,8 +1065,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     </div>
   );
 
-  console.log('🎨 Step2a_CarSelection renderizando con currentStep:', currentStep);
-  
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center mb-8">
@@ -1133,7 +1130,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                 (currentStep === 4 && !formData.carYear) ||
                 (currentStep === 5 && !formData.aniosFinanciacion) ||
                 (currentStep === 6 && (!usoVehiculo || !estiloConduccion || !frecuenciaUso || !presupuesto || !experiencia)) ||
-                (currentStep === 7 && (!formData.kmsAnuales || formData.kmsAnuales === 0)) ||
+                (currentStep === 7 && (!formData.kmsAnuales || formData.kmsAnuales <= 0)) ||
                 ((currentStep as number) === 8 && !formData.provincia)
               }
               className="flex items-center px-3 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
