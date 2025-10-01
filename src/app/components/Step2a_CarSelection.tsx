@@ -200,7 +200,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
               ...trim,
               price: updatedPrice, // Usar el precio actualizado
               originalPrice: trim.price, // Guardar precio original
-              priceUpdated: !!updatedPrice && updatedPrice !== trim.price, // Indicar si se actualizó
+              priceUpdated: !!updatedPrice && updatedPrice !== trim.price,
               priceAccuracy: integrationResult.priceAccuracy
             };
           });
