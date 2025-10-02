@@ -674,9 +674,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                 }
                 
                 // Avanzar al paso 3 después de seleccionar el año
-                setTimeout(() => {
-                  onNext();
-                }, 500);
+                onNext();
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 formData.carYear === year
