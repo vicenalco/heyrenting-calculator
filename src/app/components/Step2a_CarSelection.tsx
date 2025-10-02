@@ -36,6 +36,9 @@ interface Step2a_CarSelectionProps {
     frecuenciaUso?: string;
     presupuesto?: string;
     experiencia?: string;
+    precioNuevo?: number | null;
+    precioSegundaMano?: number | null;
+    precioKm0?: number | null;
   };
   onUpdate: (updates: Partial<Step2a_CarSelectionProps['formData']>) => void;
   onNext: () => void;
@@ -73,6 +76,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     results: scrapingResults,
     error: scrapingError,
     completed: scrapingCompleted,
+    precioNuevo,
+    precioSegundaMano,
+    precioKm0,
     startScraping,
   } = useBackgroundPriceScraping();
 
@@ -242,6 +248,18 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       });
     }
   }, [isScraping, progress, scrapingCurrentStep, scrapingError, scrapingCompleted, onScrapingStateChange]);
+  
+  // Efecto para guardar precios cuando el scraping se complete
+  useEffect(() => {
+    if (scrapingCompleted && (precioNuevo || precioSegundaMano || precioKm0)) {
+      console.log('💾 Guardando precios obtenidos:', { precioNuevo, precioSegundaMano, precioKm0 });
+      onUpdate({
+        precioNuevo,
+        precioSegundaMano,
+        precioKm0,
+      });
+    }
+  }, [scrapingCompleted, precioNuevo, precioSegundaMano, precioKm0, onUpdate]);
 
   // Efecto para actualizar precios cuando el scraping se complete
   useEffect(() => {
@@ -681,7 +699,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                     model: formData.carModel,
                     fuel: selectedTrim.fuel,
                     power: selectedTrim.cv,
-                    transmission: selectedTrim.transmision?.[0] || 'automatico'
+                    transmission: selectedTrim.transmision?.[0] || 'automatico',
+                    years: newYears
                   };
                   
                   console.log('🎯 Iniciando scraping después de seleccionar años:', newYears, 'con parámetros:', scrapingParams);

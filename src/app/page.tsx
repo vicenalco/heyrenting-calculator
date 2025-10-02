@@ -56,6 +56,10 @@ export default function Home() {
     planPago: '', // 'contado', 'entrada_financiar', 'financiar_100'
     desembolso30PorCiento: '', // 'si', 'no' (solo si planPago === 'contado')
     porcentajeIngresos: '', // 'menos_15', '15_25', 'mas_25'
+    // Precios obtenidos del scraping
+    precioNuevo: null as number | null, // Precio de km77
+    precioSegundaMano: null as number | null, // Precio de coches.com segunda mano
+    precioKm0: null as number | null, // Precio de coches.com km0
   });
   
   // Estado para almacenar los resultados del cálculo
@@ -382,6 +386,9 @@ export default function Home() {
                       planPago: '',
                       desembolso30PorCiento: '',
                       porcentajeIngresos: '',
+                      precioNuevo: null,
+                      precioSegundaMano: null,
+                      precioKm0: null,
                     });
                   }}
                   className="flex items-center justify-center px-6 py-3 text-white bg-green-600 hover:bg-green-700 font-semibold rounded-lg transition-colors duration-200"
