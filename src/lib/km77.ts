@@ -33,6 +33,7 @@ export const fuelMapping: Record<string, string> = {
   'diesel': 'diesel',
   'hibrido': 'hibrido_no_enchufable',
   'Híbrido': 'hibrido_no_enchufable', // Mapeo para el formato que viene de Airtable
+  'Híbrido Enchufable': 'hibrido_enchufable',
   'hibrido_enchufable': 'hibrido_enchufable',
   'electrico': 'electrico',
   'gas': 'gas',
@@ -83,7 +84,7 @@ export function buildKm77SearchUrl(params: Km77SearchParams): string {
  * Extrae los resultados de la página HTML de km77
  * Obtiene TODOS los resultados sin filtrar por motorización específica
  */
-export function parseKm77Results(html: string, targetMotorization: string): Km77Result[] {
+export function parseKm77Results(html: string): Km77Result[] {
   const $ = cheerio.load(html);
   const results: Km77Result[] = [];
 
@@ -111,8 +112,11 @@ export function parseKm77Results(html: string, targetMotorization: string): Km77
       const trunk = parseInt(trunkText.replace(/[^\d]/g, ''));
 
       if (!isNaN(price) && !isNaN(power)) {
+        // Extraer una "motorización" legible desde la descripción
+        // Tomamos el texto antes del primer paréntesis, p.ej. "1.3 PHEV Q4"
+        const motorization = description.split('(')[0].trim();
         results.push({
-          motorization: targetMotorization,
+          motorization,
           price,
           power,
           consumption: consumptionText,
@@ -175,12 +179,8 @@ export async function searchKm77Prices(params: Km77SearchParams): Promise<Km77Se
     }
 
     const html = await response.text();
-    
-    // Extraer la motorización objetivo del nombre del trim
-    // Por ejemplo: "Ibrida 1.2" de "Alfa Romeo Junior Ibrida 1.2 107 kW (145 CV) eDCT6"
-    const targetMotorization = extractMotorizationFromTrim();
-    
-    const rawResults = parseKm77Results(html, targetMotorization);
+
+    const rawResults = parseKm77Results(html);
     
     // Agrupar por motorización y calcular media de precios
     const results = groupResultsByMotorization(rawResults);
