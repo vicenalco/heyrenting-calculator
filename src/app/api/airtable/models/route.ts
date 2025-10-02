@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-const { AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_TABLE_MODELS } = process.env as Record<string, string>;
+const { AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_TABLE_MODELS, AIRTABLE_TABLE_TRIMS } = process.env as Record<string, string>;
 
 export async function GET(request: Request) {
-  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_MODELS) {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_MODELS || !AIRTABLE_TABLE_TRIMS) {
     return NextResponse.json({ error: 'Missing Airtable env vars' }, { status: 500 });
   }
   
@@ -13,34 +13,85 @@ export async function GET(request: Request) {
 
   // Cargamos todos los modelos y filtramos en el frontend
   const params = new URLSearchParams({ maxRecords: '100' });
-  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_MODELS}?${params.toString()}`;
+  const modelsUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_MODELS}?${params.toString()}`;
   
-  const res = await fetch(url, { 
+  const modelsRes = await fetch(modelsUrl, { 
     headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }, 
     cache: 'no-store' 
   });
   
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
+  if (!modelsRes.ok) {
+    const errText = await modelsRes.text().catch(() => '');
     return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
   }
   
-  const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; brand?: string[]; startYear?: number; endYear?: number; imageUrl?: string } }> };
+  const modelsData = await modelsRes.json() as { records: Array<{ id: string; fields: { name?: string; brand?: string[]; imageUrl?: string } }> };
   
-  // Filtramos en el frontend: buscamos modelos donde el array brand contenga el brandId
-  const results = data.records
+  // Filtramos modelos por marca
+  const filteredModels = modelsData.records
     .filter((r) => {
       const brandArray = r.fields.brand;
       return brandArray && Array.isArray(brandArray) && brandArray.includes(brandId);
     })
-    .map((r) => ({ 
-      id: r.id, 
-      name: r.fields.name || '',
-      startYear: r.fields.startYear,
-      endYear: r.fields.endYear,
-      imageUrl: r.fields.imageUrl
-    }))
-    .filter((r) => r.name)
+    .filter((r) => r.fields.name);
+
+  // Cargar todos los trims para obtener los años
+  const trimsUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_TRIMS}?${params.toString()}`;
+  
+  const trimsRes = await fetch(trimsUrl, { 
+    headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }, 
+    cache: 'no-store' 
+  });
+  
+  if (!trimsRes.ok) {
+    // Si falla la carga de trims, devolver modelos sin ordenar por año
+    return NextResponse.json(
+      filteredModels.map((r) => ({ 
+        id: r.id, 
+        name: r.fields.name || '',
+        imageUrl: r.fields.imageUrl
+      }))
+    );
+  }
+  
+  const trimsData = await trimsRes.json() as { records: Array<{ id: string; fields: { model?: string[]; startYear?: number; endYear?: number } }> };
+  
+  // Crear un mapa de modelId -> años (startYear mínimo, endYear máximo)
+  const modelYearsMap = new Map<string, { startYear: number; endYear: number }>();
+  
+  trimsData.records.forEach((trim) => {
+    const modelIds = trim.fields.model;
+    if (modelIds && Array.isArray(modelIds)) {
+      modelIds.forEach((modelId) => {
+        const startYear = trim.fields.startYear || 0;
+        const endYear = trim.fields.endYear || new Date().getFullYear();
+        
+        const existing = modelYearsMap.get(modelId);
+        if (!existing) {
+          modelYearsMap.set(modelId, { startYear, endYear });
+        } else {
+          // Actualizar con el startYear más bajo y el endYear más alto
+          modelYearsMap.set(modelId, {
+            startYear: Math.min(existing.startYear, startYear),
+            endYear: Math.max(existing.endYear, endYear)
+          });
+        }
+      });
+    }
+  });
+  
+  // Mapear modelos con sus años desde los trims
+  const results = filteredModels
+    .map((r) => {
+      const years = modelYearsMap.get(r.id);
+      return {
+        id: r.id, 
+        name: r.fields.name || '',
+        startYear: years?.startYear,
+        endYear: years?.endYear,
+        imageUrl: r.fields.imageUrl
+      };
+    })
     .sort((a, b) => {
       // Ordenar por modelos más nuevos primero
       // 1. Prioridad a modelos que siguen en producción (endYear más alto o actual)
