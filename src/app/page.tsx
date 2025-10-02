@@ -27,7 +27,7 @@ export default function Home() {
     carBrand: '',
     carModel: '',
     carVersion: '',
-    carYear: null as number | null, // nuevo campo para el año
+    carYear: [] as number[], // array de años seleccionados
     kmsAnuales: 20000,
     aniosFinanciacion: 5,
     precioCoche: 25000,
@@ -88,7 +88,7 @@ export default function Home() {
   };
 
   // Funciones para verificar si cada paso está completo
-  const isStep2Complete = formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null;
+  const isStep2Complete = formData.carBrand && formData.carModel && formData.carVersion && formData.carYear.length > 0;
   const isStep3Complete = formData.habitatVehiculo && formData.habitatVehiculo.length > 0 && 
                           formData.temperamentoVolante1 && 
                           formData.temperamentoVolante2 && 
@@ -117,10 +117,10 @@ export default function Home() {
     }
   }, [calculateOwnershipCost, formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales]);
 
-  // useEffect para navegación automática al paso 3 cuando se seleccione el año
+  // useEffect para navegación automática al paso 3 cuando se seleccionen los años
   useEffect(() => {
     // Solo avanzar automáticamente si el usuario NO está navegando manualmente hacia atrás
-    if (step === 2 && !isModifying && !isNavigatingBack && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null) {
+    if (step === 2 && !isModifying && !isNavigatingBack && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear.length > 0) {
       // Pequeño delay para que el usuario vea que se completó la selección del vehículo
       const timer = setTimeout(() => {
         setStep(3);
@@ -359,7 +359,7 @@ export default function Home() {
                       carBrand: '',
                       carModel: '',
                       carVersion: '',
-                      carYear: null as number | null,
+                      carYear: [] as number[],
                       kmsAnuales: 20000,
                       aniosFinanciacion: 5,
                       precioCoche: 25000,

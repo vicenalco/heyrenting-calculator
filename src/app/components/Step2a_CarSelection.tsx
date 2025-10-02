@@ -22,7 +22,7 @@ interface Step2a_CarSelectionProps {
     carBrand: string;
     carModel: string;
     carVersion: string; // usaremos para "motorización"
-    carYear: number | null; // nuevo campo para el año
+    carYear: number[]; // array de años seleccionados
     kmsAnuales: number;
     aniosFinanciacion: number;
     precioCoche: number;
@@ -622,7 +622,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿De qué año es el vehículo?</h2>
           <p className="text-lg text-gray-600">
-            Selecciona el año de fabricación del <strong>{formData.carModel}</strong>
+            Selecciona uno o varios años de fabricación del <strong>{formData.carModel}</strong>
             {selectedTrim && (
               <span className="block text-sm text-gray-500 mt-1">
                 Motorización: <strong>{selectedTrim.name}</strong>
@@ -631,6 +631,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                 )}
               </span>
             )}
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Puedes seleccionar múltiples años haciendo clic en ellos
           </p>
           
           {/* Texto explicativo sobre los años de disponibilidad */}
@@ -657,10 +660,22 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             <div
               key={year}
               onClick={() => {
-                onUpdate({ carYear: year });
+                const currentYears = formData.carYear || [];
+                const isSelected = currentYears.includes(year);
+                let newYears;
                 
-                // Iniciar scraping después de seleccionar año
-                if (formData.carBrand && formData.carModel && selectedTrim) {
+                if (isSelected) {
+                  // Deseleccionar año
+                  newYears = currentYears.filter(y => y !== year);
+                } else {
+                  // Seleccionar año
+                  newYears = [...currentYears, year];
+                }
+                
+                onUpdate({ carYear: newYears });
+                
+                // Iniciar scraping después de seleccionar años (solo si hay años seleccionados)
+                if (newYears.length > 0 && formData.carBrand && formData.carModel && selectedTrim) {
                   const scrapingParams = {
                     brand: formData.carBrand,
                     model: formData.carModel,
@@ -669,15 +684,12 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                     transmission: selectedTrim.transmision?.[0] || 'automatico'
                   };
                   
-                  console.log('🎯 Iniciando scraping después de seleccionar año:', year, 'con parámetros:', scrapingParams);
+                  console.log('🎯 Iniciando scraping después de seleccionar años:', newYears, 'con parámetros:', scrapingParams);
                   startScraping(scrapingParams);
                 }
-                
-                // Avanzar al paso 3 después de seleccionar el año
-                onNext();
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                formData.carYear === year
+                (formData.carYear || []).includes(year)
                   ? 'border-green-500 bg-green-50 shadow-md'
                   : 'border-gray-200 bg-white hover:border-green-300'
               }`}
@@ -747,11 +759,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
               (currentStep === 1 && !formData.carBrand) ||
               (currentStep === 2 && !formData.carModel) ||
               (currentStep === 3 && !formData.carVersion) ||
-              (currentStep === 4 && !formData.carYear)
+              (currentStep === 4 && (!formData.carYear || formData.carYear.length === 0))
             }
             className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] order-1 sm:order-3"
           >
-            Siguiente
+            {currentStep === 4 ? 'Siguiente paso' : 'Siguiente'}
             <span className="ml-2">→</span>
           </button>
         </div>
