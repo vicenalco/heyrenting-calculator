@@ -30,8 +30,8 @@ export interface Km77SearchResponse {
  */
 export const fuelMapping: Record<string, string> = {
   'gasolina': 'gasolina',
-  'diesel': 'gasóleo',
-  'Diésel': 'gasóleo', // Mapeo para el formato que viene de Airtable
+  'diesel': 'gasoleo',
+  'Diésel': 'gasoleo', // Mapeo para el formato que viene de Airtable
   'hibrido': 'hibrido_no_enchufable',
   'Híbrido': 'hibrido_no_enchufable', // Mapeo para el formato que viene de Airtable
   'Híbrido Enchufable': 'Híbrido+Enchufable',
@@ -49,6 +49,7 @@ export const transmissionMapping: Record<string, string> = {
   'automatico': 'automatico',
   'Automático': 'automatico', // Mapeo para el formato que viene de Airtable
   'Manual/Automático': '', // No filtrar por transmisión si es mixta
+  'Manual / Automático': '', // Variante con espacios
   'cvt': 'automatico', // CVT se considera automático
 };
 
@@ -80,7 +81,14 @@ export function buildKm77SearchUrl(params: Km77SearchParams): string {
   ];
 
   // Solo añadir filtro de transmisión si no es una cadena vacía
-  const transmissionFilter = transmissionMapping[params.transmission] || params.transmission;
+  const transmissionFilter = transmissionMapping[params.transmission] !== undefined 
+    ? transmissionMapping[params.transmission] 
+    : params.transmission;
+  console.log('🔧 Debug transmisión:', { 
+    original: params.transmission, 
+    mapped: transmissionFilter, 
+    willAddFilter: transmissionFilter && transmissionFilter !== '' 
+  });
   if (transmissionFilter && transmissionFilter !== '') {
     searchParams.push(`gearboxes[]=${transmissionFilter}`);
   }
