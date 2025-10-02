@@ -104,7 +104,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               }`}
             >
               <div className="text-center">
-                <div className="text-4xl mb-3">🏙️</div>
+                <div className="text-4xl mb-3">
+                  <i className="fa-solid fa-city text-blue-500"></i>
+                </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Ciudad</h4>
                 <p className="text-sm text-gray-600">
                   Principalmente ciudad, con atascos, semáforos frecuentes y trayectos cortos (menos de 15 min).
@@ -128,7 +130,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               }`}
             >
               <div className="text-center">
-                <div className="text-4xl mb-3">🛣️</div>
+                <div className="text-4xl mb-3">
+                  <i className="fa-solid fa-road text-green-500"></i>
+                </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Carretera</h4>
                 <p className="text-sm text-gray-600">
                   Casi todo autovía y carretera, a velocidad de crucero y con pocos cambios de ritmo.
@@ -152,7 +156,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               }`}
             >
               <div className="text-center">
-                <div className="text-4xl mb-3">🏞️</div>
+                <div className="text-4xl mb-3">
+                  <i className="fa-solid fa-mountain text-orange-500"></i>
+                </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Rural</h4>
                 <p className="text-sm text-gray-600">
                   Carreteras secundarias, a menudo con firmes irregulares, y algún camino ocasional.
@@ -208,7 +214,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-3xl mb-2">🏎️</div>
+                  <div className="text-3xl mb-2">
+                    <i className="fa-solid fa-car text-red-500"></i>
+                  </div>
                   <p className="text-sm text-gray-700">Buscas ser el primero, con una aceleración decidida.</p>
                 </div>
               </div>
@@ -222,7 +230,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-3xl mb-2">⚖️</div>
+                  <div className="text-3xl mb-2">
+                    <i className="fa-solid fa-balance-scale text-blue-500"></i>
+                  </div>
                   <p className="text-sm text-gray-700">Te adaptas al tráfico, un ritmo normal.</p>
                 </div>
               </div>
@@ -283,7 +293,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-3xl mb-2">🚗</div>
+                  <div className="text-3xl mb-2">
+                    <i className="fa-solid fa-car text-green-500"></i>
+                  </div>
                   <p className="text-sm text-gray-700">Un ritmo normal, disfrutando del paisaje.</p>
                 </div>
               </div>
@@ -366,7 +378,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
       {isComplete && (
         <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 border-2 border-green-200">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">
-            <span className="mr-2">✅</span>Perfil completado
+            <span className="mr-2">
+              <i className="fa-solid fa-check text-green-500"></i>
+            </span>Perfil completado
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
             <div>

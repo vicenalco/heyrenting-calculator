@@ -1,5 +1,7 @@
 'use client';
 
+import Icon from './Icon';
+
 interface Step1_WelcomeProps {
   onSelectPath: (path: 'knowsCar' | 'inspireMe') => void;
 }
@@ -7,22 +9,24 @@ interface Step1_WelcomeProps {
 export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
   return (
     <div className="text-center">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          ¡Bienvenido a la Calculadora de Gastos Reales! 🚗
-        </h2>
-        <p className="text-lg text-gray-600 mb-8">
+      <div className="mb-10 sm:mb-12">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+          <Icon name="car" className="w-8 h-8 mr-3 text-green-600 inline-block" />¡Bienvenido a la Calculadora de Gastos Reales!
+        </h1>
+        <p className="text-base sm:text-lg text-gray-600 mb-8 leading-relaxed">
           Descubre cuánto cuesta realmente tener un coche en España
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto">
+      <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto">
         <div
-          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5 flex-1"
+          className="group bg-white rounded-xl shadow-lg p-8 sm:p-10 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5 flex-1 min-h-[200px] flex flex-col justify-center"
           onClick={() => onSelectPath('knowsCar')}
         >
-          <div className="text-4xl mb-4">🎯</div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white group-active:text-white">
+          <div className="text-4xl mb-6">
+            <Icon name="bullseye" className="w-16 h-16 text-green-600" />
+          </div>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 group-hover:text-white group-active:text-white leading-tight">
             Ya sé qué coche quiero
           </h3>
           {/*
@@ -33,11 +37,13 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
         </div>
 
         <div
-          className="group bg-white rounded-xl shadow-lg p-8 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5 flex-1"
+          className="group bg-white rounded-xl shadow-lg p-8 sm:p-10 border-2 border-[#52bf31] transition-all duration-150 cursor-pointer hover:bg-[#52bf31] active:bg-[#52bf31] hover:shadow-xl active:shadow-inner active:translate-y-0.5 flex-1 min-h-[200px] flex flex-col justify-center"
           onClick={() => onSelectPath('inspireMe')}
         >
-          <div className="text-4xl mb-4">💡</div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white group-active:text-white">
+          <div className="text-4xl mb-6">
+            <Icon name="lightbulb" className="w-16 h-16 text-yellow-500" />
+          </div>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 group-hover:text-white group-active:text-white leading-tight">
             Quiero que me ayudes a elegir
           </h3>
           {/*

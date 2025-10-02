@@ -66,7 +66,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
 
         <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
           <div className="flex items-center space-x-2">
-            <span className="text-green-600">✅</span>
+            <i className="fa-solid fa-check text-green-600"></i>
             <span className="text-sm font-medium text-green-800">Precios precisos</span>
           </div>
           <span className="text-sm text-green-600 font-semibold">
@@ -77,7 +77,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
         {differentPrices > 0 && (
           <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
             <div className="flex items-center space-x-2">
-              <span className="text-red-600">⚠️</span>
+              <i className="fa-solid fa-exclamation-triangle text-red-600"></i>
               <span className="text-sm font-medium text-red-800">Precios diferentes</span>
             </div>
             <span className="text-sm text-red-600 font-semibold">
@@ -89,7 +89,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
         {noData > 0 && (
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-2">
-              <span className="text-gray-600">❓</span>
+              <i className="fa-solid fa-question text-gray-600"></i>
               <span className="text-sm font-medium text-gray-800">Sin precios actualizados</span>
             </div>
             <span className="text-sm text-gray-600 font-semibold">
@@ -102,7 +102,7 @@ export default function PriceIntegrationSummary({ results, brand, model }: Price
       {accuracyPercentage < 50 && (
         <div className="mt-4 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
           <div className="flex items-center space-x-2">
-            <span className="text-yellow-600">⚠️</span>
+            <i className="fa-solid fa-exclamation-triangle text-yellow-600"></i>
             <span className="text-sm font-medium text-yellow-800">
               Recomendación: Revisar los precios de Airtable
             </span>

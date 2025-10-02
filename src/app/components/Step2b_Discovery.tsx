@@ -22,17 +22,17 @@ export default function Step2b_Discovery({ formData, onUpdate, onNext }: Step2b_
   const [showRecommendations, setShowRecommendations] = useState(false);
 
   const useCases = [
-    { id: 'city', label: 'Ciudad', description: 'Trayectos cortos, parking fácil', icon: '🏙️' },
-    { id: 'highway', label: 'Carretera', description: 'Viajes largos, autopista', icon: '🛣️' },
-    { id: 'mixed', label: 'Mixto', description: 'Ciudad y carretera', icon: '🔄' },
-    { id: 'family', label: 'Familiar', description: 'Espacioso, seguro', icon: '👨‍👩‍👧‍👦' },
+    { id: 'city', label: 'Ciudad', description: 'Trayectos cortos, parking fácil', icon: 'fa-solid fa-city' },
+    { id: 'highway', label: 'Carretera', description: 'Viajes largos, autopista', icon: 'fa-solid fa-road' },
+    { id: 'mixed', label: 'Mixto', description: 'Ciudad y carretera', icon: 'fa-solid fa-balance-scale' },
+    { id: 'family', label: 'Familiar', description: 'Espacioso, seguro', icon: 'fa-solid fa-users' },
   ];
 
   const budgetRanges = [
-    { id: 'economy', label: 'Económico', range: '15.000 - 25.000€', icon: '💰' },
-    { id: 'mid', label: 'Gama Media', range: '25.000 - 40.000€', icon: '🚗' },
-    { id: 'premium', label: 'Premium', range: '40.000 - 60.000€', icon: '⭐' },
-    { id: 'luxury', label: 'Lujo', range: '60.000€+', icon: '💎' },
+    { id: 'economy', label: 'Económico', range: '15.000 - 25.000€', icon: 'fa-solid fa-coins' },
+    { id: 'mid', label: 'Gama Media', range: '25.000 - 40.000€', icon: 'fa-solid fa-car' },
+    { id: 'premium', label: 'Premium', range: '40.000 - 60.000€', icon: 'fa-solid fa-star' },
+    { id: 'luxury', label: 'Lujo', range: '60.000€+', icon: 'fa-solid fa-gem' },
   ];
 
   const handleUseSelect = (use: string) => {
@@ -104,7 +104,9 @@ export default function Step2b_Discovery({ formData, onUpdate, onNext }: Step2b_
               style={selectedUse === use.id ? { borderColor: '#52bf31', backgroundColor: '#f0f9f0' } : {}}
               onClick={() => handleUseSelect(use.id)}
             >
-              <div className="text-2xl mb-2">{use.icon}</div>
+              <div className="text-2xl mb-2">
+                <i className={use.icon}></i>
+              </div>
               <h4 className="font-semibold text-gray-800">{use.label}</h4>
               <p className="text-sm text-gray-600">{use.description}</p>
             </div>
@@ -127,7 +129,9 @@ export default function Step2b_Discovery({ formData, onUpdate, onNext }: Step2b_
               style={selectedBudget === budget.id ? { borderColor: '#52bf31', backgroundColor: '#f0f9f0' } : {}}
               onClick={() => handleBudgetSelect(budget.id)}
             >
-              <div className="text-2xl mb-2">{budget.icon}</div>
+              <div className="text-2xl mb-2">
+                <i className={budget.icon}></i>
+              </div>
               <h4 className="font-semibold text-gray-800">{budget.label}</h4>
               <p className="text-sm text-gray-600">{budget.range}</p>
             </div>

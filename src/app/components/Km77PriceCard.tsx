@@ -21,10 +21,10 @@ export default function Km77PriceCard({ integrationResult, showDetails = false }
 
   const getAccuracyIcon = (accuracy: string) => {
     switch (accuracy) {
-      case 'exact': return '✅';
-      case 'close': return '⚠️';
-      case 'different': return '❌';
-      default: return '❓';
+      case 'exact': return <i className="fa-solid fa-check text-green-500"></i>;
+      case 'close': return <i className="fa-solid fa-exclamation-triangle text-yellow-500"></i>;
+      case 'different': return <i className="fa-solid fa-times text-red-500"></i>;
+      default: return <i className="fa-solid fa-question text-gray-500"></i>;
     }
   };
 

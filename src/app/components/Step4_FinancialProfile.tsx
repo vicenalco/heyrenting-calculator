@@ -37,7 +37,7 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
     <div className="space-y-8">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          💰 Análisis Financiero y de Honestidad
+          <i className="fa-solid fa-coins mr-2"></i>Análisis Financiero y de Honestidad
         </h2>
         <p className="text-gray-600">
           Evaluemos tu situación financiera para darte el mejor consejo
@@ -48,7 +48,7 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
       <div className="space-y-6">
         <div className="text-center">
           <h3 className="text-xl font-bold text-gray-900 mb-2">
-            💳 ¿Respecto al pago del coche, ¿cuál es tu plan?
+            <i className="fa-solid fa-credit-card mr-2"></i>¿Respecto al pago del coche, ¿cuál es tu plan?
           </h3>
           <p className="text-gray-600">Selecciona la opción que mejor se adapte a tu situación</p>
         </div>
@@ -63,7 +63,9 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
             }`}
           >
             <div className="text-center">
-              <div className="text-4xl mb-3">💰</div>
+              <div className="text-4xl mb-3">
+                <i className="fa-solid fa-coins text-green-500"></i>
+              </div>
               <h4 className="text-lg font-bold text-gray-900 mb-2">Pagarlo al contado</h4>
               <p className="text-sm text-gray-600">
                 Tengo el dinero disponible para pagar el vehículo completo
@@ -80,7 +82,9 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
             }`}
           >
             <div className="text-center">
-              <div className="text-4xl mb-3">💸</div>
+              <div className="text-4xl mb-3">
+                <i className="fa-solid fa-money-bill-wave text-blue-500"></i>
+              </div>
               <h4 className="text-lg font-bold text-gray-900 mb-2">Dar una entrada y financiar el resto</h4>
               <p className="text-sm text-gray-600">
                 Pagar una parte inicial y financiar el resto del importe
@@ -112,7 +116,7 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
         <div className="space-y-6">
           <div className="text-center">
             <h3 className="text-xl font-bold text-gray-900 mb-2">
-              ⚠️ ¿Ese desembolso supondría utilizar más del 30% de tus ahorros e inversiones líquidas?
+              <i className="fa-solid fa-exclamation-triangle mr-2 text-yellow-500"></i>¿Ese desembolso supondría utilizar más del 30% de tus ahorros e inversiones líquidas?
             </h3>
             <p className="text-gray-600">Esta información nos ayuda a evaluar el impacto en tu patrimonio</p>
           </div>
@@ -127,7 +131,9 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
               }`}
             >
               <div className="text-center">
-                <div className="text-4xl mb-3">✅</div>
+                <div className="text-4xl mb-3">
+                  <i className="fa-solid fa-check text-green-500"></i>
+                </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">No, tengo un colchón financiero cómodo</h4>
                 <p className="text-sm text-gray-600">
                   El desembolso no afectaría significativamente mis ahorros
@@ -144,7 +150,9 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
               }`}
             >
               <div className="text-center">
-                <div className="text-4xl mb-3">⚠️</div>
+                <div className="text-4xl mb-3">
+                  <i className="fa-solid fa-exclamation-triangle text-yellow-500"></i>
+                </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Sí, sería un desembolso importante para mí</h4>
                 <p className="text-sm text-gray-600">
                   El desembolso representaría una parte significativa de mis ahorros
@@ -227,7 +235,9 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
       {isComplete && (
         <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-6 border-2 border-blue-200">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">
-            <span className="mr-2">💡</span>Análisis Financiero Completado
+            <span className="mr-2">
+              <i className="fa-solid fa-lightbulb text-yellow-500"></i>
+            </span>Análisis Financiero Completado
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
             <div>

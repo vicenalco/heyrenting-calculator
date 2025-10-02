@@ -33,6 +33,11 @@ export default function RootLayout({
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
+        <link
+          rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v6.5.2/css/all.css"
+          crossOrigin="anonymous"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

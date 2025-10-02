@@ -9,6 +9,7 @@ import Step3_DriverProfile from './components/Step3_DriverProfile';
 import Step4_FinancialProfile from './components/Step4_FinancialProfile';
 import PriceScrapingProgress from './components/PriceScrapingProgress';
 import { calculateFinancialAutopsy } from '../lib/calculations';
+import Icon from './components/Icon';
 
 export default function Home() {
   // Estado para controlar el paso actual del wizard
@@ -127,26 +128,17 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
-      <div className="max-w-4xl mx-auto w-full">
-        {/* Header común a todos los pasos */}
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-            🚗 Calculadora de Gastos Reales
-          </h1>
-          <p className="text-base sm:text-lg text-gray-600">
-            Descubre cuánto cuesta realmente tener un coche en España
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-3 sm:p-6 lg:p-8 overflow-x-hidden">
+      <div className="max-w-4xl mx-auto w-full pt-6 sm:pt-12">
 
         {/* Contenedor principal del wizard */}
-        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
           {/* Indicador de progreso */}
-          <div className="mb-4 sm:mb-6">
+          <div className="mb-6 sm:mb-8">
             <div className="flex items-center justify-center space-x-1 sm:space-x-4">
               {[1, 2, 3, 4, 5].map((stepNumber) => (
                 <div key={stepNumber} className="flex items-center">
-                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${
+                  <div className={`w-7 h-7 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-base font-semibold ${
                     step >= stepNumber 
                       ? 'text-white' 
                       : 'bg-gray-200 text-gray-500'
@@ -154,7 +146,7 @@ export default function Home() {
                     {stepNumber}
                   </div>
                   {stepNumber < 5 && (
-                    <div className={`w-4 sm:w-16 h-1 mx-1 sm:mx-2 ${
+                    <div className={`w-3 sm:w-16 h-1 mx-1 sm:mx-2 ${
                       step > stepNumber ? 'bg-gray-200' : 'bg-gray-200'
                     }`} style={step > stepNumber ? { backgroundColor: '#52bf31' } : {}} />
                   )}
