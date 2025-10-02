@@ -35,25 +35,33 @@ export const fuelMappingCoches: Record<string, string> = {
 };
 
 /**
- * Redondea la potencia al tramo más cercano permitido por coches.com
+ * Encuentra el rango de potencia (desde-hasta) para coches.com
  * Tramos: 60, 70, 80, 90, 100, 110, 120, 140, 160, 180, 200, 250, 300, 400
+ * Ejemplo: 145 CV -> desde: 140, hasta: 160
  */
-export function roundPowerToClosestBracket(power: number): number {
+export function getPowerRange(power: number): { desde: number; hasta: number } {
   const brackets = [60, 70, 80, 90, 100, 110, 120, 140, 160, 180, 200, 250, 300, 400];
   
-  // Encontrar el tramo más cercano
-  let closest = brackets[0];
-  let minDiff = Math.abs(power - closest);
+  // Encontrar el tramo inferior (desde) y superior (hasta)
+  let desde = brackets[0];
+  let hasta = brackets[brackets.length - 1];
   
-  for (const bracket of brackets) {
-    const diff = Math.abs(power - bracket);
-    if (diff < minDiff) {
-      minDiff = diff;
-      closest = bracket;
+  for (let i = 0; i < brackets.length; i++) {
+    if (power <= brackets[i]) {
+      // Si la potencia es menor o igual al primer tramo, usar el primer tramo
+      desde = i === 0 ? brackets[0] : brackets[i - 1];
+      hasta = brackets[i];
+      break;
     }
   }
   
-  return closest;
+  // Si la potencia es mayor que el último tramo, usar el último
+  if (power > brackets[brackets.length - 1]) {
+    desde = brackets[brackets.length - 1];
+    hasta = brackets[brackets.length - 1];
+  }
+  
+  return { desde, hasta };
 }
 
 /**
@@ -84,13 +92,13 @@ export function buildCochesSearchUrl(
   const vehicleType = type === 'segunda-mano' ? 'coches-segunda-mano' : 'km0';
   const brandModel = formatBrandModelForCoches(params.brand, params.model);
   const fuel = fuelMappingCoches[params.fuel] || params.fuel.toLowerCase();
-  const roundedPower = roundPowerToClosestBracket(params.power);
+  const powerRange = getPowerRange(params.power);
   
   let url = `${baseUrl}/${vehicleType}/${brandModel}-${fuel}.htm`;
   
   const queryParams: string[] = [];
-  queryParams.push(`potencia_desde=${roundedPower}`);
-  queryParams.push(`potencia_hasta=${roundedPower}`);
+  queryParams.push(`potencia_desde=${powerRange.desde}`);
+  queryParams.push(`potencia_hasta=${powerRange.hasta}`);
   
   // Añadir filtros de año si se proporcionan y se solicita incluirlos
   if (includeYears && params.years && params.years.length > 0) {
@@ -226,4 +234,5 @@ export async function searchAllCochesPrices(
     km0,
   };
 }
+
 
