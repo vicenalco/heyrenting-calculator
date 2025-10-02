@@ -332,8 +332,8 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     if (currentStep < 4) {
       setIsNavigatingBack(false);
       setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
-    } else if (currentStep === 4 && formData.carYear !== null) {
-      // Si estamos en el paso 4 (año) y ya se ha seleccionado un año, avanzar al paso 3
+    } else if (currentStep === 4 && formData.carYear && formData.carYear.length > 0) {
+      // Si estamos en el paso 4 (año) y se han seleccionado años, avanzar al paso 3
       onNext();
     }
   };
@@ -688,12 +688,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   startScraping(scrapingParams);
                 }
                 
-                // Solo avanzar automáticamente si NO se está modificando (primera vez)
-                if (!isModifying && newYears.length > 0) {
-                  setTimeout(() => {
-                    onNext();
-                  }, 500);
-                }
+                // No avanzar automáticamente - el usuario debe hacer clic en "Siguiente paso"
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 (formData.carYear || []).includes(year)
