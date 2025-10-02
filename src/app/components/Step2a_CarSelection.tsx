@@ -332,6 +332,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     if (currentStep < 4) {
       setIsNavigatingBack(false);
       setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
+    } else if (currentStep === 4 && formData.carYear !== null) {
+      // Si estamos en el paso 4 (año) y ya se ha seleccionado un año, avanzar al paso 3
+      onNext();
     }
   };
 
@@ -670,7 +673,10 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   startScraping(scrapingParams);
                 }
                 
-                // La navegación al paso 3 se maneja automáticamente desde page.tsx
+                // Avanzar al paso 3 después de seleccionar el año
+                setTimeout(() => {
+                  onNext();
+                }, 500);
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 formData.carYear === year
