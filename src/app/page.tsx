@@ -117,17 +117,16 @@ export default function Home() {
     }
   }, [calculateOwnershipCost, formData.precioCoche, formData.aniosFinanciacion, formData.kmsAnuales]);
 
-  // useEffect para navegación automática al paso 3 cuando se seleccionen los años
-  useEffect(() => {
-    // Solo avanzar automáticamente si el usuario NO está navegando manualmente hacia atrás
-    if (step === 2 && !isModifying && !isNavigatingBack && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear.length > 0) {
-      // Pequeño delay para que el usuario vea que se completó la selección del vehículo
-      const timer = setTimeout(() => {
-        setStep(3);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [step, isModifying, isNavigatingBack, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear]);
+  // useEffect desactivado para navegación automática desde selección de años
+  // El usuario debe hacer clic en "Siguiente paso" manualmente después de seleccionar años
+  // useEffect(() => {
+  //   if (step === 2 && !isModifying && !isNavigatingBack && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear.length > 0) {
+  //     const timer = setTimeout(() => {
+  //       setStep(3);
+  //     }, 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [step, isModifying, isNavigatingBack, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear]);
 
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {

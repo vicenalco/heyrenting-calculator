@@ -687,6 +687,13 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   console.log('🎯 Iniciando scraping después de seleccionar años:', newYears, 'con parámetros:', scrapingParams);
                   startScraping(scrapingParams);
                 }
+                
+                // Solo avanzar automáticamente si NO se está modificando (primera vez)
+                if (!isModifying && newYears.length > 0) {
+                  setTimeout(() => {
+                    onNext();
+                  }, 500);
+                }
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 (formData.carYear || []).includes(year)
@@ -699,6 +706,12 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                   <i className="fa-solid fa-calendar-days text-gray-600"></i>
                 </div>
                 <h4 className="font-semibold text-gray-900">{year}</h4>
+                {(formData.carYear || []).includes(year) && (
+                  <div className="mt-2 inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                    <span className="mr-1">✓</span>
+                    Seleccionado
+                  </div>
+                )}
               </div>
             </div>
           ))}
