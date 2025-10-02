@@ -33,8 +33,8 @@ export const fuelMapping: Record<string, string> = {
   'diesel': 'diesel',
   'hibrido': 'hibrido_no_enchufable',
   'Híbrido': 'hibrido_no_enchufable', // Mapeo para el formato que viene de Airtable
-  'Híbrido Enchufable': 'hibrido_enchufable',
-  'hibrido_enchufable': 'hibrido_enchufable',
+  'Híbrido Enchufable': 'Híbrido+Enchufable',
+  'hibrido_enchufable': 'Híbrido+Enchufable',
   'electrico': 'electrico',
   'gas': 'gas',
 };
