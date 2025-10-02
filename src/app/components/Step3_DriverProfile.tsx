@@ -13,9 +13,10 @@ interface Step3_DriverProfileProps {
   onNext: () => void;
   onPreviousStep?: () => void;
   onNextStep?: () => void;
+  isCurrentStepComplete?: boolean;
 }
 
-export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPreviousStep, onNextStep }: Step3_DriverProfileProps) {
+export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPreviousStep, onNextStep, isCurrentStepComplete = false }: Step3_DriverProfileProps) {
   const [currentQuestion, setCurrentQuestion] = useState(1);
 
   // Verificar si todas las preguntas han sido respondidas
@@ -56,26 +57,17 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
 
   return (
     <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          🧠 Perfil del Conductor
-        </h2>
-        <p className="text-gray-600">
-          Cuéntanos sobre tu estilo de conducción y uso del vehículo para un diagnóstico más preciso
-        </p>
-        
-        {/* Indicador de progreso */}
-        <div className="flex justify-center mt-6">
-          <div className="flex space-x-2">
-            {[1, 2, 3, 4].map((questionNumber) => (
-              <div
-                key={questionNumber}
-                className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                  questionNumber <= currentQuestion ? 'bg-green-500' : 'bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
+      {/* Indicador de progreso */}
+      <div className="flex justify-center mb-8">
+        <div className="flex space-x-2">
+          {[1, 2, 3, 4].map((questionNumber) => (
+            <div
+              key={questionNumber}
+              className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                questionNumber <= currentQuestion ? 'bg-green-500' : 'bg-gray-300'
+              }`}
+            />
+          ))}
         </div>
       </div>
 
@@ -83,10 +75,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
       {currentQuestion === 1 && (
         <div className="space-y-6">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cómo usarás principalmente el coche?
-            </h3>
-            <p className="text-gray-600">Selecciona el tipo de conducción que harás más a menudo</p>
+            </h2>
+            <p className="text-lg text-gray-600">Selecciona el tipo de conducción que harás más a menudo</p>
             <div className="mt-2 inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
               <span className="mr-1">✓</span>
               Puedes seleccionar varias opciones
@@ -180,10 +172,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
       {currentQuestion === 2 && (
         <div className="space-y-6">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cómo conduces en los semáforos?
-            </h3>
-            <p className="text-gray-600">Selecciona la opción que mejor describe tu comportamiento</p>
+            </h2>
+            <p className="text-lg text-gray-600">Selecciona la opción que mejor describe tu comportamiento</p>
           </div>
 
           <div className="space-y-4">
@@ -192,7 +184,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div
-                onClick={() => onUpdate({ temperamentoVolante1: 'calmado' })}
+                onClick={() => {
+                  onUpdate({ temperamentoVolante1: 'calmado' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
                 className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.temperamentoVolante1 === 'calmado'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -206,7 +201,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               </div>
 
               <div
-                onClick={() => onUpdate({ temperamentoVolante1: 'agresivo' })}
+                onClick={() => {
+                  onUpdate({ temperamentoVolante1: 'agresivo' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
                 className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.temperamentoVolante1 === 'agresivo'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -222,7 +220,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               </div>
 
               <div
-                onClick={() => onUpdate({ temperamentoVolante1: 'normal' })}
+                onClick={() => {
+                  onUpdate({ temperamentoVolante1: 'normal' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
                 className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.temperamentoVolante1 === 'normal'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -245,10 +246,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
       {currentQuestion === 3 && (
         <div className="space-y-6">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cómo conduces en las curvas?
-            </h3>
-            <p className="text-gray-600">Selecciona la opción que mejor describe tu estilo</p>
+            </h2>
+            <p className="text-lg text-gray-600">Selecciona la opción que mejor describe tu estilo</p>
           </div>
 
           <div className="space-y-4">
@@ -257,7 +258,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div
-                onClick={() => onUpdate({ temperamentoVolante2: 'fluido' })}
+                onClick={() => {
+                  onUpdate({ temperamentoVolante2: 'fluido' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
                 className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.temperamentoVolante2 === 'fluido'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -271,7 +275,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               </div>
 
               <div
-                onClick={() => onUpdate({ temperamentoVolante2: 'deportivo' })}
+                onClick={() => {
+                  onUpdate({ temperamentoVolante2: 'deportivo' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
                 className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.temperamentoVolante2 === 'deportivo'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -285,7 +292,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               </div>
 
               <div
-                onClick={() => onUpdate({ temperamentoVolante2: 'tranquilo' })}
+                onClick={() => {
+                  onUpdate({ temperamentoVolante2: 'tranquilo' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
                 className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.temperamentoVolante2 === 'tranquilo'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -308,10 +318,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
       {currentQuestion === 4 && (
         <div className="space-y-6">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cuánta gente suele viajar contigo?
-            </h3>
-            <p className="text-gray-600">Selecciona la opción que mejor describe el uso del vehículo</p>
+            </h2>
+            <p className="text-lg text-gray-600">Selecciona la opción que mejor describe el uso del vehículo</p>
           </div>
 
           <div className="space-y-4">
@@ -320,7 +330,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div
-                onClick={() => onUpdate({ misionVehiculo: 'ligero' })}
+                onClick={() => {
+                  onUpdate({ misionVehiculo: 'ligero' });
+                  setTimeout(() => onNext(), 500);
+                }}
                 className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.misionVehiculo === 'ligero'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -337,7 +350,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               </div>
 
               <div
-                onClick={() => onUpdate({ misionVehiculo: 'cargado' })}
+                onClick={() => {
+                  onUpdate({ misionVehiculo: 'cargado' });
+                  setTimeout(() => onNext(), 500);
+                }}
                 className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.misionVehiculo === 'cargado'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -354,7 +370,10 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               </div>
 
               <div
-                onClick={() => onUpdate({ misionVehiculo: 'mixto_carga' })}
+                onClick={() => {
+                  onUpdate({ misionVehiculo: 'mixto_carga' });
+                  setTimeout(() => onNext(), 500);
+                }}
                 className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                   formData.misionVehiculo === 'mixto_carga'
                     ? 'border-green-500 bg-green-50 shadow-md'
@@ -417,81 +436,85 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
         </div>
       )}
 
-      {/* Navegación */}
-      <div className="flex justify-between items-center">
-        <button 
-          onClick={handlePreviousQuestion}
-          disabled={currentQuestion === 1}
-          className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-200 ${
-            currentQuestion === 1 
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-              : 'bg-gray-600 text-white hover:bg-gray-700'
-          }`}
-        >
-          ← Anterior
-        </button>
-
-        <div className="text-sm text-gray-500">
-          Pregunta {currentQuestion} de 4
+      {/* Navegación interna - Diseño mejorado */}
+      <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mt-8">
+        {/* Contador de preguntas móvil - solo visible en móvil */}
+        <div className="text-center mb-4 sm:hidden">
+          <div className="inline-flex items-center px-4 py-2 bg-white rounded-full border border-gray-200">
+            <span className="text-sm text-gray-500">Pregunta</span>
+            <span className="text-base font-semibold text-gray-700 ml-2">{currentQuestion} de 4</span>
+          </div>
         </div>
 
-        {currentQuestion < 4 ? (
+        {/* Botones de navegación - responsive */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between">
           <button 
-            onClick={handleNextQuestion}
-            disabled={
-              (currentQuestion === 1 && !formData.habitatVehiculo) ||
-              (currentQuestion === 2 && !formData.temperamentoVolante1) ||
-              (currentQuestion === 3 && !formData.temperamentoVolante2)
-            }
-            className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-200 ${
-              (currentQuestion === 1 && !formData.habitatVehiculo) ||
-              (currentQuestion === 2 && !formData.temperamentoVolante1) ||
-              (currentQuestion === 3 && !formData.temperamentoVolante2)
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-green-600 text-white hover:bg-green-700'
-            }`}
+            onClick={handlePreviousQuestion}
+            disabled={currentQuestion === 1}
+            className="flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] order-2 sm:order-1"
           >
-            Siguiente →
+            <span className="mr-2">←</span>
+            Anterior
           </button>
-        ) : (
-          <button 
-            onClick={onNext}
-            disabled={!isComplete}
-            className={`px-6 py-2 rounded-lg font-semibold transition-colors duration-200 ${
-              isComplete
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            {isComplete ? 'Continuar al Análisis Financiero →' : 'Responde todas las preguntas para continuar'}
-          </button>
-        )}
+
+          {/* Contador de preguntas desktop - solo visible en desktop */}
+          <div className="hidden sm:flex items-center px-4 py-2 bg-white rounded-full border border-gray-200 sm:order-2">
+            <span className="text-sm text-gray-500">Pregunta</span>
+            <span className="text-base font-semibold text-gray-700 ml-2">{currentQuestion} de 4</span>
+          </div>
+
+          {currentQuestion < 4 ? (
+            <button 
+              onClick={handleNextQuestion}
+              disabled={
+                (currentQuestion === 1 && (!formData.habitatVehiculo || formData.habitatVehiculo.length === 0)) ||
+                (currentQuestion === 2 && !formData.temperamentoVolante1) ||
+                (currentQuestion === 3 && !formData.temperamentoVolante2)
+              }
+              className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] order-1 sm:order-3"
+            >
+              Siguiente
+              <span className="ml-2">→</span>
+            </button>
+          ) : (
+            <div className="min-h-[48px] order-1 sm:order-3" />
+          )}
+        </div>
       </div>
 
       {/* Botones de navegación adicionales */}
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-        <button
-          onClick={onPreviousStep}
-          disabled={!onPreviousStep}
-          className="flex items-center px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span className="mr-2">←</span>
-          Paso 2
-        </button>
-
-        <div className="text-center">
-          <div className="text-sm text-gray-500 mb-1">Navegación rápida</div>
-          <div className="text-xs text-gray-400">Usa los botones para saltar entre pasos</div>
+      <div className="mt-10 pt-8 border-t border-gray-200">
+        {/* Texto móvil - solo visible en móvil */}
+        <div className="text-center mb-6 sm:hidden">
+          <div className="text-sm font-medium text-gray-600 mb-2">Navegación rápida</div>
+          <div className="text-xs text-gray-500">Usa los botones para saltar entre pasos</div>
         </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+          <button
+            onClick={onPreviousStep}
+            disabled={!onPreviousStep}
+            className="flex items-center justify-center px-6 py-4 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
+          >
+            <span className="mr-2">←</span>
+            Paso 2
+          </button>
 
-        <button
-          onClick={onNextStep}
-          disabled={!onNextStep}
-          className="flex items-center px-6 py-3 text-base font-medium text-white bg-green-600 border-2 border-green-600 rounded-lg hover:bg-green-700 hover:border-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Paso 4
-          <span className="ml-2">→</span>
-        </button>
+          {/* Texto desktop - solo visible en desktop */}
+          <div className="hidden sm:block text-center">
+            <div className="text-sm font-medium text-gray-600 mb-1">Navegación rápida</div>
+            <div className="text-xs text-gray-500">Usa los botones para saltar entre pasos</div>
+          </div>
+
+          <button
+            onClick={onNextStep}
+            disabled={!onNextStep || !isCurrentStepComplete}
+            className="flex items-center justify-center px-6 py-4 text-base font-medium text-green-600 bg-white border-2 border-green-600 rounded-lg hover:bg-green-50 hover:border-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
+          >
+            Paso 4
+            <span className="ml-2">→</span>
+          </button>
+        </div>
       </div>
     </div>
   );

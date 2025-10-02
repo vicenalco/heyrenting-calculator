@@ -81,6 +81,7 @@ export function buildKm77SearchUrl(params: Km77SearchParams): string {
 
 /**
  * Extrae los resultados de la página HTML de km77
+ * Obtiene TODOS los resultados sin filtrar por motorización específica
  */
 export function parseKm77Results(html: string, targetMotorization: string): Km77Result[] {
   const $ = cheerio.load(html);
@@ -101,8 +102,9 @@ export function parseKm77Results(html: string, targetMotorization: string): Km77
     const lengthText = $row.find('td').eq(5).text().trim();
     const trunkText = $row.find('td').eq(6).text().trim();
 
-    // Verificar si la descripción contiene la motorización objetivo
-    if (description.toLowerCase().includes(targetMotorization.toLowerCase())) {
+    // Obtener TODOS los resultados, no filtrar por motorización
+    // (el filtrado se aplicó antes en la URL de búsqueda con combustible y transmisión)
+    if (description && priceText) {
       const price = parseFloat(priceText.replace(/[^\d]/g, ''));
       const power = parseInt(powerText.replace(/[^\d]/g, ''));
       const length = parseInt(lengthText.replace(/[^\d]/g, ''));
@@ -126,40 +128,27 @@ export function parseKm77Results(html: string, targetMotorization: string): Km77
 }
 
 /**
- * Agrupa resultados por motorización y calcula la media de precios
+ * Calcula el precio promedio de TODOS los resultados
+ * Ya no agrupa por motorización, sino que devuelve un único resultado con el precio promedio
  */
 export function groupResultsByMotorization(results: Km77Result[]): Km77Result[] {
-  const grouped = new Map<string, Km77Result[]>();
+  if (results.length === 0) return [];
 
-  // Agrupar por motorización
-  results.forEach(result => {
-    const key = result.motorization.toLowerCase();
-    if (!grouped.has(key)) {
-      grouped.set(key, []);
-    }
-    grouped.get(key)!.push(result);
-  });
-
-  // Calcular media para cada motorización
-  const averagedResults: Km77Result[] = [];
+  // Calcular media de precios de TODOS los resultados
+  const prices = results.map(r => r.price).filter(p => !isNaN(p));
   
-  grouped.forEach((motorizationResults) => {
-    if (motorizationResults.length === 0) return;
+  if (prices.length === 0) return [];
+  
+  const averagePrice = prices.reduce((a, b) => a + b, 0) / prices.length;
 
-    // Calcular media de precios
-    const prices = motorizationResults.map(r => r.price).filter(p => !isNaN(p));
-    const averagePrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
-
-    // Usar el primer resultado como base y actualizar el precio con la media
-    const baseResult = motorizationResults[0];
-    averagedResults.push({
-      ...baseResult,
-      price: Math.round(averagePrice),
-      description: `${baseResult.motorization} (${motorizationResults.length} variantes, precio promedio)`,
-    });
-  });
-
-  return averagedResults;
+  // Usar el primer resultado como base y actualizar el precio con la media global
+  const baseResult = results[0];
+  
+  return [{
+    ...baseResult,
+    price: Math.round(averagePrice),
+    description: `${baseResult.motorization} (${results.length} variantes, precio promedio: ${Math.round(averagePrice)}€)`,
+  }];
 }
 
 /**

@@ -18,6 +18,9 @@ export default function Home() {
   // Estado para controlar si el usuario está modificando datos (no debe avanzar automáticamente)
   const [isModifying, setIsModifying] = useState(false);
   
+  // Estado para controlar si el usuario está navegando manualmente hacia atrás
+  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
+  
   // Estado unificado para todos los datos del formulario
   const [formData, setFormData] = useState({
     userPath: '', // 'knowsCar' o 'inspireMe'
@@ -84,6 +87,16 @@ export default function Home() {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
+  // Funciones para verificar si cada paso está completo
+  const isStep2Complete = formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null;
+  const isStep3Complete = formData.habitatVehiculo && formData.habitatVehiculo.length > 0 && 
+                          formData.temperamentoVolante1 && 
+                          formData.temperamentoVolante2 && 
+                          formData.misionVehiculo;
+  const isStep4Complete = formData.planPago && 
+                          (formData.planPago !== 'contado' || formData.desembolso30PorCiento) && 
+                          formData.porcentajeIngresos;
+
   // Función de cálculo principal usando la lógica centralizada
   const calculateOwnershipCost = useCallback(() => {
     // Usar la función centralizada de cálculos
@@ -106,14 +119,15 @@ export default function Home() {
 
   // useEffect para navegación automática al paso 3 cuando se seleccione el año
   useEffect(() => {
-    if (step === 2 && !isModifying && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null) {
+    // Solo avanzar automáticamente si el usuario NO está navegando manualmente hacia atrás
+    if (step === 2 && !isModifying && !isNavigatingBack && formData.carBrand && formData.carModel && formData.carVersion && formData.carYear !== null) {
       // Pequeño delay para que el usuario vea que se completó la selección del vehículo
       const timer = setTimeout(() => {
         setStep(3);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [step, isModifying, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear]);
+  }, [step, isModifying, isNavigatingBack, formData.carBrand, formData.carModel, formData.carVersion, formData.carYear]);
 
   // Función para manejar la selección de ruta del usuario
   const handlePathSelection = (path: 'knowsCar' | 'inspireMe') => {
@@ -123,6 +137,7 @@ export default function Home() {
 
   // Función para avanzar al siguiente paso
   const handleNext = () => {
+    setIsNavigatingBack(false); // Resetear el flag cuando el usuario avanza manualmente
     setStep(step + 1);
   };
 
@@ -169,11 +184,16 @@ export default function Home() {
               isModifying={isModifying}
               onFinishModifying={() => {
                 setIsModifying(false);
+                setIsNavigatingBack(false);
                 setStep(3);
               }}
               onScrapingStateChange={setScrapingState}
               onPreviousStep={() => setStep(1)}
-              onNextStep={() => setStep(3)}
+              onNextStep={() => {
+                setIsNavigatingBack(false);
+                setStep(3);
+              }}
+              isCurrentStepComplete={!!isStep2Complete}
             />
           )}
 
@@ -190,8 +210,15 @@ export default function Home() {
               formData={formData} 
               onUpdate={updateFormData} 
               onNext={handleNext}
-              onPreviousStep={() => setStep(2)}
-              onNextStep={() => setStep(4)}
+              onPreviousStep={() => {
+                setIsNavigatingBack(true);
+                setStep(2);
+              }}
+              onNextStep={() => {
+                setIsNavigatingBack(false);
+                setStep(4);
+              }}
+              isCurrentStepComplete={!!isStep3Complete}
             />
           )}
 
@@ -200,8 +227,14 @@ export default function Home() {
               formData={formData} 
               onUpdate={updateFormData} 
               onNext={handleNext}
-              onPreviousStep={() => setStep(3)}
-              onNextStep={() => setStep(5)}
+              onPreviousStep={() => {
+                setIsNavigatingBack(true);
+                setStep(3);
+              }}
+              onNextStep={() => {
+                setIsNavigatingBack(false);
+                setStep(5);
+              }}
             />
           )}
 
@@ -310,6 +343,7 @@ export default function Home() {
                 <button 
                   onClick={() => {
                     setIsModifying(true);
+                    setIsNavigatingBack(true);
                     setStep(2);
                   }}
                   className="flex items-center justify-center px-6 py-3 text-white bg-gray-600 hover:bg-gray-700 font-semibold rounded-lg transition-colors duration-200"

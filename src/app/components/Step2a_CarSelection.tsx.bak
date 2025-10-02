@@ -359,9 +359,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   const renderBrandStep = () => (
     <div className="space-y-4">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿Qué marca te gusta?</h2>
-        <p className="text-lg text-gray-600">Busca y selecciona la marca del vehículo que quieres comprar</p>
+      <div className="text-center mb-6">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
+          <i className="fa-solid fa-tag mr-3"></i>¿Qué marca te gusta?
+        </h3>
+        <p className="text-base text-gray-600 leading-relaxed px-4">Busca y selecciona la marca del vehículo que quieres comprar</p>
       </div>
       
       <div className="relative">
@@ -445,9 +447,9 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   const renderModelStep = () => (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿Qué modelo de {formData.carBrand} te interesa?</h2>
-        <p className="text-lg text-gray-600">Selecciona el modelo que quieres configurar</p>
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">🚙 Elige el modelo</h3>
+        <p className="text-gray-600">Selecciona el modelo de <strong>{formData.carBrand}</strong></p>
       </div>
       
       {loading && (
@@ -515,9 +517,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   const renderTrimStep = () => (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿Qué motorización prefieres?</h2>
-        <p className="text-lg text-gray-600">Elige la versión de <strong>{formData.carModel}</strong></p>
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-cogs mr-2"></i>¿Qué motorización prefieres?
+        </h3>
+        <p className="text-gray-600">Elige la versión de <strong>{formData.carModel}</strong></p>
       </div>
       
       {loading && (
@@ -616,9 +620,11 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     
     return (
       <div className="space-y-6">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿De qué año es el vehículo?</h2>
-          <p className="text-lg text-gray-600">
+        <div className="text-center">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <i className="fa-solid fa-calendar mr-2"></i>¿De qué año es el vehículo que quieres comprar?
+          </h3>
+          <p className="text-gray-600">
             Selecciona el año de fabricación del <strong>{formData.carModel}</strong>
             {selectedTrim && (
               <span className="block text-sm text-gray-500 mt-1">
@@ -693,17 +699,26 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
 
   return (
     <div className="space-y-8 sm:space-y-10">
-      {/* Indicador de pasos */}
-      <div className="flex justify-center mb-8">
-        <div className="flex space-x-2">
-          {[1, 2, 3, 4].map((stepNum) => (
-            <div
-              key={stepNum}
-              className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                stepNum <= currentStep ? 'bg-green-500' : 'bg-gray-300'
-              }`}
-            />
-          ))}
+      <div className="text-center mb-10">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
+          <i className="fa-solid fa-car mr-3"></i>Configura el vehículo
+        </h2>
+        <p className="text-base sm:text-lg text-gray-600 leading-relaxed px-4">
+          Selecciona paso a paso el coche que quieres comprar y ajusta los parámetros para calcular los gastos reales
+        </p>
+        
+        {/* Indicador de pasos */}
+        <div className="flex justify-center mt-6">
+          <div className="flex space-x-2">
+            {[1, 2, 3, 4].map((stepNum) => (
+              <div
+                key={stepNum}
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  stepNum <= currentStep ? 'bg-green-500' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -727,6 +742,488 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             onClick={handlePreviousStep}
             disabled={currentStep === 1}
             className="flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] order-2 sm:order-1">
+            <span className="mr-2">←</span>
+            Anterior
+          </button>
+
+          {/* Contador de pasos desktop - solo visible en desktop */}
+          <div className="hidden sm:flex items-center px-4 py-2 bg-white rounded-full border border-gray-200 sm:order-2">
+            <span className="text-sm text-gray-500">Pregunta</span>
+            <span className="text-base font-semibold text-gray-700 ml-2">{currentStep} de 4</span>
+          </div>
+
+          <button
+            onClick={handleNextStep}
+            disabled={
+              (currentStep === 1 && !formData.carBrand) ||
+              (currentStep === 2 && !formData.carModel) ||
+              (currentStep === 3 && !formData.carVersion) ||
+              (currentStep === 4 && !formData.carYear)
+            }
+            className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] order-1 sm:order-3"
+          >
+            Siguiente
+            <span className="ml-2">→</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Botones de navegación adicionales */}
+      <div className="mt-10 pt-8 border-t border-gray-200">
+        {/* Texto móvil - solo visible en móvil */}
+        <div className="text-center mb-6 sm:hidden">
+          <div className="text-sm font-medium text-gray-600 mb-2">Navegación rápida</div>
+          <div className="text-xs text-gray-500">Usa los botones para saltar entre pasos</div>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+          <button
+            onClick={onPreviousStep}
+            disabled={!onPreviousStep}
+            className="flex items-center justify-center px-6 py-4 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
+          >
+            <span className="mr-2">←</span>
+            Paso 1
+          </button>
+
+          {/* Texto desktop - solo visible en desktop */}
+          <div className="hidden sm:block text-center">
+            <div className="text-sm font-medium text-gray-600 mb-1">Navegación rápida</div>
+            <div className="text-xs text-gray-500">Usa los botones para saltar entre pasos</div>
+          </div>
+
+          <button
+            onClick={onNextStep}
+            disabled={!onNextStep || !isCurrentStepComplete}
+            className="flex items-center justify-center px-6 py-4 text-base font-medium text-green-600 bg-white border-2 border-green-600 rounded-lg hover:bg-green-50 hover:border-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
+          >
+            Paso 3
+            <span className="ml-2">→</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+// Hook simple de debounce
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [val, setVal] = useState<T>(value);
+  useEffect(() => {
+    const id = setTimeout(() => setVal(value), delayMs);
+    return () => clearTimeout(id);
+  }, [value, delayMs]);
+  return val;
+}
+          max={8}
+          step={1}
+          value={formData.aniosFinanciacion}
+          onChange={(value) => onUpdate({ aniosFinanciacion: value })}
+          unit="años"
+        />
+      </div>
+
+      {/* Resumen de configuración */}
+      <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-8 border-2 border-green-200">
+        <div className="text-center mb-6">
+          <h4 className="text-2xl font-bold text-gray-900 mb-2">✨ Configuración seleccionada</h4>
+          <p className="text-gray-600">Revisa la selección antes de calcular</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-car text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Vehículo</p>
+                <p className="font-bold text-gray-900">{formData.carBrand} {formData.carModel} {formData.carYear}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-cogs text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Motorización</p>
+                <p className="font-bold text-gray-900">{formData.carVersion}</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Precio eliminado - solo se mostrará en el paso 3 */}
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-euro-sign text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Financiación</p>
+                <p className="font-bold text-gray-900">{formData.aniosFinanciacion} años</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderKmsStep = () => {
+    return (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-road mr-2"></i>¿Cuántos kilómetros harás al año?
+        </h3>
+        <p className="text-gray-600">Estima el uso anual que tendrás con el vehículo para calcular los gastos reales</p>
+      </div>
+      
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
+        <Slider
+          label="Kilómetros Anuales"
+          min={5000}
+          max={50000}
+          step={1000}
+          value={formData.kmsAnuales}
+          onChange={(value) => onUpdate({ kmsAnuales: value })}
+          unit="km"
+        />
+      </div>
+
+      {/* Resumen final */}
+      <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-8 border-2 border-green-200">
+        <div className="text-center mb-6">
+          <h4 className="text-2xl font-bold text-gray-900 mb-2">
+            <i className="fa-solid fa-car mr-2"></i>Vehículo seleccionado
+          </h4>
+          <p className="text-gray-600">Revisa toda la configuración antes de calcular</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-car text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Vehículo</p>
+                <p className="font-bold text-gray-900">{formData.carBrand} {formData.carModel} {formData.carYear}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-cogs text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Motorización</p>
+                <p className="font-bold text-gray-900">{formData.carVersion}</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Precio eliminado - solo se mostrará en el paso 3 */}
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-euro-sign text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Financiación</p>
+                <p className="font-bold text-gray-900">{formData.aniosFinanciacion} años</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center mb-2">
+              <i className="fa-solid fa-road text-2xl mr-3 text-gray-600"></i>
+              <div>
+                <p className="text-sm text-gray-500">Uso anual</p>
+                <p className="font-bold text-gray-900">{formData.kmsAnuales.toLocaleString('es-ES')} km</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    );
+  };
+
+  const renderProvinceStep = () => (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-map-marker-alt mr-2"></i>¿En qué provincia vives?
+        </h3>
+        <p className="text-gray-600">Selecciona tu provincia para cálculos más precisos</p>
+      </div>
+      
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {PROVINCIAS_ESPANA.map((provincia) => (
+          <button
+            key={provincia}
+            onClick={() => {
+              onUpdate({ provincia });
+              setCurrentStep(8);
+            }}
+            className={`p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+              formData.provincia === provincia
+                ? 'border-green-500 bg-green-50 shadow-md'
+                : 'border-gray-200 bg-white hover:border-green-300'
+            }`}
+          >
+            <div className="text-center">
+              <div className="text-lg mb-1">
+                <i className="fa-solid fa-map-pin text-gray-600"></i>
+              </div>
+              <span className="text-sm font-medium text-gray-900">{provincia}</span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderQuestionsStep = () => (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <i className="fa-solid fa-question-circle mr-2"></i>Cuéntanos más sobre tu uso
+        </h3>
+        <p className="text-gray-600">Estas respuestas nos ayudarán a calcular los gastos reales más precisos</p>
+      </div>
+
+      {/* Uso del vehículo */}
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-gray-900">
+          <i className="fa-solid fa-route mr-2"></i>¿Cómo usarás principalmente tu {formData.carModel}?
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { key: 'urbano', label: 'Ciudad', icon: 'fa-city', desc: 'Trayectos cortos, semáforos, atascos' },
+            { key: 'carretera', label: 'Carretera', icon: 'fa-road', desc: 'Viajes largos, autopistas' },
+            { key: 'mixto', label: 'Mixto', icon: 'fa-balance-scale', desc: 'Combinación de ciudad y carretera' }
+          ].map((uso) => (
+            <div
+              key={uso.key}
+              onClick={() => handleUsoVehiculo(uso.key)}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                usoVehiculo === uso.key
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <i className={`fa-solid ${uso.icon} text-2xl mb-2 text-gray-600`}></i>
+                <h5 className="font-semibold text-gray-900">{uso.label}</h5>
+                <p className="text-xs text-gray-500 mt-1">{uso.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Estilo de conducción */}
+      {usoVehiculo && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-steering-wheel mr-2"></i>¿Cómo describirías tu estilo de conducción?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { key: 'conservador', label: 'Conservador', icon: 'fa-shield-halved', desc: 'Suave, eficiente, precavido' },
+              { key: 'normal', label: 'Normal', icon: 'fa-gauge', desc: 'Equilibrado, respeta límites' },
+              { key: 'deportivo', label: 'Deportivo', icon: 'fa-bolt', desc: 'Dinámico, aceleraciones rápidas' }
+            ].map((estilo) => (
+              <div
+                key={estilo.key}
+                onClick={() => handleEstiloConduccion(estilo.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  estiloConduccion === estilo.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${estilo.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{estilo.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{estilo.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Frecuencia de uso */}
+      {estiloConduccion && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-calendar-days mr-2"></i>¿Con qué frecuencia usarás el vehículo?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { key: 'diario', label: 'Diario', icon: 'fa-calendar-day', desc: 'Todos los días, trabajo y ocio' },
+              { key: 'frecuente', label: 'Frecuente', icon: 'fa-calendar-week', desc: 'Varias veces por semana' },
+              { key: 'ocasional', label: 'Ocasional', icon: 'fa-calendar', desc: 'Fines de semana y vacaciones' }
+            ].map((frecuencia) => (
+              <div
+                key={frecuencia.key}
+                onClick={() => handleFrecuenciaUso(frecuencia.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  frecuenciaUso === frecuencia.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${frecuencia.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{frecuencia.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{frecuencia.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Presupuesto */}
+      {frecuenciaUso && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-euro-sign mr-2"></i>¿Cuál es tu presupuesto mensual aproximado para mantenimiento?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { key: 'bajo', label: 'Bajo (50-100€)', icon: 'fa-coins', desc: 'Mantenimiento básico' },
+              { key: 'medio', label: 'Medio (100-200€)', icon: 'fa-wallet', desc: 'Mantenimiento regular' },
+              { key: 'alto', label: 'Alto (200€+)', icon: 'fa-gem', desc: 'Mantenimiento premium' }
+            ].map((presu) => (
+              <div
+                key={presu.key}
+                onClick={() => handlePresupuesto(presu.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  presupuesto === presu.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${presu.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{presu.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{presu.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Experiencia */}
+      {presupuesto && (
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            <i className="fa-solid fa-graduation-cap mr-2"></i>¿Qué experiencia tienes con vehículos similares?
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { key: 'principiante', label: 'Principiante', icon: 'fa-seedling', desc: 'Primer vehículo o poco experiencia' },
+              { key: 'intermedio', label: 'Intermedio', icon: 'fa-chart-line', desc: 'Alguna experiencia con vehículos' },
+              { key: 'experto', label: 'Experto', icon: 'fa-crown', desc: 'Mucha experiencia, conoces el mercado' }
+            ].map((exp) => (
+              <div
+                key={exp.key}
+                onClick={() => handleExperiencia(exp.key)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  experiencia === exp.key
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <i className={`fa-solid ${exp.icon} text-2xl mb-2 text-gray-600`}></i>
+                  <h5 className="font-semibold text-gray-900">{exp.label}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{exp.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Resumen de respuestas */}
+      {experiencia && (
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6">
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">
+            <i className="fa-solid fa-clipboard-check mr-2"></i>Resumen de tu perfil
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                <strong>Uso:</strong> {usoVehiculo === 'urbano' ? 'Ciudad' : usoVehiculo === 'carretera' ? 'Carretera' : 'Mixto'}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Conducción:</strong> {estiloConduccion === 'conservador' ? 'Conservador' : estiloConduccion === 'normal' ? 'Normal' : 'Deportivo'}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                <strong>Frecuencia:</strong> {frecuenciaUso === 'diario' ? 'Diario' : frecuenciaUso === 'frecuente' ? 'Frecuente' : 'Ocasional'}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Presupuesto:</strong> {presupuesto === 'bajo' ? 'Bajo' : presupuesto === 'medio' ? 'Medio' : 'Alto'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="space-y-8 sm:space-y-10">
+      <div className="text-center mb-10">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
+          <i className="fa-solid fa-car mr-3"></i>Configura el vehículo
+        </h2>
+        <p className="text-base sm:text-lg text-gray-600 leading-relaxed px-4">
+          Selecciona paso a paso el coche que quieres comprar y ajusta los parámetros para calcular los gastos reales
+        </p>
+        
+        {/* Indicador de pasos */}
+        <div className="flex justify-center mt-6">
+          <div className="flex space-x-2">
+            {[1, 2, 3, 4, 5, 6, 7].map((step) => (
+              <div
+                key={step}
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  step <= currentStep ? 'bg-green-500' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        {renderStepContent()}
+      </div>
+
+      {/* Navegación interna del paso 2 - Diseño diferenciado */}
+      <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mt-8">
+        {/* Contador de pasos móvil - solo visible en móvil */}
+        <div className="text-center mb-4 sm:hidden">
+          <div className="inline-flex items-center px-4 py-2 bg-white rounded-full border border-gray-200">
+            <span className="text-sm text-gray-500">Pregunta</span>
+            <span className="text-base font-semibold text-gray-700 ml-2">{currentStep} de 4</span>
+          </div>
+        </div>
+
+        {/* Botones de navegación - responsive */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between">
+          <button
+            onClick={handlePreviousStep}
+            disabled={currentStep === 1}
+            className="flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] order-2 sm:order-1"
+          >
             <span className="mr-2">←</span>
             Anterior
           </button>

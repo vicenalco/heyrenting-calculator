@@ -5,8 +5,8 @@ Esta funcionalidad permite validar y actualizar precios de coches NUEVOS compar�
 ## Características
 
 - **Validación automática**: Obtiene precios actualizados basándose en marca, modelo, combustible y potencia
-- **Extracción inteligente**: Extrae precios específicos de motorizaciones
-- **Cálculo de promedio**: Cuando hay múltiples variantes de la misma motorización, calcula la media de precios
+- **Extracción inteligente**: Extrae TODOS los precios del modelo/motorización especificada
+- **Cálculo de promedio global**: Calcula la media de precios de TODAS las variantes encontradas (diferentes paquetes de equipamiento del mismo modelo/motorización)
 - **Comparación de precios**: Compara precios de Airtable vs datos actualizados (coches nuevos)
 - **Validación de precisión**: Indica la precisión de los precios con iconos de estado
 - **Estadísticas**: Resumen de precisión de precios por marca/modelo
@@ -14,7 +14,8 @@ Esta funcionalidad permite validar y actualizar precios de coches NUEVOS compar�
 ## ⚠️ IMPORTANTE
 
 - **Precios de coches NUEVOS**: Esta funcionalidad obtiene precios de coches nuevos únicamente
-- **Cálculo de promedio**: Si hay múltiples variantes de la misma motorización, se calcula la media de precios
+- **Cálculo de promedio global**: Se calcula la media de precios de TODAS las variantes encontradas, independientemente del paquete de equipamiento. Esto proporciona un precio más representativo ya que el mismo modelo/motorización puede tener diferentes precios según el nivel de equipamiento.
+- **Sin filtrado por nombre exacto**: No se requiere coincidencia exacta del nombre de la motorización, se obtienen todos los vehículos que coincidan con los filtros de combustible, transmisión y potencia.
 - **Confidencialidad**: La fuente de datos externos no se muestra en la interfaz de usuario
 - **Futuras funcionalidades**: Los precios de segunda mano, km0 y renting se implementarán en pasos posteriores
 
