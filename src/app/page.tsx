@@ -180,6 +180,8 @@ export default function Home() {
                 setStep(3);
               }}
               onScrapingStateChange={setScrapingState}
+              onPreviousStep={() => setStep(1)}
+              onNextStep={() => setStep(3)}
             />
           )}
 
@@ -196,6 +198,8 @@ export default function Home() {
               formData={formData} 
               onUpdate={updateFormData} 
               onNext={handleNext}
+              onPreviousStep={() => setStep(2)}
+              onNextStep={() => setStep(4)}
             />
           )}
 
@@ -204,6 +208,8 @@ export default function Home() {
               formData={formData} 
               onUpdate={updateFormData} 
               onNext={handleNext}
+              onPreviousStep={() => setStep(3)}
+              onNextStep={() => setStep(5)}
             />
           )}
 

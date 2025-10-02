@@ -48,9 +48,11 @@ interface Step2a_CarSelectionProps {
     error: string | null;
     completed: boolean;
   }) => void;
+  onPreviousStep?: () => void;
+  onNextStep?: () => void;
 }
 
-export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying, onScrapingStateChange }: Step2a_CarSelectionProps) {
+export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModifying = false, onFinishModifying, onScrapingStateChange, onPreviousStep, onNextStep }: Step2a_CarSelectionProps) {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
 
   const [brandQuery, setBrandQuery] = useState('');
@@ -104,6 +106,13 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       setLoadingText('');
     }
   }, [isModifying]);
+
+  // Sincronizar brandQuery con formData.carBrand cuando se navega de vuelta
+  useEffect(() => {
+    if (formData.carBrand && !brandQuery) {
+      setBrandQuery(formData.carBrand);
+    }
+  }, [formData.carBrand, brandQuery]);
 
   // Función helper para delay con loading
   const delayWithLoading = (ms: number, text: string) => {
@@ -1173,6 +1182,32 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             </button>
           )}
         </div>
+      </div>
+
+      {/* Botones de navegación adicionales */}
+      <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+        <button
+          onClick={onPreviousStep}
+          disabled={!onPreviousStep}
+          className="flex items-center px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span className="mr-2">←</span>
+          Paso 1
+        </button>
+
+        <div className="text-center">
+          <div className="text-sm text-gray-500 mb-1">Navegación rápida</div>
+          <div className="text-xs text-gray-400">Usa los botones para saltar entre pasos</div>
+        </div>
+
+        <button
+          onClick={onNextStep}
+          disabled={!onNextStep}
+          className="flex items-center px-6 py-3 text-base font-medium text-white bg-green-600 border-2 border-green-600 rounded-lg hover:bg-green-700 hover:border-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Paso 3
+          <span className="ml-2">→</span>
+        </button>
       </div>
 
     </div>

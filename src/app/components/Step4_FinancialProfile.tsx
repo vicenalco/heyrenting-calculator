@@ -10,9 +10,11 @@ interface Step4_FinancialProfileProps {
   };
   onUpdate: (updates: Partial<Step4_FinancialProfileProps['formData']>) => void;
   onNext: () => void;
+  onPreviousStep?: () => void;
+  onNextStep?: () => void;
 }
 
-export default function Step4_FinancialProfile({ formData, onUpdate, onNext }: Step4_FinancialProfileProps) {
+export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onPreviousStep, onNextStep }: Step4_FinancialProfileProps) {
   const [showSecondQuestion, setShowSecondQuestion] = useState(false);
 
   // Verificar si todas las preguntas han sido respondidas
@@ -266,6 +268,32 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext }: S
           style={isComplete ? { backgroundColor: '#52bf31' } : {}}
         >
           {isComplete ? 'Ver Resultados del Análisis →' : 'Responde todas las preguntas para continuar'}
+        </button>
+      </div>
+
+      {/* Botones de navegación adicionales */}
+      <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+        <button
+          onClick={onPreviousStep}
+          disabled={!onPreviousStep}
+          className="flex items-center px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span className="mr-2">←</span>
+          Paso 3
+        </button>
+
+        <div className="text-center">
+          <div className="text-sm text-gray-500 mb-1">Navegación rápida</div>
+          <div className="text-xs text-gray-400">Usa los botones para saltar entre pasos</div>
+        </div>
+
+        <button
+          onClick={onNextStep}
+          disabled={!onNextStep}
+          className="flex items-center px-6 py-3 text-base font-medium text-white bg-green-600 border-2 border-green-600 rounded-lg hover:bg-green-700 hover:border-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Ver Resultados
+          <span className="ml-2">→</span>
         </button>
       </div>
     </div>
