@@ -31,6 +31,7 @@ export interface Km77SearchResponse {
 export const fuelMapping: Record<string, string> = {
   'gasolina': 'gasolina',
   'diesel': 'gasóleo',
+  'Diésel': 'gasóleo', // Mapeo para el formato que viene de Airtable
   'hibrido': 'hibrido_no_enchufable',
   'Híbrido': 'hibrido_no_enchufable', // Mapeo para el formato que viene de Airtable
   'Híbrido Enchufable': 'Híbrido+Enchufable',
@@ -44,6 +45,7 @@ export const fuelMapping: Record<string, string> = {
  */
 export const transmissionMapping: Record<string, string> = {
   'manual': 'manual',
+  'Manual': '', // No filtrar por transmisión si puede ser manual o automático
   'automatico': 'automatico',
   'Automático': 'automatico', // Mapeo para el formato que viene de Airtable
   'Manual/Automático': '', // No filtrar por transmisión si es mixta
