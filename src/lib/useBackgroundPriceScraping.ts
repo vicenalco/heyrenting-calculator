@@ -7,6 +7,7 @@ interface ScrapingParams {
   power?: number;
   transmission?: string;
   years?: number[];
+  onPricesReady?: (prices: { precioNuevo: number | null; precioSegundaMano: number | null; precioKm0: number | null }) => void;
 }
 
 interface PriceScrapingState {
@@ -118,6 +119,12 @@ export function useBackgroundPriceScraping() {
         precioSegundaMano,
         precioKm0,
       });
+
+      // Llamar al callback si existe
+      if (params.onPricesReady) {
+        console.log('📞 Llamando a onPricesReady con precios:', { precioNuevo, precioSegundaMano, precioKm0 });
+        params.onPricesReady({ precioNuevo, precioSegundaMano, precioKm0 });
+      }
 
       return results;
     } catch (error) {

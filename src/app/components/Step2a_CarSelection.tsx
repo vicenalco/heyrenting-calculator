@@ -379,8 +379,18 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
         
         console.log('🎯 Iniciando scraping en segundo plano con años:', formData.carYear, 'y parámetros:', scrapingParams);
         
-        // Iniciar scraping en segundo plano (sin await)
-        startScraping(scrapingParams);
+        // Iniciar scraping en segundo plano con callback para guardar precios
+        startScraping({
+          ...scrapingParams,
+          onPricesReady: (prices) => {
+            console.log('💾 [Step2a] Callback onPricesReady ejecutado con precios:', prices);
+            onUpdate({
+              precioNuevo: prices.precioNuevo,
+              precioSegundaMano: prices.precioSegundaMano,
+              precioKm0: prices.precioKm0,
+            });
+          }
+        });
       }
       
       // Avanzar inmediatamente sin esperar al scraping
