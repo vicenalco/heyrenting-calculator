@@ -152,10 +152,25 @@ function hasKm0Badge(car: CochesCarData): boolean {
     return false;
   }
   
-  return car.badges.some(badge => 
-    badge.key === 'km0' || 
-    badge.value?.toLowerCase() === 'km0'
-  );
+  // Log para debug: ver la estructura de los badges
+  const hasKm0 = car.badges.some(badge => {
+    const isKm0 = badge.key === 'km0' || 
+                  badge.key?.toLowerCase() === 'km0' ||
+                  badge.value?.toLowerCase() === 'km0';
+    
+    if (isKm0) {
+      console.log(`🔍 Badge KM0 detectado:`, JSON.stringify(badge));
+    }
+    
+    return isKm0;
+  });
+  
+  if (!hasKm0 && car.badges.length > 0) {
+    // Log los badges para entender la estructura
+    console.log(`📋 Badges del coche ${car.id} (Precio: ${car.price?.amount}€):`, JSON.stringify(car.badges));
+  }
+  
+  return hasKm0;
 }
 
 /**
