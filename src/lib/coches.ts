@@ -166,7 +166,6 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
     const nextDataScript = $('script#__NEXT_DATA__').html();
     
     if (!nextDataScript) {
-      console.log('No se encontró el script __NEXT_DATA__');
       return null;
     }
     
@@ -177,7 +176,6 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
     const classifiedList = nextData?.props?.pageProps?.classifieds?.classifiedList;
     
     if (!classifiedList || !Array.isArray(classifiedList)) {
-      console.log('No se encontraron datos de coches en el JSON');
       return null;
     }
     
@@ -192,7 +190,6 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
       // Si estamos excluyendo KM0 y el coche es km0, lo saltamos
       if (excludeKm0 && isKm0Vehicle(car)) {
         excludedKm0Count++;
-        console.log(`⏭️  Excluyendo coche KM0 (ID: ${car.id}, Precio: ${car.price?.amount}€)`);
         return;
       }
       
@@ -201,27 +198,18 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
       }
     });
     
-    if (excludeKm0 && excludedKm0Count > 0) {
-      console.log(`🚫 Se excluyeron ${excludedKm0Count} vehículos KM0 de ${totalCars} encontrados`);
-    }
-    
     if (prices.length === 0) {
-      console.log('No se encontraron precios en los datos');
       return null;
     }
     
     // Calcular precio promedio
     const averagePrice = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
     
-    console.log(`✅ Encontrados ${prices.length} precios válidos:`, prices);
-    console.log(`💰 Precio promedio: ${averagePrice}€`);
-    
     return {
       price: averagePrice,
       count: prices.length,
     };
   } catch (error) {
-    console.error('Error parseando resultados de coches.com:', error);
     return null;
   }
 }
@@ -239,10 +227,6 @@ export async function searchCochesPrice(
     
     // Primer intento: con años si están disponibles
     let searchUrl = buildCochesSearchUrl(type, params, true);
-    console.log(`🔍 Buscando en coches.com (${type}) con años:`, searchUrl);
-    if (excludeKm0) {
-      console.log(`🚫 Se excluirán vehículos con etiqueta KM0 de los resultados`);
-    }
     
     let response = await fetch(searchUrl, {
       headers: {
@@ -261,9 +245,7 @@ export async function searchCochesPrice(
     
     // Si no se encontraron resultados y se usaron años, intentar sin años
     if (!result && params.years && params.years.length > 0) {
-      console.log(`⚠️ No se encontraron resultados con años, reintentando sin filtro de años...`);
       searchUrl = buildCochesSearchUrl(type, params, false);
-      console.log(`🔍 Buscando en coches.com (${type}) sin años:`, searchUrl);
       
       response = await fetch(searchUrl, {
         headers: {
@@ -279,15 +261,8 @@ export async function searchCochesPrice(
       }
     }
     
-    if (result) {
-      console.log(`✅ Precio encontrado en coches.com (${type}):`, result);
-    } else {
-      console.log(`❌ No se encontraron precios en coches.com (${type})`);
-    }
-    
     return result;
   } catch (error) {
-    console.error(`Error en búsqueda coches.com (${type}):`, error);
     return null;
   }
 }
@@ -298,8 +273,6 @@ export async function searchCochesPrice(
 export async function searchAllCochesPrices(
   params: CochesSearchParams
 ): Promise<CochesSearchResponse> {
-  console.log('🚗 Iniciando búsqueda de precios en coches.com:', params);
-  
   // Buscar ambos tipos en paralelo
   const [segundaMano, km0] = await Promise.all([
     searchCochesPrice('segunda-mano', params),

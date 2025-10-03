@@ -84,11 +84,7 @@ export function buildKm77SearchUrl(params: Km77SearchParams): string {
   const transmissionFilter = transmissionMapping[params.transmission] !== undefined 
     ? transmissionMapping[params.transmission] 
     : params.transmission;
-  console.log('🔧 Debug transmisión:', { 
-    original: params.transmission, 
-    mapped: transmissionFilter, 
-    willAddFilter: transmissionFilter && transmissionFilter !== '' 
-  });
+  
   if (transmissionFilter && transmissionFilter !== '') {
     searchParams.push(`gearboxes[]=${transmissionFilter}`);
   }
@@ -207,7 +203,6 @@ export async function searchKm77Prices(params: Km77SearchParams): Promise<Km77Se
       searchUrl,
     };
   } catch (error) {
-    console.error('Error en búsqueda km77:', error);
     return {
       results: [],
       totalResults: 0,

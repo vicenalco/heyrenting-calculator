@@ -49,7 +49,6 @@ export async function GET(request: Request) {
     });
 
   } catch (error) {
-    console.error('Error en API km77:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
@@ -60,13 +59,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('📥 API recibió petición POST:', body);
     
     const { brand, model, fuel, power, transmission } = body;
 
     // Validar parámetros requeridos
     if (!brand || !model || !fuel || !power || !transmission) {
-      console.log('❌ Faltan parámetros:', { brand, model, fuel, power, transmission });
       return NextResponse.json(
         { error: 'Faltan parámetros requeridos: brand, model, fuel, power, transmission' },
         { status: 400 }
@@ -80,17 +77,13 @@ export async function POST(request: Request) {
       power: parseInt(power),
       transmission,
     };
-
-    console.log('🔍 Iniciando búsqueda con parámetros:', searchParams);
     
     // Realizar búsqueda en km77
     const searchResponse = await searchKm77Prices(searchParams);
-    console.log('📊 Resultados de búsqueda:', searchResponse);
 
     // Calcular precios estadísticos
     const lowestPrice = getLowestPrice(searchResponse.results);
     const averagePrice = getAveragePrice(searchResponse.results);
-    console.log('💰 Precios calculados:', { lowestPrice, averagePrice });
 
     return NextResponse.json({
       success: true,
@@ -107,7 +100,6 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('Error en API km77 POST:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

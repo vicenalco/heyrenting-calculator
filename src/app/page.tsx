@@ -103,16 +103,6 @@ export default function Home() {
 
   // useEffect para guardar precios cuando el scraping proporcione datos
   useEffect(() => {
-    console.log('🔍 [page.tsx] Estado del scraping:', {
-      completed: scrapingState.completed,
-      precioNuevo: scrapingState.precioNuevo,
-      precioSegundaMano: scrapingState.precioSegundaMano,
-      precioKm0: scrapingState.precioKm0,
-      hayPrecios: !!(scrapingState.precioNuevo !== undefined || 
-                     scrapingState.precioSegundaMano !== undefined || 
-                     scrapingState.precioKm0 !== undefined)
-    });
-    
     // Guardar precios tan pronto como estén disponibles (no esperar a completed)
     if (scrapingState.precioNuevo !== undefined || 
         scrapingState.precioSegundaMano !== undefined || 
@@ -122,12 +112,6 @@ export default function Home() {
       if (scrapingState.precioNuevo !== null || 
           scrapingState.precioSegundaMano !== null || 
           scrapingState.precioKm0 !== null) {
-        console.log('💾 [page.tsx] Guardando precios del scraping en formData:', {
-          precioNuevo: scrapingState.precioNuevo,
-          precioSegundaMano: scrapingState.precioSegundaMano,
-          precioKm0: scrapingState.precioKm0
-        });
-        
         updateFormData({
           precioNuevo: scrapingState.precioNuevo ?? formData.precioNuevo,
           precioSegundaMano: scrapingState.precioSegundaMano ?? formData.precioSegundaMano,

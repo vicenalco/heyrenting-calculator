@@ -36,8 +36,6 @@ export function useBackgroundPriceScraping() {
   });
 
   const startScraping = useCallback(async (params: ScrapingParams) => {
-    console.log('🚀 Iniciando scraping con parámetros:', params);
-    
     setScrapingState({
       isScraping: true,
       progress: 0,
@@ -56,7 +54,6 @@ export function useBackgroundPriceScraping() {
       
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
       const km77ApiUrl = `${baseUrl}/api/km77/search`;
-      console.log('🌐 Llamando a la API km77:', km77ApiUrl);
       
       const km77Response = await fetch(km77ApiUrl, {
         method: 'POST',
@@ -71,13 +68,11 @@ export function useBackgroundPriceScraping() {
       }
 
       const km77Results = await km77Response.json();
-      console.log('📊 Resultados km77 obtenidos:', km77Results);
       
       // Paso 2: Buscar en coches.com (segunda mano y km0)
       setScrapingState(prev => ({ ...prev, progress: 60, currentStep: 'Buscando precios de segunda mano y km0...' }));
       
       const cochesApiUrl = `${baseUrl}/api/coches/search`;
-      console.log('🌐 Llamando a la API coches.com:', cochesApiUrl);
       
       const cochesResponse = await fetch(cochesApiUrl, {
         method: 'POST',
@@ -90,17 +85,12 @@ export function useBackgroundPriceScraping() {
       let cochesResults = null;
       if (cochesResponse.ok) {
         cochesResults = await cochesResponse.json();
-        console.log('📊 Resultados coches.com obtenidos:', cochesResults);
-      } else {
-        console.warn('⚠️ No se pudieron obtener precios de coches.com');
       }
       
       // Extraer precios
       const precioNuevo = km77Results.data?.priceStats?.average || null;
       const precioSegundaMano = cochesResults?.data?.segundaMano?.price || null;
       const precioKm0 = cochesResults?.data?.km0?.price || null;
-      
-      console.log('💰 Precios extraídos:', { precioNuevo, precioSegundaMano, precioKm0 });
       
       // Combinar resultados
       const results = {
@@ -122,7 +112,6 @@ export function useBackgroundPriceScraping() {
 
       // Llamar al callback si existe
       if (params.onPricesReady) {
-        console.log('📞 Llamando a onPricesReady con precios:', { precioNuevo, precioSegundaMano, precioKm0 });
         params.onPricesReady({ precioNuevo, precioSegundaMano, precioKm0 });
       }
 
