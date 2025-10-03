@@ -103,6 +103,16 @@ export default function Home() {
 
   // useEffect para guardar precios cuando el scraping se complete
   useEffect(() => {
+    console.log('🔍 [page.tsx] Estado del scraping:', {
+      completed: scrapingState.completed,
+      precioNuevo: scrapingState.precioNuevo,
+      precioSegundaMano: scrapingState.precioSegundaMano,
+      precioKm0: scrapingState.precioKm0,
+      hayPrecios: !!(scrapingState.precioNuevo !== undefined || 
+                     scrapingState.precioSegundaMano !== undefined || 
+                     scrapingState.precioKm0 !== undefined)
+    });
+    
     if (scrapingState.completed && 
         (scrapingState.precioNuevo !== undefined || 
          scrapingState.precioSegundaMano !== undefined || 
