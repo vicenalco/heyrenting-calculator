@@ -19,6 +19,28 @@ export interface CochesSearchResponse {
   km0: CochesResult | null;
 }
 
+// Tipos para el JSON de coches.com
+interface CochesCarPrice {
+  amount: number;
+  currency: string;
+}
+
+interface CochesCarData {
+  id: string;
+  price?: CochesCarPrice;
+  [key: string]: unknown;
+}
+
+interface CochesNextData {
+  props?: {
+    pageProps?: {
+      classifieds?: {
+        classifiedList?: CochesCarData[];
+      };
+    };
+  };
+}
+
 /**
  * Mapea los tipos de combustible de Airtable a los de coches.com
  */
@@ -131,7 +153,7 @@ export function parseCochesResults(html: string): CochesResult | null {
     }
     
     // Parsear el JSON
-    const nextData = JSON.parse(nextDataScript);
+    const nextData = JSON.parse(nextDataScript) as CochesNextData;
     
     // Extraer los datos de los coches desde la estructura JSON
     const classifiedList = nextData?.props?.pageProps?.classifieds?.classifiedList;
@@ -144,7 +166,7 @@ export function parseCochesResults(html: string): CochesResult | null {
     const prices: number[] = [];
     
     // Extraer precios de cada coche
-    classifiedList.forEach((car: any) => {
+    classifiedList.forEach((car: CochesCarData) => {
       if (car.price && car.price.amount) {
         prices.push(car.price.amount);
       }
