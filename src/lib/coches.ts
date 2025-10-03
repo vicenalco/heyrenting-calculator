@@ -25,9 +25,16 @@ interface CochesCarPrice {
   currency: string;
 }
 
+interface CochesCarBadge {
+  key: string;
+  value: string;
+  [key: string]: unknown;
+}
+
 interface CochesCarData {
   id: string;
   price?: CochesCarPrice;
+  badges?: CochesCarBadge[];
   [key: string]: unknown;
 }
 
@@ -138,9 +145,25 @@ export function buildCochesSearchUrl(
 }
 
 /**
- * Extrae el precio promedio de la página HTML de coches.com
+ * Verifica si un coche tiene la etiqueta KM0
  */
-export function parseCochesResults(html: string): CochesResult | null {
+function hasKm0Badge(car: CochesCarData): boolean {
+  if (!car.badges || !Array.isArray(car.badges)) {
+    return false;
+  }
+  
+  return car.badges.some(badge => 
+    badge.key === 'km0' || 
+    badge.value?.toLowerCase() === 'km0'
+  );
+}
+
+/**
+ * Extrae el precio promedio de la página HTML de coches.com
+ * @param html - HTML de la página
+ * @param excludeKm0 - Si true, excluye vehículos con etiqueta KM0 (útil para búsquedas de segunda mano)
+ */
+export function parseCochesResults(html: string, excludeKm0: boolean = false): CochesResult | null {
   const $ = cheerio.load(html);
   
   try {
@@ -164,13 +187,28 @@ export function parseCochesResults(html: string): CochesResult | null {
     }
     
     const prices: number[] = [];
+    let totalCars = 0;
+    let excludedKm0Count = 0;
     
     // Extraer precios de cada coche
     classifiedList.forEach((car: CochesCarData) => {
+      totalCars++;
+      
+      // Si estamos excluyendo KM0 y el coche tiene esa etiqueta, lo saltamos
+      if (excludeKm0 && hasKm0Badge(car)) {
+        excludedKm0Count++;
+        console.log(`⏭️  Excluyendo coche KM0 (ID: ${car.id}, Precio: ${car.price?.amount}€)`);
+        return;
+      }
+      
       if (car.price && car.price.amount) {
         prices.push(car.price.amount);
       }
     });
+    
+    if (excludeKm0 && excludedKm0Count > 0) {
+      console.log(`🚫 Se excluyeron ${excludedKm0Count} vehículos KM0 de ${totalCars} encontrados`);
+    }
     
     if (prices.length === 0) {
       console.log('No se encontraron precios en los datos');
@@ -180,7 +218,7 @@ export function parseCochesResults(html: string): CochesResult | null {
     // Calcular precio promedio
     const averagePrice = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
     
-    console.log(`✅ Encontrados ${prices.length} precios:`, prices);
+    console.log(`✅ Encontrados ${prices.length} precios válidos:`, prices);
     console.log(`💰 Precio promedio: ${averagePrice}€`);
     
     return {
@@ -201,9 +239,15 @@ export async function searchCochesPrice(
   params: CochesSearchParams
 ): Promise<CochesResult | null> {
   try {
+    // Para segunda mano, excluir coches con etiqueta KM0
+    const excludeKm0 = type === 'segunda-mano';
+    
     // Primer intento: con años si están disponibles
     let searchUrl = buildCochesSearchUrl(type, params, true);
     console.log(`🔍 Buscando en coches.com (${type}) con años:`, searchUrl);
+    if (excludeKm0) {
+      console.log(`🚫 Se excluirán vehículos con etiqueta KM0 de los resultados`);
+    }
     
     let response = await fetch(searchUrl, {
       headers: {
@@ -218,7 +262,7 @@ export async function searchCochesPrice(
     }
 
     let html = await response.text();
-    let result = parseCochesResults(html);
+    let result = parseCochesResults(html, excludeKm0);
     
     // Si no se encontraron resultados y se usaron años, intentar sin años
     if (!result && params.years && params.years.length > 0) {
@@ -236,7 +280,7 @@ export async function searchCochesPrice(
 
       if (response.ok) {
         html = await response.text();
-        result = parseCochesResults(html);
+        result = parseCochesResults(html, excludeKm0);
       }
     }
     

@@ -351,7 +351,21 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       setIsNavigatingBack(false);
       setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
     } else if (currentStep === 4 && formData.carYear && formData.carYear.length > 0) {
-      // Si estamos en el paso 4 (año) y se han seleccionado años, avanzar al paso 3
+      // Si estamos en el paso 4 (año) y se han seleccionado años, iniciar scraping y avanzar
+      if (formData.carBrand && formData.carModel && selectedTrim) {
+        const scrapingParams = {
+          brand: formData.carBrand,
+          model: formData.carModel,
+          fuel: selectedTrim.fuel,
+          power: selectedTrim.cv,
+          transmission: selectedTrim.transmision?.[0] || 'automatico',
+          years: formData.carYear,
+        };
+        
+        console.log('🎯 Iniciando scraping al hacer clic en "Siguiente paso" con años:', formData.carYear, 'y parámetros:', scrapingParams);
+        startScraping(scrapingParams);
+      }
+      
       onNext();
     }
   };
@@ -692,22 +706,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                 
                 onUpdate({ carYear: newYears });
                 
-                // Iniciar scraping después de seleccionar años (solo si hay años seleccionados)
-                if (newYears.length > 0 && formData.carBrand && formData.carModel && selectedTrim) {
-                  const scrapingParams = {
-                    brand: formData.carBrand,
-                    model: formData.carModel,
-                    fuel: selectedTrim.fuel,
-                    power: selectedTrim.cv,
-                    transmission: selectedTrim.transmision?.[0] || 'automatico',
-                    years: newYears
-                  };
-                  
-                  console.log('🎯 Iniciando scraping después de seleccionar años:', newYears, 'con parámetros:', scrapingParams);
-                  startScraping(scrapingParams);
-                }
-                
-                // No avanzar automáticamente - el usuario debe hacer clic en "Siguiente paso"
+                // NO iniciar scraping aquí - se hará al hacer clic en "Siguiente paso"
               }}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 (formData.carYear || []).includes(year)
