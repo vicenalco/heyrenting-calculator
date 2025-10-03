@@ -251,6 +251,14 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   
   // Efecto para guardar precios cuando el scraping se complete
   useEffect(() => {
+    console.log('🔍 Verificando si guardar precios:', { 
+      scrapingCompleted, 
+      precioNuevo, 
+      precioSegundaMano, 
+      precioKm0,
+      hayAlgunPrecio: !!(precioNuevo || precioSegundaMano || precioKm0)
+    });
+    
     if (scrapingCompleted && (precioNuevo || precioSegundaMano || precioKm0)) {
       console.log('💾 Guardando precios obtenidos:', { precioNuevo, precioSegundaMano, precioKm0 });
       onUpdate({
@@ -346,7 +354,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   };
 
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (currentStep < 4) {
       setIsNavigatingBack(false);
       setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
@@ -363,7 +371,19 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
         };
         
         console.log('🎯 Iniciando scraping al hacer clic en "Siguiente paso" con años:', formData.carYear, 'y parámetros:', scrapingParams);
-        startScraping(scrapingParams);
+        
+        // Iniciar scraping y esperar a que termine
+        const results = await startScraping(scrapingParams);
+        
+        // Guardar precios antes de avanzar
+        if (results) {
+          console.log('💾 Guardando precios antes de avanzar al paso 5');
+          onUpdate({
+            precioNuevo: precioNuevo,
+            precioSegundaMano: precioSegundaMano,
+            precioKm0: precioKm0,
+          });
+        }
       }
       
       onNext();
