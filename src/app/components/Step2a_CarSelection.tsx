@@ -665,7 +665,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             )}
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Puedes seleccionar múltiples años haciendo clic en ellos
+            Selecciona un rango de años: haz clic en el año inicial y luego en el año final
           </p>
           
           {/* Texto explicativo sobre los años de disponibilidad */}
@@ -694,14 +694,30 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
               onClick={() => {
                 const currentYears = formData.carYear || [];
                 const isSelected = currentYears.includes(year);
-                let newYears;
+                let newYears: number[];
                 
                 if (isSelected) {
-                  // Deseleccionar año
-                  newYears = currentYears.filter(y => y !== year);
+                  // Si el año ya está seleccionado, deseleccionarlo (y deseleccionar todo)
+                  newYears = [];
+                } else if (currentYears.length === 0) {
+                  // Si no hay años seleccionados, seleccionar solo este año
+                  newYears = [year];
                 } else {
-                  // Seleccionar año
-                  newYears = [...currentYears, year];
+                  // Si ya hay al menos un año seleccionado, crear un rango
+                  const minYear = Math.min(...currentYears);
+                  const maxYear = Math.max(...currentYears);
+                  
+                  // Determinar el nuevo rango
+                  const newMin = Math.min(minYear, year);
+                  const newMax = Math.max(maxYear, year);
+                  
+                  // Crear array con todos los años en el rango
+                  newYears = [];
+                  for (let y = newMin; y <= newMax; y++) {
+                    if (availableYears.includes(y)) {
+                      newYears.push(y);
+                    }
+                  }
                 }
                 
                 onUpdate({ carYear: newYears });
