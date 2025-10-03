@@ -395,7 +395,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   const renderBrandStep = () => (
     <div className="space-y-4">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿Qué marca te gusta?</h2>
+        <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿Qué marca quieres elegir?</h2>
         <p className="text-lg text-gray-600">Busca y selecciona la marca del vehículo que quieres comprar</p>
       </div>
       

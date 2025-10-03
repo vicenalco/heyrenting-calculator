@@ -10,7 +10,6 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
   return (
     <div className="text-center max-w-6xl mx-auto">
       <div className="mb-12">
-        <Icon name="car" className="w-12 h-12 mx-auto mb-4 text-green-600" />
         <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 tracking-tight">
           ¡Bienvenido a la Calculadora de Gastos Reales!
         </h1>

@@ -206,8 +206,13 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
     let excludedKm0Count = 0;
     
     // Extraer precios de cada coche
-    classifiedList.forEach((car: CochesCarData) => {
+    classifiedList.forEach((car: CochesCarData, index: number) => {
       totalCars++;
+      
+      // Log completo del primer coche para entender la estructura
+      if (index === 0) {
+        console.log(`🔍 Estructura completa del primer coche:`, JSON.stringify(car, null, 2));
+      }
       
       // Si estamos excluyendo KM0 y el coche tiene esa etiqueta, lo saltamos
       if (excludeKm0 && hasKm0Badge(car)) {
@@ -218,6 +223,10 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
       
       if (car.price && car.price.amount) {
         prices.push(car.price.amount);
+        // Log del precio para ver si hay algún patrón
+        if (excludeKm0) {
+          console.log(`✅ Añadiendo precio de segunda mano: ${car.price.amount}€ (ID: ${car.id})`);
+        }
       }
     });
     
