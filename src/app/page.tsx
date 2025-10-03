@@ -101,7 +101,7 @@ export default function Home() {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
-  // useEffect para guardar precios cuando el scraping se complete
+  // useEffect para guardar precios cuando el scraping proporcione datos
   useEffect(() => {
     console.log('🔍 [page.tsx] Estado del scraping:', {
       completed: scrapingState.completed,
@@ -113,23 +113,29 @@ export default function Home() {
                      scrapingState.precioKm0 !== undefined)
     });
     
-    if (scrapingState.completed && 
-        (scrapingState.precioNuevo !== undefined || 
-         scrapingState.precioSegundaMano !== undefined || 
-         scrapingState.precioKm0 !== undefined)) {
-      console.log('💾 [page.tsx] Guardando precios del scraping en formData:', {
-        precioNuevo: scrapingState.precioNuevo,
-        precioSegundaMano: scrapingState.precioSegundaMano,
-        precioKm0: scrapingState.precioKm0
-      });
+    // Guardar precios tan pronto como estén disponibles (no esperar a completed)
+    if (scrapingState.precioNuevo !== undefined || 
+        scrapingState.precioSegundaMano !== undefined || 
+        scrapingState.precioKm0 !== undefined) {
       
-      updateFormData({
-        precioNuevo: scrapingState.precioNuevo ?? formData.precioNuevo,
-        precioSegundaMano: scrapingState.precioSegundaMano ?? formData.precioSegundaMano,
-        precioKm0: scrapingState.precioKm0 ?? formData.precioKm0,
-      });
+      // Solo actualizar si al menos uno de los precios es diferente de null
+      if (scrapingState.precioNuevo !== null || 
+          scrapingState.precioSegundaMano !== null || 
+          scrapingState.precioKm0 !== null) {
+        console.log('💾 [page.tsx] Guardando precios del scraping en formData:', {
+          precioNuevo: scrapingState.precioNuevo,
+          precioSegundaMano: scrapingState.precioSegundaMano,
+          precioKm0: scrapingState.precioKm0
+        });
+        
+        updateFormData({
+          precioNuevo: scrapingState.precioNuevo ?? formData.precioNuevo,
+          precioSegundaMano: scrapingState.precioSegundaMano ?? formData.precioSegundaMano,
+          precioKm0: scrapingState.precioKm0 ?? formData.precioKm0,
+        });
+      }
     }
-  }, [scrapingState.completed, scrapingState.precioNuevo, scrapingState.precioSegundaMano, scrapingState.precioKm0]);
+  }, [scrapingState.precioNuevo, scrapingState.precioSegundaMano, scrapingState.precioKm0]);
 
   // Funciones para verificar si cada paso está completo
   const isStep2Complete = formData.carBrand && formData.carModel && formData.carVersion && formData.carYear.length > 0;
