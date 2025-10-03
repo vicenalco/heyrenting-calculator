@@ -122,28 +122,44 @@ export function parseCochesResults(html: string): CochesResult | null {
   const $ = cheerio.load(html);
   
   try {
-    // Buscar todos los precios en la página
+    // Buscar el script __NEXT_DATA__ que contiene los datos JSON
+    const nextDataScript = $('script#__NEXT_DATA__').html();
+    
+    if (!nextDataScript) {
+      console.log('No se encontró el script __NEXT_DATA__');
+      return null;
+    }
+    
+    // Parsear el JSON
+    const nextData = JSON.parse(nextDataScript);
+    
+    // Extraer los datos de los coches desde la estructura JSON
+    const classifiedList = nextData?.props?.pageProps?.classifieds?.classifiedList;
+    
+    if (!classifiedList || !Array.isArray(classifiedList)) {
+      console.log('No se encontraron datos de coches en el JSON');
+      return null;
+    }
+    
     const prices: number[] = [];
     
-    // Selector para precios (puede variar según la estructura de coches.com)
-    $('[data-testid="listing-card-price"], .listing-card__price, .price').each((_, element) => {
-      const priceText = $(element).text().trim();
-      // Extraer números del texto (ej: "25.000 €" -> 25000)
-      const priceMatch = priceText.match(/[\d.]+/g);
-      if (priceMatch) {
-        const price = parseFloat(priceMatch.join('').replace(/\./g, ''));
-        if (!isNaN(price) && price > 0) {
-          prices.push(price);
-        }
+    // Extraer precios de cada coche
+    classifiedList.forEach((car: any) => {
+      if (car.price && car.price.amount) {
+        prices.push(car.price.amount);
       }
     });
     
     if (prices.length === 0) {
+      console.log('No se encontraron precios en los datos');
       return null;
     }
     
     // Calcular precio promedio
     const averagePrice = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+    
+    console.log(`✅ Encontrados ${prices.length} precios:`, prices);
+    console.log(`💰 Precio promedio: ${averagePrice}€`);
     
     return {
       price: averagePrice,
