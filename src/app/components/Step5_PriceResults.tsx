@@ -94,7 +94,6 @@ export default function Step5_PriceResults({ formData, onPreviousStep }: Step5_P
           </p>
         )}
       </div>
-
       {/* Price Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {priceCards.map((card) => (
@@ -148,10 +147,7 @@ export default function Step5_PriceResults({ formData, onPreviousStep }: Step5_P
                 ) : (
                   <>
                     <div className="text-2xl font-semibold text-gray-400 mb-1">
-                      No disponible
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      No se encontraron ofertas en el mercado
+                      No hay modelos disponibles en el mercado
                     </div>
                   </>
                 )}
@@ -245,7 +241,7 @@ export default function Step5_PriceResults({ formData, onPreviousStep }: Step5_P
         </div>
       )}
 
-      {/* Botones de navegación */}
+       {/* Botones de navegación */}
       <div className="flex justify-between items-center mt-8">
         <button
           onClick={onPreviousStep}
