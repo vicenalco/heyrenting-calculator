@@ -35,6 +35,7 @@ interface CochesCarData {
   id: string;
   price?: CochesCarPrice;
   badges?: CochesCarBadge[];
+  isKm0?: boolean; // Campo que indica si el vehículo es km0
   [key: string]: unknown;
 }
 
@@ -145,32 +146,11 @@ export function buildCochesSearchUrl(
 }
 
 /**
- * Verifica si un coche tiene la etiqueta KM0
+ * Verifica si un coche es KM0
  */
-function hasKm0Badge(car: CochesCarData): boolean {
-  if (!car.badges || !Array.isArray(car.badges)) {
-    return false;
-  }
-  
-  // Log para debug: ver la estructura de los badges
-  const hasKm0 = car.badges.some(badge => {
-    const isKm0 = badge.key === 'km0' || 
-                  badge.key?.toLowerCase() === 'km0' ||
-                  badge.value?.toLowerCase() === 'km0';
-    
-    if (isKm0) {
-      console.log(`🔍 Badge KM0 detectado:`, JSON.stringify(badge));
-    }
-    
-    return isKm0;
-  });
-  
-  if (!hasKm0 && car.badges.length > 0) {
-    // Log los badges para entender la estructura
-    console.log(`📋 Badges del coche ${car.id} (Precio: ${car.price?.amount}€):`, JSON.stringify(car.badges));
-  }
-  
-  return hasKm0;
+function isKm0Vehicle(car: CochesCarData): boolean {
+  // El JSON de coches.com tiene un campo 'isKm0' que indica directamente si es km0
+  return car.isKm0 === true;
 }
 
 /**
@@ -206,16 +186,11 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
     let excludedKm0Count = 0;
     
     // Extraer precios de cada coche
-    classifiedList.forEach((car: CochesCarData, index: number) => {
+    classifiedList.forEach((car: CochesCarData) => {
       totalCars++;
       
-      // Log completo del primer coche para entender la estructura
-      if (index === 0) {
-        console.log(`🔍 Estructura completa del primer coche:`, JSON.stringify(car, null, 2));
-      }
-      
-      // Si estamos excluyendo KM0 y el coche tiene esa etiqueta, lo saltamos
-      if (excludeKm0 && hasKm0Badge(car)) {
+      // Si estamos excluyendo KM0 y el coche es km0, lo saltamos
+      if (excludeKm0 && isKm0Vehicle(car)) {
         excludedKm0Count++;
         console.log(`⏭️  Excluyendo coche KM0 (ID: ${car.id}, Precio: ${car.price?.amount}€)`);
         return;
@@ -223,10 +198,6 @@ export function parseCochesResults(html: string, excludeKm0: boolean = false): C
       
       if (car.price && car.price.amount) {
         prices.push(car.price.amount);
-        // Log del precio para ver si hay algún patrón
-        if (excludeKm0) {
-          console.log(`✅ Añadiendo precio de segunda mano: ${car.price.amount}€ (ID: ${car.id})`);
-        }
       }
     });
     
