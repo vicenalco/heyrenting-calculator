@@ -7,6 +7,7 @@ import Step2a_CarSelection from './components/Step2a_CarSelection';
 import Step2b_Discovery from './components/Step2b_Discovery';
 import Step3_DriverProfile from './components/Step3_DriverProfile';
 import Step4_FinancialProfile from './components/Step4_FinancialProfile';
+import Step5_PriceResults from './components/Step5_PriceResults';
 import PriceScrapingProgress from './components/PriceScrapingProgress';
 import { calculateFinancialAutopsy } from '../lib/calculations';
 import Icon from './components/Icon';
@@ -242,162 +243,31 @@ export default function Home() {
           )}
 
           {step === 5 && (
-            <div className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Gastos Reales del Vehículo 📊
-                </h2>
-                <p className="text-gray-600">
-                  Aquí tienes el desglose completo de todos los costes reales
-                </p>
-              </div>
-
+            <>
               {/* Mostrar animación de scraping si está activo */}
               {scrapingState.isScraping && (
-                <PriceScrapingProgress
-                  isScraping={scrapingState.isScraping}
-                  progress={scrapingState.progress}
-                  currentStep={scrapingState.currentStep}
-                  error={scrapingState.error}
-                  completed={scrapingState.completed}
+                <div className="mb-8">
+                  <PriceScrapingProgress
+                    isScraping={scrapingState.isScraping}
+                    progress={scrapingState.progress}
+                    currentStep={scrapingState.currentStep}
+                    error={scrapingState.error}
+                    completed={scrapingState.completed}
+                  />
+                </div>
+              )}
+
+              {/* Mostrar resultados de precios */}
+              {!scrapingState.isScraping && (
+                <Step5_PriceResults
+                  formData={formData}
+                  onPreviousStep={() => {
+                    setIsNavigatingBack(true);
+                    setStep(4);
+                  }}
                 />
               )}
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Tarjeta de Coste Total Real */}
-                <ResultCard
-                  title="Coste Total Real Mensual"
-                  monthlyCost={results.totalOwnershipCost}
-                  isFeatured={true}
-                >
-                  <h4 className="font-semibold mb-2 text-gray-700">Desglose completo de gastos:</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex justify-between">
-                      <span>💸 Financiación e Intereses</span>
-                      <strong>{results.breakdown.financiero.toFixed(0)} €</strong>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>📉 Depreciación (coste oculto)</span>
-                      <strong>{results.breakdown.depreciacion.toFixed(0)} €</strong>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>🛡️ Seguro y Tasas</span>
-                      <strong>{(results.breakdown.seguro + results.breakdown.impuestos).toFixed(0)} €</strong>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>🔧 Mantenimiento y Neumáticos</span>
-                      <strong>{(results.breakdown.mantenimiento + results.breakdown.neumaticos).toFixed(0)} €</strong>
-                    </li>
-                    <li className="flex justify-between border-t pt-2 mt-2 border-dashed">
-                      <span>🚨 Fondo para Imprevistos</span>
-                      <strong>{results.breakdown.imprevistos.toFixed(0)} €</strong>
-                    </li>
-                  </ul>
-                </ResultCard>
-
-                {/* Tarjeta de Alternativas */}
-                <ResultCard
-                  title="Otras Opciones"
-                  monthlyCost={results.rentingCost}
-                  isFeatured={false}
-                >
-                  <h4 className="font-semibold mb-2">Compara con otras opciones:</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex justify-between">
-                      <span>🚗 Renting (todo incluido)</span>
-                      <strong>{results.rentingCost.toFixed(0)} €</strong>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>🛒 Compra de segunda mano</span>
-                      <strong>{(results.totalOwnershipCost * 0.7).toFixed(0)} €</strong>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>🆕 Compra de KM0</span>
-                      <strong>{(results.totalOwnershipCost * 0.85).toFixed(0)} €</strong>
-                    </li>
-                    <li className="flex justify-between border-t pt-2 mt-2 border-dashed">
-                      <span>💳 Leasing operativo</span>
-                      <strong>{(results.rentingCost * 1.1).toFixed(0)} €</strong>
-                    </li>
-                  </ul>
-                </ResultCard>
-              </div>
-
-              {/* Resumen informativo */}
-              <div className="mt-8 p-6 rounded-lg" style={{ backgroundColor: '#f0f9f0', borderLeft: '4px solid #52bf31' }}>
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <span className="text-2xl">💡</span>
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-semibold" style={{ color: '#2d5a2d' }}>
-                      Información Importante
-                    </h3>
-                    <p style={{ color: '#2d5a2d' }}>
-                      Estos cálculos incluyen todos los gastos reales: financiación, depreciación, seguro, mantenimiento, impuestos e imprevistos. 
-                      Recuerda que la depreciación es un coste oculto pero real que afecta el valor del vehículo.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Botones de navegación para el paso 5 */}
-              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
-                  onClick={() => {
-                    setIsModifying(true);
-                    setIsNavigatingBack(true);
-                    setStep(2);
-                  }}
-                  className="flex items-center justify-center px-6 py-3 text-white bg-gray-600 hover:bg-gray-700 font-semibold rounded-lg transition-colors duration-200"
-                >
-                  <span className="mr-2">←</span>
-                  Modificar Datos
-                </button>
-                <button 
-                  onClick={() => {
-                    setStep(1);
-                    setFormData({
-                      userPath: '',
-                      carBrand: '',
-                      carModel: '',
-                      carVersion: '',
-                      carYear: [] as number[],
-                      kmsAnuales: 20000,
-                      aniosFinanciacion: 5,
-                      precioCoche: 25000,
-                      tipoCombustible: 'gasolina',
-                      codigoPostal: '',
-                      provincia: '',
-                      nombre: '',
-                      email: '',
-                      telefono: '',
-                      brandId: '',
-                      modelId: '',
-                      usoVehiculo: '',
-                      estiloConduccion: '',
-                      frecuenciaUso: '',
-                      presupuesto: '',
-                      experiencia: '',
-                      habitatVehiculo: [],
-                      temperamentoVolante1: '',
-                      temperamentoVolante2: '',
-                      misionVehiculo: '',
-                      planPago: '',
-                      desembolso30PorCiento: '',
-                      porcentajeIngresos: '',
-                      precioNuevo: null,
-                      precioSegundaMano: null,
-                      precioKm0: null,
-                    });
-                  }}
-                  className="flex items-center justify-center px-6 py-3 text-white bg-green-600 hover:bg-green-700 font-semibold rounded-lg transition-colors duration-200"
-                >
-                  <span className="mr-2">🏠</span>
-                  Empezar de Nuevo
-                </button>
-              </div>
-            </div>
+            </>
           )}
 
         </div>

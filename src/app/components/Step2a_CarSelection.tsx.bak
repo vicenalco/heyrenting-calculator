@@ -647,9 +647,6 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                 <p className="text-blue-700">
                   Los años mostrados corresponden al período en el que la motorización <strong>{selectedTrim?.name || 'seleccionada'}{selectedTrim?.cv ? ` de ${selectedTrim.cv} CV` : ''}</strong> ha estado disponible en el mercado europeo para el modelo <strong>{formData.carModel}</strong>.
                 </p>
-                <p className="text-blue-700 mt-2">
-                  <strong>Nota:</strong> Si aparece el año 2025, significa que la motorización sigue disponible actualmente, no que termine en 2025.
-                </p>
               </div>
             </div>
           </div>
