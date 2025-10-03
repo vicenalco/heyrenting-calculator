@@ -79,11 +79,20 @@ export default function Home() {
   });
 
   // Estado para el scraping de precios
-  const [scrapingState, setScrapingState] = useState({
+  const [scrapingState, setScrapingState] = useState<{
+    isScraping: boolean;
+    progress: number;
+    currentStep: string;
+    error: string | null;
+    completed: boolean;
+    precioNuevo?: number | null;
+    precioSegundaMano?: number | null;
+    precioKm0?: number | null;
+  }>({
     isScraping: false,
     progress: 0,
     currentStep: '',
-    error: null as string | null,
+    error: null,
     completed: false,
   });
 
@@ -91,6 +100,26 @@ export default function Home() {
   const updateFormData = (updates: Partial<typeof formData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
+
+  // useEffect para guardar precios cuando el scraping se complete
+  useEffect(() => {
+    if (scrapingState.completed && 
+        (scrapingState.precioNuevo !== undefined || 
+         scrapingState.precioSegundaMano !== undefined || 
+         scrapingState.precioKm0 !== undefined)) {
+      console.log('💾 [page.tsx] Guardando precios del scraping en formData:', {
+        precioNuevo: scrapingState.precioNuevo,
+        precioSegundaMano: scrapingState.precioSegundaMano,
+        precioKm0: scrapingState.precioKm0
+      });
+      
+      updateFormData({
+        precioNuevo: scrapingState.precioNuevo ?? formData.precioNuevo,
+        precioSegundaMano: scrapingState.precioSegundaMano ?? formData.precioSegundaMano,
+        precioKm0: scrapingState.precioKm0 ?? formData.precioKm0,
+      });
+    }
+  }, [scrapingState.completed, scrapingState.precioNuevo, scrapingState.precioSegundaMano, scrapingState.precioKm0]);
 
   // Funciones para verificar si cada paso está completo
   const isStep2Complete = formData.carBrand && formData.carModel && formData.carVersion && formData.carYear.length > 0;

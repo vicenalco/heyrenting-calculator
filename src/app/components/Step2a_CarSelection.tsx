@@ -50,6 +50,9 @@ interface Step2a_CarSelectionProps {
     currentStep: string;
     error: string | null;
     completed: boolean;
+    precioNuevo?: number | null;
+    precioSegundaMano?: number | null;
+    precioKm0?: number | null;
   }) => void;
   onPreviousStep?: () => void;
   onNextStep?: () => void;
@@ -245,9 +248,12 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
         currentStep: scrapingCurrentStep,
         error: scrapingError,
         completed: scrapingCompleted,
+        precioNuevo,
+        precioSegundaMano,
+        precioKm0,
       });
     }
-  }, [isScraping, progress, scrapingCurrentStep, scrapingError, scrapingCompleted, onScrapingStateChange]);
+  }, [isScraping, progress, scrapingCurrentStep, scrapingError, scrapingCompleted, precioNuevo, precioSegundaMano, precioKm0, onScrapingStateChange]);
   
   // Efecto para guardar precios cuando el scraping se complete
   useEffect(() => {
@@ -259,15 +265,16 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       hayAlgunPrecio: !!(precioNuevo || precioSegundaMano || precioKm0)
     });
     
-    if (scrapingCompleted && (precioNuevo || precioSegundaMano || precioKm0)) {
-      console.log('💾 Guardando precios obtenidos:', { precioNuevo, precioSegundaMano, precioKm0 });
+    if (scrapingCompleted && (precioNuevo !== null || precioSegundaMano !== null || precioKm0 !== null)) {
+      console.log('💾 Guardando precios obtenidos en formData:', { precioNuevo, precioSegundaMano, precioKm0 });
       onUpdate({
         precioNuevo,
         precioSegundaMano,
         precioKm0,
       });
     }
-  }, [scrapingCompleted, precioNuevo, precioSegundaMano, precioKm0, onUpdate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrapingCompleted, precioNuevo, precioSegundaMano, precioKm0]);
 
   // Efecto para actualizar precios cuando el scraping se complete
   useEffect(() => {
@@ -354,12 +361,12 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
   };
 
 
-  const handleNextStep = async () => {
+  const handleNextStep = () => {
     if (currentStep < 4) {
       setIsNavigatingBack(false);
       setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
     } else if (currentStep === 4 && formData.carYear && formData.carYear.length > 0) {
-      // Si estamos en el paso 4 (año) y se han seleccionado años, iniciar scraping y avanzar
+      // Si estamos en el paso 4 (año) y se han seleccionado años, iniciar scraping en segundo plano
       if (formData.carBrand && formData.carModel && selectedTrim) {
         const scrapingParams = {
           brand: formData.carBrand,
@@ -370,22 +377,13 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
           years: formData.carYear,
         };
         
-        console.log('🎯 Iniciando scraping al hacer clic en "Siguiente paso" con años:', formData.carYear, 'y parámetros:', scrapingParams);
+        console.log('🎯 Iniciando scraping en segundo plano con años:', formData.carYear, 'y parámetros:', scrapingParams);
         
-        // Iniciar scraping y esperar a que termine
-        const results = await startScraping(scrapingParams);
-        
-        // Guardar precios antes de avanzar
-        if (results) {
-          console.log('💾 Guardando precios antes de avanzar al paso 5');
-          onUpdate({
-            precioNuevo: precioNuevo,
-            precioSegundaMano: precioSegundaMano,
-            precioKm0: precioKm0,
-          });
-        }
+        // Iniciar scraping en segundo plano (sin await)
+        startScraping(scrapingParams);
       }
       
+      // Avanzar inmediatamente sin esperar al scraping
       onNext();
     }
   };
