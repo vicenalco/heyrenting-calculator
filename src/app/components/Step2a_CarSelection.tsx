@@ -657,31 +657,15 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             Selecciona uno o varios años de fabricación del <strong>{formData.carModel}</strong>
             {selectedTrim && (
               <span className="block text-sm text-gray-500 mt-1">
-                Motorización: <strong>{selectedTrim.name}</strong>
+                Motorización: <strong>{selectedTrim?.name || 'seleccionada'}{selectedTrim?.cv ? ` de ${selectedTrim.cv} CV` : ''}</strong>
                 {selectedTrim.startYear && selectedTrim.endYear && (
                   <span> - Disponible desde {selectedTrim.startYear} hasta {selectedTrim.endYear}</span>
                 )}
               </span>
             )}
           </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Selecciona un rango de años: haz clic en el año inicial y luego en el año final
-          </p>
           
-          {/* Texto explicativo sobre los años de disponibilidad */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <i className="fa-solid fa-info-circle text-blue-500 mt-0.5"></i>
-              </div>
-              <div className="ml-3">
-                <p className="font-medium mb-1">Información sobre los años mostrados</p>
-                <p className="text-blue-700">
-                  Los años mostrados corresponden al período en el que la motorización <strong>{selectedTrim?.name || 'seleccionada'}{selectedTrim?.cv ? ` de ${selectedTrim.cv} CV` : ''}</strong> ha estado disponible en el mercado europeo para el modelo <strong>{formData.carModel}</strong>.
-                </p>
-              </div>
-            </div>
-          </div>
+
         </div>
         
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
