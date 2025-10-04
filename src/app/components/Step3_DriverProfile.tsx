@@ -8,6 +8,9 @@ interface Step3_DriverProfileProps {
     temperamentoVolante1: string;
     temperamentoVolante2: string;
     misionVehiculo: string;
+    lugarAparcamiento: string;
+    filosofiaMantenimiento: string;
+    anosSinParte: string;
   };
   onUpdate: (updates: Partial<Step3_DriverProfileProps['formData']>) => void;
   onNext: () => void;
@@ -23,11 +26,14 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
   const isComplete = formData.habitatVehiculo && formData.habitatVehiculo.length > 0 && 
                    formData.temperamentoVolante1 && 
                    formData.temperamentoVolante2 && 
-                   formData.misionVehiculo;
+                   formData.misionVehiculo &&
+                   formData.lugarAparcamiento &&
+                   formData.filosofiaMantenimiento &&
+                   formData.anosSinParte;
 
   // Función para avanzar a la siguiente pregunta
   const handleNextQuestion = () => {
-    if (currentQuestion < 4) {
+    if (currentQuestion < 7) {
       setCurrentQuestion(currentQuestion + 1);
       // Scroll automático al top de la página después del cambio
       setTimeout(() => {
@@ -67,7 +73,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
       {/* Indicador de progreso */}
       <div className="flex justify-center mb-8">
         <div className="flex space-x-2">
-          {[1, 2, 3, 4].map((questionNumber) => (
+          {[1, 2, 3, 4, 5, 6, 7].map((questionNumber) => (
             <div
               key={questionNumber}
               className={`w-3 h-3 rounded-full transition-all duration-200 ${
@@ -132,7 +138,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
                 <div className="text-4xl mb-3">
                   <i className="fa-solid fa-road text-green-500"></i>
                 </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">Carretera</h4>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">Autovía y Carretera</h4>
                 <p className="text-sm text-gray-600">
                   Casi todo autovía y carretera, a velocidad de crucero y con pocos cambios de ritmo.
                 </p>
@@ -326,7 +332,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
         <div className="space-y-6" data-question="4">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
-              ¿Cuánta gente suele viajar contigo?
+            ¿Cuál es la carga habitual del coche?
             </h2>
             <p className="text-lg text-gray-600">Selecciona la opción que mejor describe el uso del vehículo</p>
           </div>
@@ -349,9 +355,9 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               >
                 <div className="text-center">
                   <div className="text-4xl mb-3">👤</div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Solo o con 1 persona</h4>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Casi vacío</h4>
                   <p className="text-sm text-gray-600">
-                    Voy solo o con un pasajero la mayor parte del tiempo.
+                  Voy solo o con un pasajero la mayor parte del tiempo.
                   </p>
                 </div>
               </div>
@@ -394,6 +400,210 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
                     Ligero entre semana, cargado en los viajes.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pregunta 5: Lugar de Aparcamiento */}
+      {currentQuestion === 5 && (
+        <div className="space-y-6" data-question="5">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
+              ¿Dónde aparcas habitualmente?
+            </h2>
+            <p className="text-lg text-gray-600">El lugar donde descansa tu coche influye en su seguro y conservación.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div
+              onClick={() => {
+                onUpdate({ lugarAparcamiento: 'garaje' });
+                setTimeout(() => handleNextQuestion(), 500);
+              }}
+              className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                formData.lugarAparcamiento === 'garaje'
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-3">🏠</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">En un garaje privado o comunitario</h4>
+                <p className="text-sm text-gray-600">
+                  Protegido del clima y más seguro.
+                </p>
+              </div>
+            </div>
+
+            <div
+              onClick={() => {
+                onUpdate({ lugarAparcamiento: 'calle' });
+                setTimeout(() => handleNextQuestion(), 500);
+              }}
+              className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                formData.lugarAparcamiento === 'calle'
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-3">🅿️</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">En la calle</h4>
+                <p className="text-sm text-gray-600">
+                  Aparcamiento público o en la vía.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pregunta 6: Filosofía de Mantenimiento */}
+      {currentQuestion === 6 && (
+        <div className="space-y-6" data-question="6">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
+              ¿Cuál es tu filosofía de mantenimiento?
+            </h2>
+            <p className="text-lg text-gray-600">Tu enfoque hacia el cuidado del coche nos dice mucho sobre su fiabilidad futura.</p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div
+                onClick={() => {
+                  onUpdate({ filosofiaMantenimiento: 'rajatabla' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
+                className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  formData.filosofiaMantenimiento === 'rajatabla'
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">📋</div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">A rajatabla</h4>
+                  <p className="text-sm text-gray-600">
+                    Sigo el libro de mantenimiento oficial sin saltarme una sola revisión.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                onClick={() => {
+                  onUpdate({ filosofiaMantenimiento: 'cuando_pide' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
+                className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  formData.filosofiaMantenimiento === 'cuando_pide'
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">🔧</div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Cuando "pide algo"</h4>
+                  <p className="text-sm text-gray-600">
+                    Voy al taller cuando oigo un ruido raro o toca la ITV.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                onClick={() => {
+                  onUpdate({ filosofiaMantenimiento: 'equilibrio' });
+                  setTimeout(() => handleNextQuestion(), 500);
+                }}
+                className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  formData.filosofiaMantenimiento === 'equilibrio'
+                    ? 'border-green-500 bg-green-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">⚖️</div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Buscando el equilibrio</h4>
+                  <p className="text-sm text-gray-600">
+                    Hago las revisiones importantes, pero puedo estirar los plazos si el coche va bien.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pregunta 7: Años sin Parte */}
+      {currentQuestion === 7 && (
+        <div className="space-y-6" data-question="7">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
+              ¿Cuántos años llevas sin dar un parte con culpa?
+            </h2>
+            <p className="text-lg text-gray-600">Esta información nos ayuda a calcular tu prima de seguro.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div
+              onClick={() => {
+                onUpdate({ anosSinParte: 'novel' });
+                setTimeout(() => onNext(), 500);
+              }}
+              className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                formData.anosSinParte === 'novel'
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-3">🆕</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">Soy un conductor novel / He dado un parte en el último año</h4>
+                <p className="text-sm text-gray-600">
+                  Sin experiencia o con siniestros recientes.
+                </p>
+              </div>
+            </div>
+
+            <div
+              onClick={() => {
+                onUpdate({ anosSinParte: '1-5' });
+                setTimeout(() => onNext(), 500);
+              }}
+              className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                formData.anosSinParte === '1-5'
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-3">📅</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">Entre 1 y 5 años</h4>
+                <p className="text-sm text-gray-600">
+                  Conducción responsable con algunos años de experiencia.
+                </p>
+              </div>
+            </div>
+
+            <div
+              onClick={() => {
+                onUpdate({ anosSinParte: '5+' });
+                setTimeout(() => onNext(), 500);
+              }}
+              className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                formData.anosSinParte === '5+'
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-3">🏆</div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">Más de 5 años (Bonificación máxima)</h4>
+                <p className="text-sm text-gray-600">
+                  Conductor experimentado sin siniestros.
+                </p>
               </div>
             </div>
           </div>
@@ -449,7 +659,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
         <div className="text-center mb-4 sm:hidden">
           <div className="inline-flex items-center px-4 py-2 bg-white rounded-full border border-gray-200">
             <span className="text-sm text-gray-500">Pregunta</span>
-            <span className="text-base font-semibold text-gray-700 ml-2">{currentQuestion} de 4</span>
+            <span className="text-base font-semibold text-gray-700 ml-2">{currentQuestion} de 7</span>
           </div>
         </div>
 
@@ -467,16 +677,19 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
           {/* Contador de preguntas desktop - solo visible en desktop */}
           <div className="hidden sm:flex items-center px-4 py-2 bg-white rounded-full border border-gray-200 sm:order-2">
             <span className="text-sm text-gray-500">Pregunta</span>
-            <span className="text-base font-semibold text-gray-700 ml-2">{currentQuestion} de 4</span>
+            <span className="text-base font-semibold text-gray-700 ml-2">{currentQuestion} de 7</span>
           </div>
 
-          {currentQuestion < 4 ? (
+          {currentQuestion < 7 ? (
             <button 
               onClick={handleNextQuestion}
               disabled={
                 (currentQuestion === 1 && (!formData.habitatVehiculo || formData.habitatVehiculo.length === 0)) ||
                 (currentQuestion === 2 && !formData.temperamentoVolante1) ||
-                (currentQuestion === 3 && !formData.temperamentoVolante2)
+                (currentQuestion === 3 && !formData.temperamentoVolante2) ||
+                (currentQuestion === 4 && !formData.misionVehiculo) ||
+                (currentQuestion === 5 && !formData.lugarAparcamiento) ||
+                (currentQuestion === 6 && !formData.filosofiaMantenimiento)
               }
               className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] order-1 sm:order-3"
             >
