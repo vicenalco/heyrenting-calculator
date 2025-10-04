@@ -680,18 +680,20 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     return (
       <div className="space-y-6">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿De qué año es el vehículo?</h2>
-          <p className="text-lg text-gray-600">
-            Selecciona uno o varios años de fabricación del <strong>{formData.carModel}</strong>
+          <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿De qué año es el vehículo que quieres?</h2>
+          <div className="text-lg text-gray-600">
             {selectedTrim && (
-              <span className="block text-sm text-gray-500 mt-1">
-                Motorización: <strong>{selectedTrim?.name || 'seleccionada'}{selectedTrim?.cv ? ` de ${selectedTrim.cv} CV` : ''}</strong>
-                {selectedTrim.startYear && selectedTrim.endYear && (
-                  <span> - Disponible desde {selectedTrim.startYear} hasta {selectedTrim.endYear}</span>
-                )}
-              </span>
-            )}
-          </p>
+                <span className="block text-sm text-gray-500 mt-1">
+                  Motorización: <strong>{selectedTrim?.name || 'seleccionada'}{selectedTrim?.cv ? ` de ${selectedTrim.cv} CV` : ''}</strong>
+                  {selectedTrim.startYear && selectedTrim.endYear && (
+                    <span> - Disponible desde {selectedTrim.startYear} hasta {selectedTrim.endYear}</span>
+                  )}
+                </span>
+              )}
+            <div className="mt-2 inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+              <span>Selecciona uno o varios años de fabricación del <strong>{formData.carModel}</strong></span>
+            </div>
+          </div>
           
 
         </div>
