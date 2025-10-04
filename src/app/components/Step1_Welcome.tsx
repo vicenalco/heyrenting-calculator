@@ -18,15 +18,15 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8">
         <div
-          className="group bg-white rounded-2xl shadow-sm p-8 flex-1 cursor-pointer border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+          className="group bg-white rounded-2xl shadow-sm p-4 md:p-8 flex-1 cursor-pointer border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
           onClick={() => onSelectPath('knowsCar')}
         >
-          <div className="mb-6">
-            <Icon name="bullseye" className="w-16 h-16 text-green-500 mx-auto transition-transform duration-300 group-hover:scale-110" />
+          <div className="mb-3 md:mb-6">
+            <Icon name="bullseye" className="w-10 h-10 md:w-16 md:h-16 text-green-500 mx-auto transition-transform duration-300 group-hover:scale-110" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-1 md:mb-2">
             Ya sé qué coche quiero
           </h3>
           {/*
@@ -37,13 +37,13 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
         </div>
 
         <div
-          className="group bg-white rounded-2xl shadow-sm p-8 flex-1 cursor-pointer border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+          className="group bg-white rounded-2xl shadow-sm p-4 md:p-8 flex-1 cursor-pointer border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
           onClick={() => onSelectPath('inspireMe')}
         >
-          <div className="mb-6">
-            <Icon name="magnifyingGlass" className="w-16 h-16 text-yellow-500 mx-auto transition-transform duration-300 group-hover:scale-110" />
+          <div className="mb-3 md:mb-6">
+            <Icon name="magnifyingGlass" className="w-10 h-10 md:w-16 md:h-16 text-yellow-500 mx-auto transition-transform duration-300 group-hover:scale-110" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-1 md:mb-2">
             Quiero que me ayudes a elegir
           </h3>
           {/*
