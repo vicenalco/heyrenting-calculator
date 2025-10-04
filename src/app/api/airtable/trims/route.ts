@@ -46,7 +46,17 @@ export async function GET(request: Request) {
       };
       return result;
     })
-    .filter((r) => r.name);
+    .filter((r) => r.name)
+    .sort((a, b) => {
+      // Ordenar por endYear más reciente primero
+      // Si no tiene endYear, asumimos que sigue en producción (prioridad alta)
+      const currentYear = new Date().getFullYear();
+      const endYearA = a.endYear || currentYear + 1; // +1 para dar prioridad a los que no tienen endYear
+      const endYearB = b.endYear || currentYear + 1;
+      
+      // Ordenar por endYear descendente (más reciente primero)
+      return endYearB - endYearA;
+    });
   
   return NextResponse.json(results);
 }
