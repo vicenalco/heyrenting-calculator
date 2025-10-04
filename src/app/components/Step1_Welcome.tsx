@@ -10,7 +10,7 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
   return (
     <div className="text-center max-w-6xl mx-auto">
       <div className="mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 tracking-tight">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 tracking-tight">
         Descubre el coste oculto del coche que quieres
         </h1>
         <p className="text-lg text-gray-500">
