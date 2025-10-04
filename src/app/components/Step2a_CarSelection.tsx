@@ -487,7 +487,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
             <div
               key={m.id}
               onClick={() => handleSelectBrand(m.id, m.name)}
-              className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+              className={`p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 formData.carBrand === m.name
                   ? 'border-green-500 bg-green-50 shadow-md'
                   : 'border-gray-200 bg-white hover:border-green-300'
