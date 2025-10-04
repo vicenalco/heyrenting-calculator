@@ -76,7 +76,7 @@ export function buildKm77SearchUrl(params: Km77SearchParams): string {
     'markets[]=current',
     `nqls[]=ve:car:${formatBrandModelForKm77(params.brand, params.model)}`,
     `fuel_categories[]=${fuelMapping[params.fuel] || params.fuel}`,
-    `power-min=${params.power}`,
+    `power-min=${params.power - 1}`,
     `power-max=${params.power + 1}`,
   ];
 
