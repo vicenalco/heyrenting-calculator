@@ -11,7 +11,7 @@ export default function Step1_Welcome({ onSelectPath }: Step1_WelcomeProps) {
     <div className="text-center max-w-6xl mx-auto">
       <div className="mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 tracking-tight">
-          ¡Bienvenido a la Calculadora de Gastos Reales!
+        Descubre el coste oculto del coche que quieres
         </h1>
         <p className="text-lg text-gray-500">
           Descubre cuánto cuesta realmente tener un coche en España
