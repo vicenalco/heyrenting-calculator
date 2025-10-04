@@ -530,7 +530,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       )}
       
       {!loading && models.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {models.map((m) => (
             <div
               key={m.id}
