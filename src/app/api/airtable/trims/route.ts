@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   if (!modelId) return NextResponse.json([]);
 
   // Cargamos todos los trims y filtramos en el frontend
-  const params = new URLSearchParams({ maxRecords: '100' });
+  const params = new URLSearchParams({ maxRecords: '500' });
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_TRIMS}?${params.toString()}`;
   
   const res = await fetch(url, { 
