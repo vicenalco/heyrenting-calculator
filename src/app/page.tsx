@@ -182,6 +182,15 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-3 sm:p-6 lg:p-8 overflow-x-hidden">
       <div className="max-w-4xl mx-auto w-full pt-6 sm:pt-12">
 
+        {/* Logo */}
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <img 
+            src="/calculator-logo.png" 
+            alt="HEYcalculator Logo" 
+            className="h-12 sm:h-16 w-auto"
+          />
+        </div>
+
         {/* Contenedor principal del wizard */}
         <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
           {/* Indicador de progreso */}
