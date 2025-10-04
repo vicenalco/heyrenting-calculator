@@ -11,28 +11,46 @@ export async function GET(request: Request) {
   const modelId = (searchParams.get('modelId') || '').trim();
   if (!modelId) return NextResponse.json([]);
 
-  // Cargamos todos los trims y filtramos en el frontend
-  const params = new URLSearchParams({ maxRecords: '500' });
-  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_TRIMS}?${params.toString()}`;
+  // Cargamos todos los trims con paginación para manejar cualquier cantidad
+  const allRecords: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number; cv?: number; model?: string[]; transmision?: string[]; startYear?: number; endYear?: number } }> = [];
+  let offset: string | undefined = undefined;
+  let pageCount = 0;
   
-  const res = await fetch(url, { 
-    headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }, 
-    cache: 'no-store' 
-  });
-  
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
-  }
-  
-  const data = await res.json() as { records: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number; cv?: number; model?: string[]; transmision?: string[]; startYear?: number; endYear?: number } }> };
+  do {
+    pageCount++;
+    const params = new URLSearchParams({ maxRecords: '500' });
+    if (offset) {
+      params.set('offset', offset);
+    }
+    
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_TRIMS}?${params.toString()}`;
+    
+    const res = await fetch(url, { 
+      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }, 
+      cache: 'no-store' 
+    });
+    
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      return NextResponse.json({ error: 'Airtable error', detail: errText }, { status: 500 });
+    }
+    
+    const data = await res.json() as { 
+      records: Array<{ id: string; fields: { name?: string; fuel?: string; price?: number; cv?: number; model?: string[]; transmision?: string[]; startYear?: number; endYear?: number } }>; 
+      offset?: string;
+    };
+    
+    allRecords.push(...data.records);
+    offset = data.offset;
+  } while (offset);
   
   // Filtramos en el frontend: buscamos trims donde el array model contenga el modelId
-  const results = data.records
-    .filter((r) => {
-      const modelArray = r.fields.model;
-      return modelArray && Array.isArray(modelArray) && modelArray.includes(modelId);
-    })
+  const filteredRecords = allRecords.filter((r) => {
+    const modelArray = r.fields.model;
+    return modelArray && Array.isArray(modelArray) && modelArray.includes(modelId);
+  });
+  
+  const results = filteredRecords
     .map((r) => {
       const result = { 
         id: r.id, 
