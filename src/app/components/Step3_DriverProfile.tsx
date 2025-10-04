@@ -505,7 +505,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
               >
                 <div className="text-center">
                   <div className="text-4xl mb-3">🔧</div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Cuando "pide algo"</h4>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Cuando &quot;pide algo&quot;</h4>
                   <p className="text-sm text-gray-600">
                     Voy al taller cuando oigo un ruido raro o toca la ITV.
                   </p>

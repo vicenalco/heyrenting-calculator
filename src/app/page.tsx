@@ -53,6 +53,9 @@ export default function Home() {
     temperamentoVolante1: '', // 'calmado', 'agresivo', 'normal'
     temperamentoVolante2: '', // 'fluido', 'deportivo', 'tranquilo'
     misionVehiculo: '', // 'ligero', 'cargado', 'mixto_carga'
+    lugarAparcamiento: '', // 'garaje', 'calle'
+    filosofiaMantenimiento: '', // 'rajatabla', 'cuando_pide', 'equilibrio'
+    anosSinParte: '', // 'novel', '1-5', '5+'
     // Nuevos campos para el perfil financiero (Paso 4)
     planPago: '', // 'contado', 'entrada_financiar', 'financiar_100'
     desembolso30PorCiento: '', // 'si', 'no' (solo si planPago === 'contado')
