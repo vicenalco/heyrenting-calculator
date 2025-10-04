@@ -747,9 +747,10 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
                 </div>
                 <h4 className="font-semibold text-gray-900">{year}</h4>
                 {(formData.carYear || []).includes(year) && (
-                  <div className="mt-2 inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                    <span className="mr-1">✓</span>
-                    Seleccionado
+                  <div className="mt-1 inline-flex items-center px-1.5 py-0.5 bg-green-100 text-green-800 text-xs font-medium rounded-full whitespace-nowrap">
+                    <span className="hidden sm:inline mr-0.5">✓</span>
+                    <span className="hidden sm:inline">Seleccionado</span>
+                    <span className="sm:hidden">✓</span>
                   </div>
                 )}
               </div>

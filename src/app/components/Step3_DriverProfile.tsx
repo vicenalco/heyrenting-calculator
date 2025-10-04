@@ -29,6 +29,13 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
   const handleNextQuestion = () => {
     if (currentQuestion < 4) {
       setCurrentQuestion(currentQuestion + 1);
+      // Scroll automático al top de la página después del cambio
+      setTimeout(() => {
+        window.scrollTo({ 
+          top: 0, 
+          behavior: 'smooth' 
+        });
+      }, 100);
     }
   };
 
@@ -73,7 +80,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
 
       {/* Pregunta 1: El Hábitat del Vehículo */}
       {currentQuestion === 1 && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-question="1">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cómo usarás principalmente el coche?
@@ -170,7 +177,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
 
       {/* Pregunta 2: Temperamento al Volante - Pregunta 1 */}
       {currentQuestion === 2 && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-question="2">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cómo conduces en los semáforos?
@@ -244,7 +251,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
 
       {/* Pregunta 3: Temperamento al Volante - Pregunta 2 */}
       {currentQuestion === 3 && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-question="3">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cómo conduces en las curvas?
@@ -316,7 +323,7 @@ export default function Step3_DriverProfile({ formData, onUpdate, onNext, onPrev
 
       {/* Pregunta 4: La Misión del Vehículo */}
       {currentQuestion === 4 && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-question="4">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cuánta gente suele viajar contigo?

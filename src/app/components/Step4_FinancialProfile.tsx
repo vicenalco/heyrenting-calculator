@@ -33,7 +33,16 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
       setShowSecondQuestion(false);
       onUpdate({ desembolso30PorCiento: '' }); // Limpiar la respuesta condicional
     }
-    setTimeout(() => setCurrentQuestion(2), 300);
+    setTimeout(() => {
+      setCurrentQuestion(2);
+      // Scroll automático al top de la página después del cambio
+      setTimeout(() => {
+        window.scrollTo({ 
+          top: 0, 
+          behavior: 'smooth' 
+        });
+      }, 100);
+    }, 300);
   };
 
   const handlePreviousQuestion = () => {
@@ -65,7 +74,7 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
 
       {/* Pregunta 1: Plan de pago */}
       {currentQuestion === 1 && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-question="1">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Cuál es tu plan para pagar el coche?
@@ -134,7 +143,7 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
 
       {/* Pregunta 2: Condicional - Solo si se elige "Al contado" */}
       {currentQuestion === 2 && showSecondQuestion && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-question="2">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Pagar al contado supondría usar más del 30% de tus ahorros?
@@ -146,7 +155,16 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
             <div
               onClick={() => {
                 onUpdate({ desembolso30PorCiento: 'no' });
-                setTimeout(() => setCurrentQuestion(3), 300);
+                setTimeout(() => {
+                  setCurrentQuestion(3);
+                  // Scroll automático al top de la página después del cambio
+                  setTimeout(() => {
+                    window.scrollTo({ 
+                      top: 0, 
+                      behavior: 'smooth' 
+                    });
+                  }, 100);
+                }, 300);
               }}
               className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 formData.desembolso30PorCiento === 'no'
@@ -168,7 +186,16 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
             <div
               onClick={() => {
                 onUpdate({ desembolso30PorCiento: 'si' });
-                setTimeout(() => setCurrentQuestion(3), 300);
+                setTimeout(() => {
+                  setCurrentQuestion(3);
+                  // Scroll automático al top de la página después del cambio
+                  setTimeout(() => {
+                    window.scrollTo({ 
+                      top: 0, 
+                      behavior: 'smooth' 
+                    });
+                  }, 100);
+                }, 300);
               }}
               className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 formData.desembolso30PorCiento === 'si'
@@ -192,7 +219,7 @@ export default function Step4_FinancialProfile({ formData, onUpdate, onNext, onP
 
       {/* Pregunta 3: Porcentaje de ingresos */}
       {((currentQuestion === 2 && !showSecondQuestion) || (currentQuestion === 3 && showSecondQuestion)) && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-question="3">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">
               ¿Qué porcentaje de tus ingresos mensuales se llevaría el coche?
