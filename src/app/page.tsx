@@ -185,7 +185,7 @@ export default function Home() {
         {/* Logo */}
         <div className="flex justify-center mb-6 sm:mb-8">
           <img 
-            src="/heycalculator-logo.png" 
+            src="/calculator-logo.png" 
             alt="HEYcalculator Logo" 
             className="h-12 sm:h-16 w-auto"
           />
