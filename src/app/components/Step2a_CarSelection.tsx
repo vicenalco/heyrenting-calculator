@@ -452,7 +452,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     <div className="space-y-4">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿Qué marca quieres elegir?</h2>
-        <p className="text-lg text-gray-600">Busca y selecciona la marca del vehículo que quieres comprar</p>
+        <p className="text-lg text-gray-600">Busca y selecciona la marca del vehículo que quieres adquirir</p>
       </div>
       
       <div className="relative">
@@ -538,7 +538,7 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">¿Qué modelo de {formData.carBrand} te interesa?</h2>
-        <p className="text-lg text-gray-600">Selecciona el modelo que quieres configurar</p>
+        <p className="text-lg text-gray-600">Selecciona el modelo que quieres</p>
       </div>
       
       {loading && (
