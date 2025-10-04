@@ -317,6 +317,13 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
       makeQid: undefined 
     });
     setCurrentStep(2);
+    // Scroll automático al top de la página después del cambio
+    setTimeout(() => {
+      window.scrollTo({ 
+        top: 0, 
+        behavior: 'smooth' 
+      });
+    }, 100);
   };
 
   const handleSelectModel = (id: string, name: string) => {
@@ -328,6 +335,13 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     // Solo avanzar automáticamente si no se está navegando hacia atrás
     if (!isNavigatingBack) {
       setCurrentStep(3);
+      // Scroll automático al top de la página después del cambio
+      setTimeout(() => {
+        window.scrollTo({ 
+          top: 0, 
+          behavior: 'smooth' 
+        });
+      }, 100);
     }
     // Resetear el flag de navegación hacia atrás
     setIsNavigatingBack(false);
@@ -358,6 +372,13 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     
     // Ir al paso 4 (selección de año)
     setCurrentStep(4);
+    // Scroll automático al top de la página después del cambio
+    setTimeout(() => {
+      window.scrollTo({ 
+        top: 0, 
+        behavior: 'smooth' 
+      });
+    }, 100);
   };
 
 
@@ -365,6 +386,13 @@ export default function Step2a_CarSelection({ formData, onUpdate, onNext, isModi
     if (currentStep < 4) {
       setIsNavigatingBack(false);
       setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
+      // Scroll automático al top de la página después del cambio
+      setTimeout(() => {
+        window.scrollTo({ 
+          top: 0, 
+          behavior: 'smooth' 
+        });
+      }, 100);
     } else if (currentStep === 4 && formData.carYear && formData.carYear.length > 0) {
       // Si estamos en el paso 4 (año) y se han seleccionado años, iniciar scraping en segundo plano
       if (formData.carBrand && formData.carModel && selectedTrim) {
